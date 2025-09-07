@@ -63,7 +63,7 @@ const colors = {
 
 const tetrominoNames = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'] // Имена всех тетрамино
 
-const canvas = document.getElementById("game") // Получаем элемент canvas из HTML
+const canvas = document.getElementById("field") // Получаем элемент canvas из HTML
 const context = canvas.getContext("2d") // Получаем 2D контекст для рисования на canvas
 
 /**

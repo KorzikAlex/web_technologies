@@ -1,1 +1,4 @@
-import '@material/web/button/filled-button.js';
+import {Toast} from 'bootstrap.esm.min.js'
+
+Array.from(document.querySelectorAll('.toast'))
+    .forEach(toastNode => new Toast(toastNode))
