@@ -51,7 +51,7 @@ const tetrominoes = {
  * Цвета для каждой фигуры
  * @type {{I: string, O: string, T: string, S: string, Z: string, J: string, L: string}}
  */
-const colors = {
+const tetrominoColors = {
     'I': "cyan",
     'O': "yellow",
     'T': "purple",
@@ -62,9 +62,6 @@ const colors = {
 }
 
 const tetrominoNames = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'] // Имена всех тетрамино
-
-const canvas = document.getElementById("field") // Получаем элемент canvas из HTML
-const context = canvas.getContext("2d") // Получаем 2D контекст для рисования на canvas
 
 /**
  * Основная функция для инициализации игры
@@ -104,16 +101,57 @@ function nextTetromino() {
     // TODO: продолжить реализацию функции
 }
 
-document.addEventListener("keydown", function (event) {
-    if (event.key === "ArrowLeft") {
-        // Движение влево
-    } else if (event.key === "ArrowRight") {
-        // Движение вправо
-    } else if (event.key === "ArrowDown") {
-        // Быстрое падение
-    } else if (event.key === "ArrowUp") {
-        // Поворот фигуры
+/**
+ * Функция для рисования на canvas
+ */
+function draw() {
+    const canvas = document.getElementById("field") // Получаем элемент canvas из HTML
+    if (canvas.getContext) {
+        let ctx = canvas.getContext('2d');
+        ctx.fillRect(25, 25, 100, 100);
+        ctx.clearRect(45, 45, 60, 60);
     }
-})
+}
+
+/**
+ * Обработчик событий для нажатий клавиш
+ */
+document.addEventListener(
+    "keydown",
+    function (event) {
+        if (event.key === "ArrowLeft" || event.key === "a") {
+            console.log(event.key);
+            // Движение влево
+        } else if (event.key === "ArrowRight" || event.key === "d") {
+            console.log(event.key);
+            // Движение вправо
+        } else if (event.key === "ArrowDown" || event.key === "s") {
+            console.log(event.key);
+            // Быстрое падение
+        } else if (event.key === "ArrowUp" || event.key === "w") {
+            console.log(event.key);
+            // Поворот фигуры
+        } else if (event.key === " ") {
+            console.log(event.key);
+            // Пауза
+        } else if (event.key === "Enter") {
+            console.log(event.key);
+            // Начать игру
+        } else if (event.key === "Escape") {
+            console.log(event.key);
+            // Выйти из игры
+        } else if (event.key === "F1") {
+            console.log(event.key);
+            // Показать справку
+        } else if (event.key === "Shift") {
+            console.log(event.key);
+            // Ускорить падение
+        } else if (event.key === "Control") {
+            console.log(event.key);
+            // Замедлить падение
+        } else {
+            console.log(`Необработанное нажатие клавиши: ${event.key}`);
+        }
+    })
 
 main() // Запускаем основную функцию для инициализации игры

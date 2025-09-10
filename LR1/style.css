@@ -10,15 +10,16 @@ html, body {
     height: 100%;
     margin: 0; /* убираем стандартные отступы браузера */
     --background-wallpaper-web: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80");
-    --background-wallpaper: url("wallpaper.png");
+    --background-wallpaper-light: url("wallpaper-light.png");
 }
 
 body.index {
+    color-scheme: light dark;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--background-wallpaper) no-repeat center center fixed;
+    background: var(--background-wallpaper-light) no-repeat center center fixed;
     background-size: cover;
     min-height: 100vh; /* занять всю высоту окна */
     gap: 16px; /* расстояние между h1 и form */
@@ -31,7 +32,7 @@ body.main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--background-wallpaper) no-repeat center center fixed;
+    background: var(--background-wallpaper-light) no-repeat center center fixed;
     background-size: cover;
 }
 
@@ -81,7 +82,7 @@ div.player-information input[type="text"] {
 }
 
 
-input[type="submit"].submit-button {
+input[type="submit"].submit-button, button.submit-button {
     font-family: "Comic Relief", system-ui;
     font-weight: 700;
     font-style: normal;

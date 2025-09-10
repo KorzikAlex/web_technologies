@@ -1,7 +1,15 @@
+/**
+ * Сохранить имя пользователя в localStorage
+ * @param source
+ */
 function store(source) {
     localStorage["tetris.username"] = source.value
 }
 
+/**
+ *
+ * @param source
+ */
 function read(source) {
     source.value = localStorage["tetris.username"]
 }
