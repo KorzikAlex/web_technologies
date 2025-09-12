@@ -15,7 +15,7 @@ cd LR1
 ```
 3. Сгенерируйте самоподписанные ключи для HTTPS:
 ```
-openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout nginx/keys/server.key -out nginx/keys/server.crt
+openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout nginx/keys/tetris.key -out nginx/keys/tetris.crt
 ```
 4. Запустите скрипт для генерации nginx файла и переноса ключей в необходимые директрии:
 ```shell
