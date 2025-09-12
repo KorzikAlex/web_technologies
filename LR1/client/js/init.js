@@ -5,7 +5,6 @@
 function store(source) {
     localStorage["tetris.username"] = source.value
 }
-
 /**
  *
  * @param source

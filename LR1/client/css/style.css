@@ -1,97 +1,137 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&family=Pangolin&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400&display=swap');
 
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
+/* Светлая тема */
+@media (prefers-color-scheme: light) {
+    body.index {
+        background: linear-gradient(to right top, lightpink, lightcoral, lightblue, lightcyan);
+        color: black;
+    }
 
-* {
-    box-sizing: border-box;
+    input[type="submit"].submit-player, button.submit-player {
+        background-color: deepskyblue;
+        color: black;
+    }
+
+    input[type="submit"].submit-player:hover, button.submit-player:hover {
+        background-color: lightblue;
+    }
+
+    body.main {
+        background: linear-gradient(to right top, lightpink, lightcoral, lightblue, lightcyan);
+    }
 }
 
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+    body.index {
+        background: linear-gradient(to right top, darkmagenta, darkred, darkblue, darkcyan);
+        color: white;
+    }
+
+    input[type="submit"].submit-player, button.submit-player {
+        background-color: blue;
+        color: white;
+    }
+    input[type="submit"].submit-player:hover, button.submit-player:hover {
+        background-color: mediumblue;
+    }
+
+    body.main {
+        background: linear-gradient(to right top, darkmagenta, darkred, darkblue, darkcyan);
+    }
+}
+
+/* Общие стили для всех страниц */
 html, body {
+    font-family: "Comic Relief", system-ui;
+    font-weight: 400;
+    font-style: normal;
     height: 100%;
-    margin: 0; /* убираем стандартные отступы браузера */
-    --background-wallpaper-web: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80");
-    --background-wallpaper-light: url("../wallpaper-light.png");
+    margin: 0;
 }
 
+/* Общие стили для кнопок */
+input[type="submit"].submit-player, button.submit-player {
+    font-family: "Comic Relief", system-ui;
+    font-weight: 700;
+    font-style: normal;
+    border-radius: 8px;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+input.input-form {
+    font-family: "Comic Relief", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    padding: 8px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid gray;
+    border-radius: 8px;
+}
+
+/* Стили для главной страницы */
 body.index {
-    color-scheme: light dark;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--background-wallpaper-light) no-repeat center center fixed;
     background-size: cover;
-    min-height: 100vh; /* занять всю высоту окна */
-    gap: 16px; /* расстояние между h1 и form */
-    padding: 16px; /* отступы для маленьких экранов */
-    color: white;
-}
-
-body.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: var(--background-wallpaper-light) no-repeat center center fixed;
-    background-size: cover;
+    padding: 8px;
 }
 
 h1.title {
     font-family: "Comic Relief", system-ui;
     font-weight: 700;
     font-style: normal;
-    display: block;
+    font-size: 2rem;
     text-align: center;
-    margin: 0;
+    margin: 0 16px;
 }
 
-div.player-information {
+form.player-information {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; /* расстояние между полем и кнопкой */
-    width: 360px; /* желаемая ширина формы на больших экранах */
-    max-width: 100%; /* адаптация под мобильные устройства */
-    border: 2px solid white;
+    gap: 12px;
+    width: 360px;
+    max-width: 100%;
     border-radius: 16px;
-    backdrop-filter: blur(12px) brightness(0.8);
+    backdrop-filter: brightness(0.9);
     padding: 16px;
+    margin: 8px;
 }
 
 img.img-icon {
     width: 100px;
     height: 100px;
+    margin-bottom: 12px;
+}
+
+label.input-player-label {
+    font-family: "Comic Relief", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+    width: 100%;
+    text-align: left;
+}
+
+/* Стили для страницы игры */
+body.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
 }
 
 canvas.field {
     border: 2px solid white;
     border-radius: 16px;
     backdrop-filter: blur(12px) brightness(0.8);
-}
-
-div.player-information label.input-player-label{
-    font-family: "Comic Relief", system-ui;
-    font-weight: 400;
-    font-style: normal;
-}
-
-div.player-information input[type="text"] {
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 16px;
-}
-
-
-input[type="submit"].submit-button, button.submit-button {
-    font-family: "Comic Relief", system-ui;
-    font-weight: 700;
-    font-style: normal;
-    background-color: #ff6f61;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }

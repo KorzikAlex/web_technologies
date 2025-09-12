@@ -1,22 +1,36 @@
+# HTTPS-сервер
 server {
+    # Настройка портов
     listen 443 ssl;
     listen [::]:443 ssl;
+    http2 on;
     server_name localhost;
 
+
+    # Пути к вашим самоподписанным сертификатам
     ssl_certificate /etc/pki/tls/certs/tetris.crt;
     ssl_certificate_key /etc/pki/tls/private/tetris.key;
-    ssl_session_cache shared:SSL:1m;
+
+    # Настройки SSL
+    ssl_session_cache shared:SSL:20m;
     ssl_session_timeout  20m;
     ssl_ciphers PROFILE=SYSTEM;
     ssl_prefer_server_ciphers on;
     ssl_protocols TLSv1.2 TLSv1.3;
-    root PROJECT_ROOT/client;
-    location /server {
-        root PROJECT_ROOT/server;
+
+    # Записи логов
+    access_log /var/log/nginx/tetris_access.log;
+    error_log  /var/log/nginx/tetris_error.log;
+
+    # Настройка корневой директории и индексного файла
+    root /PROJECT_ROOT/client;
+    index /html/index.html;
+    location / {
+        try_files $uri $uri/ =404;
     }
-    index index.html;
 }
 
+# Редирект с HTTP на HTTPS
 server {
     listen 80;
     listen [::]:80;
