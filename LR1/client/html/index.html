@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="/assets/icons/icon.png"/>
-    <link rel="stylesheet" href="/css/style.css">
-    <script type="text/javascript" src="/js/init.js" defer></script>
-    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0"/>
+    <!-- Иконка -->
+    <link rel="icon" href="../assets/icons/icon.png"/>
+    <!-- Заголовок страницы -->
     <title>Tetris</title>
-        <link
-                href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-                integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-                crossorigin="anonymous" defer></script>
+
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script type="module" href="../js/bootstrap.bundle.min.js" defer></script>
+
+    <!-- Стили и скрипты -->
+    <link rel="stylesheet" href="../css/style.css">
+    <script type="text/javascript" src="../js/init.js" defer></script>
 </head>
+
 <body class="index">
-<form action="/html/main.html" method="GET" class="player-information">
-    <img src="/assets/icons/icon.png" alt="tetris icon" class="img-icon"/>
+<!-- Форма для ввода имени игрока -->
+<form action="../html/main.html" method="GET" class="player-information">
+    <!-- Иконка игры-->
+    <img src="../assets/icons/icon.png" alt="tetris icon" class="img-icon"/>
+    <!-- Заголовок -->
     <h1 class="title">Tetris</h1>
+
+    <!-- Поле для ввода имени -->
     <div class="form-group">
+        <!-- Метка и текстовое поле для ввода имени-->
         <label for="name" class="input-player-label">
             Введите имя:
             <input type="text" id="name" class="form-control input-form" placeholder="Имя пользователя" required/>
         </label>
     </div>
+    <!-- Кнопка для начала игры -->
     <button type="submit" class="btn submit-player" id="submit-button">Начать игру</button>
 </form>
+
 </body>
 </html>

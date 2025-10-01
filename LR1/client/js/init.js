@@ -1,21 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Сохранить имя пользователя в localStorage
  * @param source
  */
 function store(source) {
-    localStorage["tetris.username"] = source.value
+    localStorage["tetris.username"] = source.value;
 }
 /**
  *
  * @param source
  */
 function read(source) {
-    source.value = localStorage["tetris.username"]
+    source.value = localStorage["tetris.username"];
 }
-
 function setName() {
     if (localStorage.hasOwnProperty("tetris.username")) {
-        let input = document.getElementById("name")
-        input.value = localStorage["tetris.username"]
+        let input = document.getElementById("name");
+        input.value = localStorage["tetris.username"];
     }
 }
+//# sourceMappingURL=init.js.map

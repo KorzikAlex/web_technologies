@@ -1,88 +1,147 @@
-@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400&display=swap');
+@font-face {
+    font-family: "Comic Relief";
+    src: url("../assets/fonts/ComicRelief-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Comic Relief";
+    src: url("../assets/fonts/ComicRelief-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Caveat", cursive;
+    src: url("../assets/fonts/Caveat-VariableFont_wght.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+:root {
+    --gap-sm: 8px;
+    --gap-md: 12px;
+    --gap-lg: 16px;
+    --container-width: 360px;
+    --radius-sm: 8px;
+    --radius-lg: 16px;
+
+    --font-ui: "Comic Relief", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-cursive: "Caveat", cursive;
+
+    --font-size-sm: 16px;
+    --font-size-md: 18px;
+    --font-size-lg: 24px;
+    --font-size-xl: 32px;
+    --font-size-xxl: 48px;
+    --font-size-xxxl: 64px;
+    --font-size-giant: 96px;
+
+    --ease: 0.25s;
+    --ease-long: 0.3s;
+}
 
 /* Светлая тема */
 @media (prefers-color-scheme: light) {
-    body.index {
-        background: linear-gradient(to right top, lightpink, lightcoral, lightblue, lightcyan);
-        color: black;
-    }
-
-    input[type="submit"].submit-player, button.submit-player {
-        background-color: deepskyblue;
-        color: black;
-    }
-
-    input[type="submit"].submit-player:hover, button.submit-player:hover {
-        background-color: lightblue;
-    }
-
-    body.main {
-        background: linear-gradient(to right top, lightpink, lightcoral, lightblue, lightcyan);
+    :root {
+        --bg-gradient: linear-gradient(to right top, lightpink, lightcoral, lightblue, lightcyan);
+        --bg-gradient-main: var(--bg-gradient);
+        --text-color: #000;
+        --btn-bg: deepskyblue;
+        --btn-bg-hover: lightblue;
+        --btn-color: #000;
+        --canvas-border: rgba(255, 255, 255, 1);
+        --backdrop-brightness: 0.9;
+        --border-color: rgba(0, 0, 0, 0.15);
     }
 }
 
 /* Темная тема */
 @media (prefers-color-scheme: dark) {
-    body.index {
-        background: linear-gradient(to right top, darkmagenta, darkred, darkblue, darkcyan);
-        color: white;
-    }
-
-    input[type="submit"].submit-player, button.submit-player {
-        background-color: blue;
-        color: white;
-    }
-    input[type="submit"].submit-player:hover, button.submit-player:hover {
-        background-color: mediumblue;
-    }
-
-    body.main {
-        background: linear-gradient(to right top, darkmagenta, darkred, darkblue, darkcyan);
+    :root {
+        --bg-gradient: linear-gradient(to right top, darkmagenta, darkred, darkblue, darkcyan);
+        --bg-gradient-main: var(--bg-gradient);
+        --text-color: #fff;
+        --btn-bg: blue;
+        --btn-bg-hover: mediumblue;
+        --btn-color: #fff;
+        --canvas-border: rgba(255, 255, 255, 0.6);
+        --backdrop-brightness: 0.8;
+        --border-color: rgba(255, 255, 255, 0.12);
     }
 }
 
-/* Общие стили для всех страниц */
 html, body {
-    font-family: "Comic Relief", system-ui;
-    font-weight: 400;
-    font-style: normal;
     height: 100%;
     margin: 0;
+    font-family: var(--font-ui), serif;
+    justify-content: center;
+    color: var(--text-color);
+    box-sizing: border-box;
 }
 
-/* Общие стили для кнопок */
-input[type="submit"].submit-player, button.submit-player {
-    font-family: "Comic Relief", system-ui;
-    font-weight: 700;
-    font-style: normal;
-    border-radius: 8px;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+body.index, body.main {
+    background: var(--bg-gradient-main) no-repeat center / cover;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
-input.input-form {
-    font-family: "Comic Relief", system-ui;
-    font-weight: 400;
-    font-style: normal;
-    padding: 8px;
+
+.button, button.submit-player, input[type="submit"].submit-player {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-ui), serif;
+    font-weight: 700;
     font-size: 16px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--ease-long), transform var(--ease);
+    background-color: var(--btn-bg);
+    color: var(--btn-color);
+    text-decoration: none;
+}
+
+.button:focus,
+button.submit-player:focus,
+input[type="submit"].submit-player:focus {
+    outline: 3px solid rgba(0, 123, 255, 0.25);
+    outline-offset: 2px;
+}
+
+/* hover / active */
+.button:hover,
+button.submit-player:hover,
+input[type="submit"].submit-player:hover {
+    background-color: var(--btn-bg-hover);
+    transform: translateY(-1px);
+}
+
+.button:active,
+button.submit-player:active,
+input[type="submit"].submit-player:active {
+    transform: translateY(0);
+}
+
+input.input-form {
+    font-family: var(--font-ui), serif;
+    font-weight: 400;
+    font-size: 16px;
+    padding: calc(var(--gap-sm) + 4px);
     width: 100%;
     box-sizing: border-box;
-    border: 2px solid gray;
-    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-color);
 }
 
-/* Стили для главной страницы */
-body.index {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    padding: 8px;
-}
 
 h1.title {
     font-family: "Comic Relief", system-ui;
@@ -109,25 +168,16 @@ form.player-information {
 img.img-icon {
     width: 100px;
     height: 100px;
-    margin-bottom: 12px;
+    object-fit: contain;
+    margin-bottom: var(--gap-md);
 }
 
 label.input-player-label {
-    font-family: "Comic Relief", system-ui;
+    font-family: var(--font-ui), serif;
     font-weight: 400;
-    font-style: normal;
     font-size: 18px;
     width: 100%;
     text-align: left;
-}
-
-/* Стили для страницы игры */
-body.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
 }
 
 canvas.field {
