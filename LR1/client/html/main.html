@@ -9,7 +9,7 @@
     <link rel="icon" href="../assets/icons/icon.png" type="image/x-icon"/>
 
     <!-- Bootstrap 5 -->
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <script type="module" href="../js/bootstrap.bundle.min.js" defer></script>
 
     <!-- Стили и скрипты -->
@@ -18,17 +18,42 @@
 </head>
 <body class="main">
 <audio id="pop" src="../assets/sounds/pop.mp3"></audio>
-
+<dialog id="controlInfoDialog" class="control-info">
+    <h3>Управление</h3>
+    <ul>
+        <li>Стрелка влево - переместить фигуру влево</li>
+        <li>Стрелка вправо - переместить фигуру вправо</li>
+        <li>Стрелка вниз - ускорить падение фигуры</li>
+        <li>Стрелка вверх - повернуть фигуру по часовой стрелке</li>
+        <li>Пробел - мгновенно опустить фигуру</li>
+        <li>P - пауза/продолжить игру</li>
+    </ul>
+    <button id="closeControlInfo" class="btn btn-primary">Закрыть</button>
+</dialog>
+<!-- Левая колонка с информацией об игре -->
 <div class="left-column">
-    <div>
-        <h2>Тетрис</h2>
-        <p>Игрок: <label id="username"></label></p>
-        <p>Очки: <span id="score">0</span></p>
-        <p>Уровень: <span id="level">1</span></p>
-        <p>Следующая фигура:</p>
-        <canvas id="next" width="300" height="300"></canvas>
+    <!-- Заголовок -->
+    <h1>Тетрис</h1>
+    <!-- Информация об игроке -->
+    <p>Игрок: <label id="username"></label></p>
+    <!-- Информация об игре -->
+    <p>Очки: <span id="scoreValue">0</span></p>
+    <p>Уровень: <span id="levelValue">1</span></p>
+    <!-- Следующая фигура -->
+    <p>Следующая фигура:</p>
+    <canvas id="nextFigure" width="300" height="300"></canvas>
+    <!-- Кнопки управления состоянием игры-->
+    <div class="btn-group" role="group">
+        <!-- Начать игру -->
+        <button type="button" id="startButton" class="btn btn-success button-start">Начать игру</button>
+        <!-- Пауза -->
+<!--        <button type="button" id="pauseButton" class="btn btn-warning button-pause" disabled>Пауза</button>-->
+        <!-- Сброс -->
+        <button type="button" id="controlInfoButton" class="btn btn-primary button-info-control">Управление</button>
     </div>
-<canvas width="320" height="640" id="field" class="field">
+</div>
+<!-- Игровое поле -->
+<canvas width="320" height="720" id="playfield" class="playfield">
 
 </canvas>
 </body>

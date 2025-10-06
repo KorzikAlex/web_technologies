@@ -1,23 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Сохранить имя пользователя в localStorage
- * @param source
- */
-function store(source) {
-    localStorage["tetris.username"] = source.value;
+import {readFromLocalStorage, STORAGE_KEY, storeToLocalStorage} from "./utils/utils";
+
+
+const inputUsername = document.getElementById("username");
+const savedUsername = readFromLocalStorage(STORAGE_KEY);
+
+if (savedUsername !== null) {
+    inputUsername.value = savedUsername;
 }
-/**
- *
- * @param source
- */
-function read(source) {
-    source.value = localStorage["tetris.username"];
-}
-function setName() {
-    if (localStorage.hasOwnProperty("tetris.username")) {
-        let input = document.getElementById("name");
-        input.value = localStorage["tetris.username"];
-    }
-}
-//# sourceMappingURL=init.js.map
+
+inputUsername.addEventListener("input", () => {
+    storeToLocalStorage(STORAGE_KEY, inputUsername.value);
+})

@@ -9,17 +9,17 @@
     <meta charset="UTF-8" content="width=device-width, initial-scale=1.0"/>
 
     <!-- Bootstrap 5 -->
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
     <script type="module" href="../js/bootstrap.bundle.min.js" defer></script>
 
     <!-- Стили и скрипты -->
     <link rel="stylesheet" href="../css/style.css">
-    <script type="text/javascript" src="../js/init.js" defer></script>
+    <script type="module" src="../js/init.js" defer></script>
 </head>
 
 <body class="index">
 <!-- Форма для ввода имени игрока -->
-<form action="../html/main.html" method="GET" class="player-information">
+<form action="../html/main.html" method="GET" class="player-information" id="player-form">
     <!-- Иконка игры-->
     <img src="../assets/icons/icon.png" alt="tetris icon" class="img-icon"/>
     <!-- Заголовок -->
@@ -28,13 +28,13 @@
     <!-- Поле для ввода имени -->
     <div class="form-group">
         <!-- Метка и текстовое поле для ввода имени-->
-        <label for="name" class="input-player-label">
+        <label for="username" class="input-player-label">
             Введите имя:
-            <input type="text" id="name" class="form-control input-form" placeholder="Имя пользователя" required/>
+            <input type="text" id="username" name="username" class="form-control input-form" placeholder="Имя пользователя" required/>
         </label>
     </div>
     <!-- Кнопка для начала игры -->
-    <button type="submit" class="btn submit-player" id="submit-button">Начать игру</button>
+    <button type="submit" class="btn submit-player btn-primary" id="submit-button">Начать игру</button>
 </form>
 
 </body>

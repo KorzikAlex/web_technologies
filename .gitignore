@@ -180,3 +180,6 @@ vite.config.ts.timestamp-*
 
 #*.csr
 *.key
+
+*.d.ts
+*.d.ts.map

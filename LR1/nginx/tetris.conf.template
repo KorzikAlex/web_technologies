@@ -6,7 +6,6 @@ server {
     http2 on;
     server_name localhost;
 
-
     # Пути к вашим самоподписанным сертификатам
     ssl_certificate /etc/pki/tls/certs/tetris.crt;
     ssl_certificate_key /etc/pki/tls/private/tetris.key;
