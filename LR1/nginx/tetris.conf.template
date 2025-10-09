@@ -22,7 +22,7 @@ server {
     error_log  /var/log/nginx/tetris_error.log;
 
     # Настройка корневой директории и индексного файла
-    root /PROJECT_ROOT/client;
+    root PROJECT_ROOT/client;
     index /html/index.html;
     location / {
         try_files $uri $uri/ =404;
