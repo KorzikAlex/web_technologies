@@ -27,6 +27,19 @@ server {
     location / {
         try_files $uri $uri/ =404;
     }
+
+    location /js/ {
+        # попробуем запрошенный URI, затем тот же путь с .js, затем 404
+        try_files $uri $uri.js $uri/ =404;
+    }
+
+    location /css/ {
+        try_files $uri $uri/ =404;
+    }
+
+    location /assets/ {
+        try_files $uri $uri/ =404;
+    }
 }
 
 # Редирект с HTTP на HTTPS

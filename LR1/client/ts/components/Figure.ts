@@ -2,15 +2,14 @@ import {
     type colorType,
     TETROMINO_COLORS,
     TETROMINOES,
-    type TetrominoMatrix,
-    type TetrominoType
-} from '../settings'
+    type tetrominoMatrix,
+    type tetrominoType
+} from '../types'
 
-import type {IRotatable} from './ShapeProperties';
 
-export class Figure implements IRotatable {
-    private _shape: TetrominoMatrix;
-    public get shape(): TetrominoMatrix {
+export class Figure {
+    private _shape: tetrominoMatrix;
+    public get shape(): tetrominoMatrix {
         return this._shape;
     }
 
@@ -37,36 +36,44 @@ export class Figure implements IRotatable {
         this._y = value;
     }
 
-    constructor(type: TetrominoType) {
+    private _cols: number;
+    public get cols(): number {
+        return this._shape.length;
+    }
+
+    private _rows: number;
+    public get rows(): number {
+        return this._shape[0]!.length;
+    }
+
+    constructor(type: tetrominoType) {
         this._shape = TETROMINOES[type];
+        this._cols = this._shape.length;
+        this._rows = this._shape[0]!.length;
+
         this._color = TETROMINO_COLORS[type];
         this._x = Math.floor((10 - this._shape[0]!.length) / 2);
         this._y = 0;
     }
 
-    random(): Figure {
-        const types: TetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
-        const randomType: TetrominoType = types[Math.floor(Math.random() * types.length)]!;
+    static random(): Figure {
+        const types: tetrominoType[] = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+        const randomType: tetrominoType = types[Math.floor(Math.random() * types.length)]!;
         return new Figure(randomType);
     }
 
     rotate(): void {
-        const rows: number = this.shape.length;
-        const cols: number = this.shape[0]!.length; // Используем оператор ! для доступа к длине
-        const rotated: number[][] = [];
+        const rotated: number[][] = Array.from({length: this._rows}, () => new Array(this._cols).fill(0));
 
-        for (let j: number = 0; j < cols; ++j) {
-            rotated[j] = [];
-            for (let i: number = 0; i < rows; ++i) {
-                rotated [j][i] = this._shape[i][j];
+        rotated.forEach((row: number[], j: number): void => {
+            for (let i: number = 0; i < this._cols; i++) {
+                row[i] = this._shape[i]?.[j] ?? 0;
             }
-        }
-
-        // Отражаем каждую строку по горизонтали
-        for (let i: number = 0; i < rotated.length; i++) {
-            rotated[i]?.reverse();
-        }
+            row.reverse();
+        });
 
         this._shape = rotated;
+        this._cols = this._shape.length;
+        this._rows = this._shape[0]!.length;
     }
 }

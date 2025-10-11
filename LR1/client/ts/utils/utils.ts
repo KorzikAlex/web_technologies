@@ -7,24 +7,7 @@ export const STORAGE_KEY: string = "tetris.username"; // Ключ с никне�
  * @returns {number}
  */
 export function randInt(min: number, max: number): number {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/**
- * Записывает в localstorage информацию по ключу со значением value
- * @param key
- * @param value
- */
-export function storeToLocalStorage(key: string, value: string): void {
-    localStorage.setItem(key, String(value));
-}
-
-/**
- * Читает данные по ключу из localStorage
- * @param key
- */
-export function readFromLocalStorage(key: string): string | null {
-    return localStorage.getItem(key);
+    min = Math.ceil(min); // Округляем min в большую сторону
+    max = Math.floor(max); // Округляем max в меньшую сторону
+    return Math.floor(Math.random() * (max - min + 1)) + min; // Генерируем случайное число
 }

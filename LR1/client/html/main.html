@@ -17,18 +17,6 @@
 </head>
 <body class="main">
 <audio id="pop" src="../assets/sounds/pop.mp3"></audio>
-<dialog id="controlInfoDialog" class="control-info">
-    <h3>Управление</h3>
-    <ul>
-        <li>Стрелка влево - переместить фигуру влево</li>
-        <li>Стрелка вправо - переместить фигуру вправо</li>
-        <li>Стрелка вниз - ускорить падение фигуры</li>
-        <li>Стрелка вверх - повернуть фигуру по часовой стрелке</li>
-        <li>Пробел - мгновенно опустить фигуру</li>
-        <li>P - пауза/продолжить игру</li>
-    </ul>
-    <button id="closeControlInfo" class="btn btn-primary">Закрыть</button>
-</dialog>
 <!-- Левая колонка с информацией об игре -->
 <div class="left-column">
     <!-- Заголовок -->
@@ -45,9 +33,7 @@
     <div class="btn-group" role="group">
         <!-- Начать игру -->
         <button type="button" id="startButton" class="btn btn-success button-start">Начать игру</button>
-        <!-- Пауза -->
-<!--        <button type="button" id="pauseButton" class="btn btn-warning button-pause" disabled>Пауза</button>-->
-        <!-- Сброс -->
+        <!-- Плашка Управление игрой -->
         <button type="button" id="controlInfoButton" class="btn btn-primary button-info-control">Управление</button>
     </div>
 </div>

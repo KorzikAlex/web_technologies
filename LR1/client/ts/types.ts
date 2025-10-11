@@ -1,14 +1,14 @@
-// Определим тип для фигур тетрамино
-export type TetrominoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L';
+/**
+ * Настройки и типы для игры в Тетрис
+ */
+export type tetrominoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'; // Тип для всех тетрамино
+export type tetrominoMatrix = number[][]; // Тип для матрицы тетромино
+export type colorType = "cyan" | "yellow" | "purple" | "green" | "red" | "blue" | "orange" | "none"; // Тип для цветов тетромино
+export type tetrominoColor = Record<tetrominoType, colorType>; // Тип для цветов всех тетромино
 
-// Определим тип для матрицы тетрамино
-export type TetrominoMatrix = number[][];
-export type colorType = "cyan" | "yellow" | "purple" | "green" | "red" | "blue" | "orange";
-
-// Определим тип для цвета тетрамино
-export type TetrominoColors = Record<TetrominoType, colorType>;
-
-// Определим тип для очков
+/**
+ * Определим тип для очков
+ */
 export interface Scores {
     oneLine: number;
     twoLines: number;
@@ -22,7 +22,9 @@ export interface Scores {
     combo: number;
 }
 
-// Определим тип для уровней
+/**
+ * Определим тип для уровней
+ */
 export interface Levels {
     1: number;
     2: number;
@@ -31,29 +33,21 @@ export interface Levels {
     5: number;
 }
 
-// Определим тип для всех тетрамино
+/**
+ * Определение типа для всех тетрамино
+ */
 export interface Tetrominoes {
-    I: TetrominoMatrix;
-    O: TetrominoMatrix;
-    T: TetrominoMatrix;
-    S: TetrominoMatrix;
-    Z: TetrominoMatrix;
-    J: TetrominoMatrix;
-    L: TetrominoMatrix;
-}
-
-export interface Colors {
-    I: colorType;
-    O: colorType;
-    T: colorType;
-    S: colorType;
-    Z: colorType;
-    J: colorType;
-    L: colorType;
+    I: tetrominoMatrix;
+    O: tetrominoMatrix;
+    T: tetrominoMatrix;
+    S: tetrominoMatrix;
+    Z: tetrominoMatrix;
+    J: tetrominoMatrix;
+    L: tetrominoMatrix;
 }
 
 /**
- * Определение всех тетрамино в виде матриц
+ * Определение всех тетрамино и их форм
  */
 export const TETROMINOES: Tetrominoes = {
     I: [
@@ -94,10 +88,10 @@ export const TETROMINOES: Tetrominoes = {
 };
 
 /**
- * Цвета для каждой фигуры
+ * Определение цветов для всех тетрамино
  */
-export const TETROMINO_COLORS: TetrominoColors = {
-    I: "cyan", // Цвет для фигуры I (голубой)
+export const TETROMINO_COLORS: tetrominoColor = {
+    I: "cyan",
     O: "yellow",
     T: "purple",
     S: "green",
@@ -107,7 +101,7 @@ export const TETROMINO_COLORS: TetrominoColors = {
 };
 
 /**
- * Очки за различные действия в игре
+ * Определим очки за различные действия в игре
  */
 export const SCORES: Scores = {
     oneLine: 100, // Очки за одну линию
@@ -123,7 +117,7 @@ export const SCORES: Scores = {
 };
 
 /**
- * Очки, необходимые для перехода на следующий уровень
+ * Определим уровни и соответствующие им скорости падения фигур (в миллисекундах)
  */
 export const LEVELS: Levels = {
     1: 500,
@@ -131,4 +125,10 @@ export const LEVELS: Levels = {
     3: 300,
     4: 250,
     5: 190,
+};
+
+export type ScoreRecord = {
+    name: string;          // имя игрока
+    score: number;         // очки
+    date: string;          // ISO строка даты
 };
