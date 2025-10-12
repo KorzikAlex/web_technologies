@@ -1,33 +1,51 @@
-import type {Game} from "./Game";
-import type {Figure} from "./Figure";
+/**
+ * @file KeyboardHandler.ts
+ * @fileOverview Обработчик клавиатуры для игры в Тетрис
+ * @author KorzikAlex
+ * @license MIT
+ * @copyright 2025
+ * @module KeyboardHandler
+ */
+import type {Game} from "./Game"; // Импортируем класс игры
+import type {Figure} from "./Figure"; // Импортируем класс фигуры
 
+/**
+ * Класс для обработки событий клавиатуры
+ */
 export class KeyboardHandler {
     private game: Game;
     private keydownHandler: (event: KeyboardEvent) => void = this.handleKeydown.bind(this);
 
+    /**
+     * Конструктор класса KeyboardHandler
+     * @param game
+     */
     constructor(game: Game) {
         this.game = game;
     }
 
+    /**
+     * Обработчик события нажатия клавиши
+     * @param event
+     */
     handleKeydown(event: KeyboardEvent): void {
-        const piece: Figure | null = this.game.currentFigure;
-        if (!piece) return;
-
+        const currentFigure: Figure | null = this.game.currentFigure; // Текущая фигура
+        if (!currentFigure) return; // Если фигуры нет, выходим из функции
         switch (event.key) {
             case 'ArrowLeft':
                 // TODO: движение влево
-                piece.y++;
+                currentFigure.y++;
                 break
             case 'ArrowRight':
                 // TODO: движение вправо
                 break
             case 'ArrowDown':
-                piece.y++;
+                currentFigure.y++;
                 // TODO: ускоренное падение
                 break
             case 'ArrowUp':
                 // TODO: поворот
-                piece.rotate()
+                currentFigure.rotate()
                 break
             case ' ':
                 // TODO: мгновенное падение
@@ -44,10 +62,16 @@ export class KeyboardHandler {
         }
     }
 
+    /**
+     * Привязывает обработчик событий к документу
+     */
     attach() {
         document.addEventListener("keydown", this.keydownHandler);
     }
 
+    /**
+     * Отвязывает обработчик событий от документа
+     */
     detach() {
         document.removeEventListener("keydown", this.keydownHandler);
     }

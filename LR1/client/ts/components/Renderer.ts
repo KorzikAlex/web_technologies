@@ -1,9 +1,11 @@
+import {TETRIS_BLOCK_SIZE} from "../utils/utils";
+
 export abstract class Renderer<T = void> implements IRenderer {
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
     protected cellSize: number;
 
-    protected constructor(canvas: HTMLCanvasElement, cellSize = 32) {
+    protected constructor(canvas: HTMLCanvasElement, cellSize = TETRIS_BLOCK_SIZE) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         this.cellSize = cellSize;

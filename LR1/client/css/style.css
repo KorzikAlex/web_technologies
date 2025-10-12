@@ -86,6 +86,7 @@ div[translate="no"] {
 
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     font-family: var(--font-ui), system-ui;
     justify-content: center;
@@ -113,6 +114,8 @@ body.main {
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
+    max-width: 400px;
+    width: 400px;
 }
 
 button.submit-player, input[type="submit"].submit-player {
@@ -128,8 +131,6 @@ button.submit-player, input[type="submit"].submit-player {
     border: none;
     cursor: pointer;
     transition: var(--ease-long), transform var(--ease);
-    /*background-color: var(--btn-bg);*/
-    /*color: var(--btn-color);*/
     text-decoration: none;
 }
 
@@ -204,4 +205,11 @@ canvas.playfield {
     border: 2px solid white;
     border-radius: var(--radius-sm);
     backdrop-filter: blur(12px) brightness(0.8);
+}
+canvas.next-figure {
+    border: 2px solid white;
+    border-radius: var(--radius-sm);
+    backdrop-filter: blur(12px) brightness(0.8);
+    height: 160px;
+    width: 160px;
 }

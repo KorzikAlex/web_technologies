@@ -1,4 +1,13 @@
 /**
+ * @file types.ts
+ * @fileOverview Настройки и типы для игры в Тетрис
+ * @author KorzikAlex
+ * @license MIT
+ * @copyright 2025
+ * @module types
+ */
+
+/**
  * Настройки и типы для игры в Тетрис
  */
 export type tetrominoType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'; // Тип для всех тетрамино
@@ -45,6 +54,11 @@ export interface Tetrominoes {
     J: tetrominoMatrix;
     L: tetrominoMatrix;
 }
+
+/**
+ * Определение типа для записи рекорда
+ */
+export type ScoreRec = { score: number; date: number };
 
 /**
  * Определение всех тетрамино и их форм
@@ -125,10 +139,4 @@ export const LEVELS: Levels = {
     3: 300,
     4: 250,
     5: 190,
-};
-
-export type ScoreRecord = {
-    name: string;          // имя игрока
-    score: number;         // очки
-    date: string;          // ISO строка даты
 };

@@ -1,22 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Заголовок страницы -->
     <title>Tetris</title>
+
     <!-- Иконка -->
     <link rel="icon" href="../assets/icons/icon.png" type="image/x-icon"/>
 
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css">
-    <script type="module" href="../js/bootstrap.bundle.min.js" defer></script>
+    <script type="module" src="../js/bootstrap/bootstrap.bundle.min.js" defer></script>
 
     <!-- Стили и скрипты -->
     <link rel="stylesheet" href="../css/style.css">
     <script type="module" src="../js/main.js" defer></script>
 </head>
 <body class="main">
-<audio id="pop" src="../assets/sounds/pop.mp3"></audio>
+<audio id="pop" src="../assets/sounds/pop.mp3" preload="auto" aria-hidden="true"></audio>
+
+<!-- Модальное окно с информацией об управлении -->
+<div class="modal" tabindex="-1" id="controlInfoModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Управление</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Стрелки влево/вправо - перемещение фигуры</p>
+                <p>Стрелка вниз - ускоренное падение фигуры</p>
+                <p>Стелка вверх - поворот фигуры</p>
+                <p>Пробел - мгновенное падение фигуры</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Левая колонка с информацией об игре -->
 <div class="left-column">
     <!-- Заголовок -->
@@ -24,22 +48,26 @@
     <!-- Информация об игроке -->
     <p>Игрок: <label id="username"></label></p>
     <!-- Информация об игре -->
-    <p>Очки: <span id="scoreValue">0</span></p>
-    <p>Уровень: <span id="levelValue">1</span></p>
+    <p>Очки: <span id="scoreValue" aria-live="polite">0</span></p>
+    <p>Уровень: <span id="levelValue" aria-live="polite">1</span></p>
     <!-- Следующая фигура -->
     <p>Следующая фигура:</p>
-    <canvas id="nextFigure" width="300" height="300"></canvas>
+    <canvas id="nextFigure" class="next-figure" width="160" height="160"></canvas>
     <!-- Кнопки управления состоянием игры-->
     <div class="btn-group" role="group">
         <!-- Начать игру -->
         <button type="button" id="startButton" class="btn btn-success button-start">Начать игру</button>
         <!-- Плашка Управление игрой -->
-        <button type="button" id="controlInfoButton" class="btn btn-primary button-info-control">Управление</button>
+        <button type="button" id="controlInfoButton" class="btn btn-primary button-info-control" data-bs-toggle="modal"
+                data-bs-target="#controlInfoModal">Управление
+        </button>
     </div>
 </div>
-<!-- Игровое поле -->
-<canvas width="320" height="720" id="playfield" class="playfield">
 
-</canvas>
+<!-- Игровое поле -->
+<main>
+    <canvas width="400" height="800" id="playfield" class="playfield" aria-label="Игровое поле тетриса">
+    </canvas>
+</main>
 </body>
 </html>
