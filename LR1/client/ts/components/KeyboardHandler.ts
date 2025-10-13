@@ -55,6 +55,7 @@ export class KeyboardHandler {
                 }
                 break
             case ' ':
+                event.preventDefault();
                 this.game.hardDrop();
                 break
         }

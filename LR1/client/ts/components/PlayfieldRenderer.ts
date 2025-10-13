@@ -1,7 +1,7 @@
 import type {Playfield} from "./Playfield";
 import {Renderer} from "./Renderer";
 import type {Figure} from "./Figure";
-import {TETRIS_BLOCK_SIZE} from "../utils/utils";
+import {TETRIS_BLOCK_SIZE} from "../utils/consts";
 import type {Cell} from "./Cell";
 
 /**

@@ -6,7 +6,7 @@
  * @copyright 2025
  * @module main
  */
-import {USERNAME_KEY} from './utils/utils' // Импортируем константу ключа для имени пользователя
+import {USERNAME_KEY} from './utils/consts' // Импортируем константу ключа для имени пользователя
 import {RecordStorageManager} from "./components/RecordStorageManager"; // Импортируем функции для работы с localStorage
 
 const recordStorageManager: RecordStorageManager = new RecordStorageManager();

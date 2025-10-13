@@ -7,9 +7,9 @@
  * @module Playfield
  */
 import {Figure} from "./Figure"; // Импорт класса Figure
-import type {tetrominoMatrix} from "../types"; // Импорт типа tetrominoMatrix
+import type {tetrominoMatrix} from "../utils/types"; // Импорт типа tetrominoMatrix
 import {Cell} from "./Cell"; // Импорт класса Cell
-import {TETRIS_COLS, TETRIS_ROWS} from "../utils/utils"; // Импорт констант
+import {TETRIS_COLS, TETRIS_ROWS} from "../utils/consts"; // Импорт констант
 
 /**
  * Класс Playfield представляет игровое поле тетриса.

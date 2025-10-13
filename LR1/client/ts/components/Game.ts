@@ -11,10 +11,10 @@ import {KeyboardHandler} from "./KeyboardHandler"; // Обработчик кл�
 import {Figure} from "./Figure"; // Фигура
 import {RecordStorageManager} from "./RecordStorageManager"; // Менеджер хранения рекордов
 import {PlayfieldRenderer} from "./PlayfieldRenderer"; // Рендер игрового поля
-import {TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, USERNAME_KEY} from "../utils/utils"; // Константы
+import {TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, USERNAME_KEY} from "../utils/consts"; // Константы
 import {NextFigureRenderer} from "./NextFigureRenderer"; // Рендер следующей фигуры
 import {Ui} from "./Ui"; // UI
-import {LEVELS} from "../types"; // Уровни
+import {LEVELS} from "../utils/types"; // Уровни
 
 /**
  * Класс Game - основной класс игры
@@ -208,10 +208,11 @@ export class Game {
     start(): void {
         this._isGameOver = false;
         this._currentFigure = Figure.random();
-        this._nextFigure = Figure.random();
-        if (this._currentFigure.equals(this._nextFigure)) {
+
+        do {
             this._nextFigure = Figure.random();
-        }
+        } while (this._nextFigure.equals(this._currentFigure!));
+
         this.nextFigureRenderer.render(this._nextFigure)
         this.playfieldRenderer.render(this._currentFigure);
         this.keyboardHandler.attach();
@@ -259,18 +260,20 @@ export class Game {
         }
 
         this._currentFigure = this._nextFigure;
-        this._nextFigure = Figure.random();
-        this.nextFigureRenderer.render(this._nextFigure);
-
         do {
             this._nextFigure = Figure.random();
-        } while (this._nextFigure.equals(this._currentFigure));
+        } while (this._nextFigure.equals(this._currentFigure!));
+
+        this.nextFigureRenderer.render(this._nextFigure);
 
         if (!this._playfield.isValidPosition(this._currentFigure!)) {
             this.gameOver();
         }
     }
 
+    /**
+     * Обновление уровня игры
+     */
     updateLevel(): void {
         this._level = Math.floor(this._score / 500) + 1;
         if (this._level > 5) {
@@ -306,6 +309,9 @@ export class Game {
         this.dropCounter = 0;
     }
 
+    /**
+     * Мгновенно опускает фигуру вниз и закрепляет ее
+     */
     hardDrop(): void {
         if (!this._currentFigure) return;
         while (this._playfield.isValidPosition(this._currentFigure, 0, 1)) {

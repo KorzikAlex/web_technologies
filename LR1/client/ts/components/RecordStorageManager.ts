@@ -7,7 +7,7 @@
  * @module RecordStorageManager
  */
 import {LocalStorageManager} from "./LocalStorageManager";
-import type {ScoreRec} from "../types";
+import type {ScoreRec} from "../utils/types";
 
 /**
  * Класс RecordStorageManager отвечает за сохранение и получение рекордов игроков в локальном хранилище.

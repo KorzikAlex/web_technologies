@@ -5,7 +5,7 @@
  * @copyright 2025
  * @module main
  */
-import {USERNAME_KEY} from './utils/utils'; // Импортируем константу ключа для имени пользователя
+import {USERNAME_KEY} from './utils/consts'; // Импортируем константу ключа для имени пользователя
 import {Game} from './components/Game' // Импортируем класс игры
 import {RecordStorageManager} from "./components/RecordStorageManager"; // Импортируем класс для работы с localStorage
 

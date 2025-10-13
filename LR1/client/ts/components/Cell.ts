@@ -6,7 +6,7 @@
  * @copyright 2025
  * @license MIT
  */
-import type {colorType} from "../types";
+import type {colorType} from "../utils/types";
 
 /**
  * Класс, представляющий ячейку в сетке.

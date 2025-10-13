@@ -8,7 +8,7 @@
  */
 import {Renderer} from "./Renderer";
 import type {Figure} from "./Figure";
-import type {tetrominoMatrix} from "../types";
+import type {tetrominoMatrix} from "../utils/types";
 
 /**
  * Класс NextFigureRenderer отвечает за отрисовку следующей фигуры тетриса.

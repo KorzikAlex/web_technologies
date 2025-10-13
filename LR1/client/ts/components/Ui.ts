@@ -1,60 +1,60 @@
 import type {RecordStorageManager} from "./RecordStorageManager";
-import type {ScoreRec} from "../types";
+import type {ScoreRec} from "../utils/types";
+
+declare const bootstrap: any;
 
 export class Ui {
     private spanScoreValue: HTMLSpanElement;
     private spanLevelValue: HTMLSpanElement;
-    private nicknameValue = document.getElementById("username_value");
-    private nicknameInput = document.getElementById("nickname_input");
-    private startButton = document.getElementById("start_button");
+    private leaderboardBody: HTMLTableSectionElement;
+    private leaderboardModalElement: HTMLElement;
+    private leaderboardModal: any;
+
     constructor(spanScoreValue: HTMLSpanElement, spanLevelValue: HTMLSpanElement) {
         this.spanScoreValue = spanScoreValue;
         this.spanLevelValue = spanLevelValue;
         this.updateScore(0);
         this.updateLevel(1);
+
+        this.leaderboardBody = document.getElementById('leaderboardBody') as HTMLTableSectionElement;
+        this.leaderboardModalElement = document.getElementById('leaderboardModal') as HTMLElement;
+        // Создаем экземпляр модального окна Bootstrap
+        this.leaderboardModal = new bootstrap.Modal(this.leaderboardModalElement);
     }
 
-    updateLevel(level: number) {
+    updateLevel(level: number): void {
         this.spanLevelValue.textContent = level.toString();
     }
 
-    updateScore(score: number) {
+    updateScore(score: number): void {
         this.spanScoreValue.textContent = score.toString();
-    }
-
-    updateNickname(nickname: string) {
-        this.nicknameValue!.textContent = nickname;
-        (this.nicknameInput as HTMLInputElement).value = nickname;
-    }
-    getNickname() {
-        return (this.nicknameInput as HTMLInputElement).value;
     }
 
     showLeaderboard(recordStorageManager: RecordStorageManager, nickname: string, score: number) {
         const sortedPlayers: Record<string, ScoreRec> = recordStorageManager.getSortedPlayers();
         this.leaderboardBody.innerHTML = ''; // Очищаем предыдущие записи
 
-        let rank = 1;
+        let rank: number = 1;
         for (const playerNickname in sortedPlayers) {
-            const record = sortedPlayers[playerNickname]!;
-            const row = document.createElement('tr');
+            const record: ScoreRec = sortedPlayers[playerNickname]!;
+            const row: HTMLTableRowElement = document.createElement('tr');
 
-            // Выделяем текущий результат игрока
+            // Выделяем текущий результат игрока, если он есть в таблице
             if (playerNickname === nickname && record.score === score) {
                 row.classList.add('table-success');
             }
 
-            const rankCell = document.createElement('th');
+            const rankCell: HTMLTableCellElement = document.createElement('th');
             rankCell.scope = 'row';
             rankCell.textContent = String(rank++);
 
-            const nameCell = document.createElement('td');
+            const nameCell: HTMLTableCellElement = document.createElement('td');
             nameCell.textContent = playerNickname;
 
-            const scoreCell = document.createElement('td');
+            const scoreCell: HTMLTableCellElement = document.createElement('td');
             scoreCell.textContent = String(record.score);
 
-            const dateCell = document.createElement('td');
+            const dateCell: HTMLTableCellElement = document.createElement('td');
             dateCell.textContent = new Date(record.date).toLocaleDateString();
 
             row.appendChild(rankCell);

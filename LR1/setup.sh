@@ -4,6 +4,9 @@ set -euo pipefail
 # Пути
 PROJECT_ROOT="$(pwd)"
 
+sudo chmod -R 755 "$PROJECT_ROOT/client"
+sudo chmod -R 755 ~/
+
 CERT_SRC="$PROJECT_ROOT/nginx/keys/tetris.crt"
 KEY_SRC="$PROJECT_ROOT/nginx/keys/tetris.key"
 TEMPLATE_SRC="$PROJECT_ROOT/nginx/tetris.conf.template"
@@ -42,4 +45,4 @@ else
     echo "❌ Ошибка в конфиге nginx!"
 fi
 
-sudo chmod -R 755 "$PROJECT_ROOT/client"
+

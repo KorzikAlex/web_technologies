@@ -13,8 +13,8 @@ import {
     TETROMINOES,
     type tetrominoMatrix,
     type tetrominoType
-} from '../types'
-import {TETRIS_COLS} from "../utils/utils"; // Импорт типов и констант
+} from '../utils/types'
+import {TETRIS_COLS} from "../utils/consts"; // Импорт типов и констант
 
 /**
  * Класс Figure представляет фигуру тетриса.
