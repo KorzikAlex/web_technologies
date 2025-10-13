@@ -16,22 +16,6 @@ export type colorType = "cyan" | "yellow" | "purple" | "green" | "red" | "blue" 
 export type tetrominoColor = Record<tetrominoType, colorType>; // Тип для цветов всех тетромино
 
 /**
- * Определим тип для очков
- */
-export interface Scores {
-    oneLine: number;
-    twoLines: number;
-    threeLines: number;
-    fourLines: number;
-    softDrop: number;
-    hardDrop: number;
-    tSpin: number;
-    tSpinMini: number;
-    backToBack: number;
-    combo: number;
-}
-
-/**
  * Определим тип для уровней
  */
 export interface Levels {
@@ -112,22 +96,6 @@ export const TETROMINO_COLORS: tetrominoColor = {
     Z: "red",
     J: "blue",
     L: "orange"
-};
-
-/**
- * Определим очки за различные действия в игре
- */
-export const SCORES: Scores = {
-    oneLine: 100, // Очки за одну линию
-    twoLines: 300,  // Очки за две линии
-    threeLines: 500,  // Очки за три линии
-    fourLines: 800,  // Очки за четыре линии
-    softDrop: 1, // Очки за мягкое падение
-    hardDrop: 2, // Очки за жесткое падение
-    tSpin: 400, // Очки за T-Spin
-    tSpinMini: 100, // Очки за T-Spin Mini
-    backToBack: 1.5, // Множитель для back-to-back
-    combo: 50, // Бонус за комбо
 };
 
 /**

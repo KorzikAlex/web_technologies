@@ -79,12 +79,19 @@ export class Playfield {
      * @param figure
      */
     placeFigure(figure: Figure): void {
-        for (let y: number = 0; y < figure.cols; ++y) {
-            for (let x: number = 0; x < figure.rows; ++x) {
-                if (figure.shape[y]![x] && figure.y + y >= 0) {
-                    this._grid[figure.y + y]![figure.x + x]!.color = figure.color;
-                    this._grid[figure.y + y]![figure.x + x]!.state = true;
-                }
+        for (let y: number = 0; y < figure.rows; ++y) {
+            for (let x: number = 0; x < figure.cols; ++x) {
+                if (!figure.shape[y]?.[x]) continue;
+                const nx: number = figure.x + x;
+                const ny: number = figure.y + y;
+
+                if (ny < 0) continue;
+
+                if (nx < 0 || nx >= this._cols || ny >= this._rows) continue;
+
+                const cell: Cell = this._grid[ny]![nx]!;
+                cell.color = figure.color;
+                cell.state = true;
             }
         }
     }
@@ -97,17 +104,16 @@ export class Playfield {
      */
     isValidPosition(figure: Figure, offsetX: number = 0, offsetY: number = 0): boolean {
         const shape: tetrominoMatrix = figure.shape;
-        for (let y: number = 0; y < figure.cols; ++y) {
-            for (let x: number = 0; x < figure.rows; ++x) {
-                if (shape[y]![x]) {
-                    let nx: number = figure.x + x + offsetX;
-                    let ny: number = figure.y + y + offsetY;
-                    if (nx < 0 || nx >= this._cols || ny >= this._rows) return true;
-                    if (ny >= 0 && this._grid[ny]![nx]!.state) return true;
-                }
+        for (let y: number = 0; y < figure.rows; ++y) {
+            for (let x: number = 0; x < figure.cols; ++x) {
+                if (!shape[y]?.[x]) continue;
+                const nx: number = figure.x + x + offsetX;
+                const ny: number = figure.y + y + offsetY;
+                if (nx < 0 || nx >= this._cols || ny >= this._rows) return false;
+                if (ny >= 0 && this._grid[ny]![nx]!.state) return false;
             }
         }
-        return false
+        return true;
     }
 
     /**

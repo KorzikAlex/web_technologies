@@ -41,6 +41,36 @@
     </div>
 </div>
 
+<!-- Модальное окно с таблицей лидеров -->
+<div class="modal fade" id="leaderboardModal" tabindex="-1" aria-labelledby="leaderboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leaderboardModalLabel">Таблица лидеров</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Игрок</th>
+                        <th scope="col">Очки</th>
+                        <th scope="col">Дата</th>
+                    </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                    <!-- Сюда будут добавляться строки с рекордами -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Левая колонка с информацией об игре -->
 <div class="left-column">
     <!-- Заголовок -->
@@ -63,6 +93,8 @@
         </button>
     </div>
 </div>
+
+
 
 <!-- Игровое поле -->
 <main>

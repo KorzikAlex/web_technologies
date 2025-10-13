@@ -10,9 +10,9 @@ import {Playfield} from "./Playfield"; // Игровое поле
 import {KeyboardHandler} from "./KeyboardHandler"; // Обработчик клавиатуры
 import {Figure} from "./Figure"; // Фигура
 import {RecordStorageManager} from "./RecordStorageManager"; // Менеджер хранения рекордов
-import {PlayfieldRenderer} from "./PlayfieldRenderer"; // Рендерер игрового поля
+import {PlayfieldRenderer} from "./PlayfieldRenderer"; // Рендер игрового поля
 import {TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, USERNAME_KEY} from "../utils/utils"; // Константы
-import {NextFigureRenderer} from "./NextFigureRenderer"; // Рендерер следующей фигуры
+import {NextFigureRenderer} from "./NextFigureRenderer"; // Рендер следующей фигуры
 import {Ui} from "./Ui"; // UI
 import {LEVELS} from "../types"; // Уровни
 
@@ -38,7 +38,15 @@ export class Game {
      * Игровое поле
      * @private
      */
-    private playfield: Playfield;
+    private _playfield: Playfield;
+    /**
+     * Получение игрового поля
+     * @returns {Playfield}
+     */
+    public get playfield(): Playfield {
+        return this._playfield;
+    }
+
     /**
      * Время последнего обновления
      * @private
@@ -117,16 +125,6 @@ export class Game {
      */
     private canvasNextFigure: HTMLCanvasElement;
     /**
-     * Элемент для отображения счета
-     * @private
-     */
-    private spanScoreValue: HTMLSpanElement;
-    /**
-     * Элемент для отображения уровня
-     * @private
-     */
-    private spanLevelValue: HTMLSpanElement;
-    /**
      * Обработчик клавиатуры
      * @private
      */
@@ -150,7 +148,7 @@ export class Game {
      * UI
      * @private
      */
-    private ui: Ui = new Ui();
+    private ui: Ui;
     /**
      * Никнейм игрока
      * @private
@@ -178,19 +176,18 @@ export class Game {
         canvasNextFigure: HTMLCanvasElement,
         spanScoreValue: HTMLSpanElement,
         spanLevelValue: HTMLSpanElement,
-        rows = TETRIS_ROWS,
-        cols = TETRIS_COLS
+        rows: number = TETRIS_ROWS,
+        cols: number = TETRIS_COLS
     ) {
         this.canvasPlayfield = canvasPlayfield;
         this.canvasNextFigure = canvasNextFigure;
 
-        this.spanScoreValue = spanScoreValue;
-        this.spanLevelValue = spanLevelValue;
+        this._playfield = new Playfield(rows, cols);
 
-        this.playfield = new Playfield(rows, cols);
-
-        this.playfieldRenderer = new PlayfieldRenderer(canvasPlayfield, this.playfield, TETRIS_BLOCK_SIZE);
+        this.playfieldRenderer = new PlayfieldRenderer(canvasPlayfield, this._playfield, TETRIS_BLOCK_SIZE);
         this.nextFigureRenderer = new NextFigureRenderer(canvasNextFigure, TETRIS_BLOCK_SIZE);
+
+        this.ui = new Ui(spanScoreValue, spanLevelValue);
 
         this.keyboardHandler.attach();
     }
@@ -203,7 +200,6 @@ export class Game {
         this.ui.showLeaderboard(this.recordStorageManager, this._nickname, this._score);
         this.keyboardHandler.detach()
         this._isGameOver = true;
-        // TODO: реализовать окончание игры
     }
 
     /**
@@ -211,17 +207,28 @@ export class Game {
      */
     start(): void {
         this._isGameOver = false;
+        this._currentFigure = Figure.random();
         this._nextFigure = Figure.random();
+        if (this._currentFigure.equals(this._nextFigure)) {
+            this._nextFigure = Figure.random();
+        }
         this.nextFigureRenderer.render(this._nextFigure)
-        this.playfieldRenderer.render(this._nextFigure);
+        this.playfieldRenderer.render(this._currentFigure);
+        this.keyboardHandler.attach();
+        requestAnimationFrame(this.loop.bind(this));
     }
 
     /**
      * Перезапуск игры
      */
     restart(): void {
-        this._isGameOver = false;
-        // TODO: реализовать перезапуск игры
+        this._playfield.clear();
+        this._score = 0;
+        this._level = 1;
+        this.ui.updateScore(this._score);
+        this.ui.updateLevel(this._level);
+        this.dropInterval = LEVELS[this._level as keyof typeof LEVELS];
+        this.start()
     }
 
     /**
@@ -233,6 +240,7 @@ export class Game {
         const deltaTime: number = time - this.lastTime;
         this.lastTime = time;
         this.update(deltaTime);
+        this.playfieldRenderer.render(this._currentFigure!);
         requestAnimationFrame(this.loop.bind(this));
     }
 
@@ -240,8 +248,36 @@ export class Game {
      * Закрепление фигуры на игровом поле
      */
     lockFigure(): void {
-        this.playfield.placeFigure(this._currentFigure!);
-        const linesCleared = this.playfield.clearLines();
+        if (!this._currentFigure) return;
+
+        this._playfield.placeFigure(this._currentFigure);
+        let lines: number = this._playfield.clearLines();
+        if (lines > 0) {
+            this._score += lines * 100;
+            this.ui.updateScore(this._score);
+            this.updateLevel();
+        }
+
+        this._currentFigure = this._nextFigure;
+        this._nextFigure = Figure.random();
+        this.nextFigureRenderer.render(this._nextFigure);
+
+        do {
+            this._nextFigure = Figure.random();
+        } while (this._nextFigure.equals(this._currentFigure));
+
+        if (!this._playfield.isValidPosition(this._currentFigure!)) {
+            this.gameOver();
+        }
+    }
+
+    updateLevel(): void {
+        this._level = Math.floor(this._score / 500) + 1;
+        if (this._level > 5) {
+            this._level = 5;
+        }
+        this.ui.updateLevel(this._level);
+        this.dropInterval = LEVELS[this._level as keyof typeof LEVELS];
     }
 
     /**
@@ -249,14 +285,33 @@ export class Game {
      * @param deltaTime
      */
     update(deltaTime: number): void {
+        if (!this._currentFigure) return;
+
         this.dropCounter += deltaTime;
         if (this.dropCounter > this.dropInterval) {
-            if (!this.playfield.isValidPosition(this._currentFigure!, 0, 1)) {
-                this._currentFigure!.y++;
-            } else {
-                return;
-            }
-            this.dropCounter = 0;
+            this.moveDown();
         }
+    }
+
+    /**
+     * Сдвигает фигуру вниз или закрепляет ее
+     */
+    moveDown(): void {
+        if (!this._currentFigure) return;
+        if (this._playfield.isValidPosition(this._currentFigure!, 0, 1)) {
+            this._currentFigure.y++;
+        } else {
+            this.lockFigure();
+        }
+        this.dropCounter = 0;
+    }
+
+    hardDrop(): void {
+        if (!this._currentFigure) return;
+        while (this._playfield.isValidPosition(this._currentFigure, 0, 1)) {
+            this._currentFigure.y++;
+        }
+        this.lockFigure();
+        this.dropCounter = 0;
     }
 }

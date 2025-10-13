@@ -28,7 +28,7 @@ const game = new Game(canvasPlayfield, canvasNextFigure, spanScoreValue, spanLev
 // Добавляем обработчик события клика на кнопку "Start Game"
 startButton.addEventListener('click', () => {
     if (startButton.textContent === 'Перезапустить игру') {
-        window.location.reload(); // Перезагружаем страницу, если игра уже запущена
+        game.restart();
         return;
     }
     startButton.textContent = 'Перезапустить игру'; // Меняем текст кнопки на "Restart Game"

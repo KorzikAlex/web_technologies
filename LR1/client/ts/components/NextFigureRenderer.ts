@@ -21,8 +21,7 @@ export class NextFigureRenderer extends Renderer<Figure> {
      * @param nextFigure
      */
     render(nextFigure: Figure): void {
-        this.ctx.fillStyle = "transparent"; // Фон канваса
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height); // Очистка канваса
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         const shape: tetrominoMatrix = nextFigure.shape; // Форма следующей фигуры
         const offsetX: number = Math.floor((this.canvas.width - shape[0]!.length * this.cellSize) / 2); // Центрирование по X

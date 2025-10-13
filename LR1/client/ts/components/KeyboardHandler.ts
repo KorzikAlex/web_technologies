@@ -33,31 +33,29 @@ export class KeyboardHandler {
         if (!currentFigure) return; // Если фигуры нет, выходим из функции
         switch (event.key) {
             case 'ArrowLeft':
-                // TODO: движение влево
-                currentFigure.y++;
+                if (this.game.playfield.isValidPosition(currentFigure, -1, 0)) {
+                    currentFigure.x--;
+                    console.log(currentFigure.x, currentFigure.y, event.key);
+                }
                 break
             case 'ArrowRight':
-                // TODO: движение вправо
+                if (this.game.playfield.isValidPosition(currentFigure, 1, 0)) {
+                    currentFigure.x++;
+                    console.log(currentFigure.x, currentFigure.y, event.key);
+                }
                 break
             case 'ArrowDown':
-                currentFigure.y++;
-                // TODO: ускоренное падение
+                this.game.moveDown();
                 break
             case 'ArrowUp':
-                // TODO: поворот
-                currentFigure.rotate()
+                const figureBeforeRotation = currentFigure.clone();
+                currentFigure.rotate();
+                if (!this.game.playfield.isValidPosition(currentFigure)) {
+                    currentFigure.restore(figureBeforeRotation);
+                }
                 break
             case ' ':
-                // TODO: мгновенное падение
-                break
-            case 'Escape':
-                // TODO: конец игры
-                break
-            case 'F1':
-                // TODO: показать справку
-                break
-            case 'R':
-                // TODO: перезапуск игры
+                this.game.hardDrop();
                 break
         }
     }

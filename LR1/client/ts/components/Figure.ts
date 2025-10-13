@@ -79,28 +79,17 @@ export class Figure {
         this._y = value;
     }
 
-    /**
-     * Количество колонок в фигуре.
-     * @private
-     */
     private _cols: number;
-    /**
-     * Получение количества колонок в фигуре.
-     */
     public get cols(): number {
-        return this._shape.length;
+        return this._shape[0]!.length;
     }
 
     /**
      * Количество строк в фигуре.
-     * @private
      */
     private _rows: number;
-    /**
-     * Получение количества строк в фигуре.
-     */
     public get rows(): number {
-        return this._shape[0]!.length;
+        return this._shape.length;
     }
 
     /**
@@ -143,5 +132,46 @@ export class Figure {
         this._shape = rotated;
         this._cols = this._shape.length;
         this._rows = this._shape[0]!.length;
+    }
+
+    /**
+     * Клонирует текущий объект фигуры.
+     * @returns {Figure}
+     */
+    clone(): Figure {
+        const newFigure = new Figure('I');
+        newFigure._shape = this._shape.map(row => [...row]);
+        (newFigure as any)._color = this._color;
+        newFigure._x = this._x;
+        newFigure._y = this._y;
+        newFigure._rows = this._rows;
+        newFigure._cols = this._cols;
+        return newFigure;
+    }
+
+    restore(other: Figure): void {
+        this._shape = other._shape.map(row => [...row]);
+        this._x = other._x;
+        this._y = other._y;
+        this._rows = other._rows;
+        this._cols = other._cols;
+    }
+
+    equals(other: Figure): boolean {
+        if (!other) {
+            return false;
+        }
+        return this.matricesEqual(this._shape, other._shape);
+    }
+
+    private matricesEqual(a: number[][], b: number[][]): boolean {
+        if (a.length !== b.length) return false;
+        for (let i: number = 0; i < a.length; i++) {
+            if (a[i]!.length !== b[i]!.length) return false;
+            for (let j: number = 0; j < a[i]!.length; j++) {
+                if (a[i]![j] !== b[i]![j]) return false;
+            }
+        }
+        return true;
     }
 }

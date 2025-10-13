@@ -2,6 +2,7 @@ import type {Playfield} from "./Playfield";
 import {Renderer} from "./Renderer";
 import type {Figure} from "./Figure";
 import {TETRIS_BLOCK_SIZE} from "../utils/utils";
+import type {Cell} from "./Cell";
 
 /**
  * Класс PlayfieldRenderer отвечает за отрисовку игрового поля тетриса.
@@ -43,6 +44,8 @@ export class PlayfieldRenderer extends Renderer<Figure> {
      * @private
      */
     private renderGrid(): void {
+        this.ctx.fillStyle = "transparent";
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (let y: number = 0; y < this.playfield.rows; y++) {
             for (let x: number = 0; x < this.playfield.cols; x++) {
                 this.drawCell(
@@ -63,12 +66,13 @@ export class PlayfieldRenderer extends Renderer<Figure> {
     private renderExistingFigures(): void {
         for (let y: number = 0; y < this.playfield.rows; y++) {
             for (let x: number = 0; x < this.playfield.cols; x++) {
-                if (this.playfield.grid[y]![x]) {
+                const cell: Cell = this.playfield.grid[y]![x]!;
+                if (cell.state) {
                     this.drawCell(
                         this.offsetX + x * this.cellSize,
                         this.offsetY + y * this.cellSize,
                         this.cellSize,
-                        this.playfield.grid[y]![x]!.color,
+                        cell.color,
                         "black");
                 }
             }
@@ -81,8 +85,8 @@ export class PlayfieldRenderer extends Renderer<Figure> {
      * @private
      */
     private renderCurrentFigure(currentFigure: Figure): void {
-        for (let y: number = 0; y < currentFigure.cols; y++) {
-            for (let x: number = 0; x < currentFigure.rows; x++) {
+        for (let y: number = 0; y < currentFigure.rows; ++y) {
+            for (let x: number = 0; x < currentFigure.cols; ++x) {
                 if (currentFigure.shape[y]![x]) {
                     this.drawCell(
                         this.offsetX + (currentFigure.x + x) * this.cellSize,
