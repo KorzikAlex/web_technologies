@@ -30,6 +30,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+
+
 const projectRoot: string = path.resolve(__dirname, '..');
 
 app.use(express.static(path.join(projectRoot, 'public')));
@@ -48,11 +50,13 @@ app.use('/', authRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: 'keyboard cat',
+    secret: 'library-secret-key',
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 часа
     store: new SQLiteStore({ db: 'sessions.db', dir: './var/db' }) as any
 }));
+app.use(passport.initialize());
 app.use(passport.authenticate('session'));
 
 

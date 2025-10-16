@@ -1,5 +1,7 @@
 import type {IManager} from "../api/IManager";
 
+const READERS_FILE = path.join(__dirname, '../../data/readers.json');
+
 export class ReaderManager implements IManager {
     addItem(): void {
     }

@@ -1,4 +1,8 @@
-export interface IManager {
+import type {ISavable} from "./ISavable";
+import type {IDeletable} from "./IDeletable";
+import type {IGettable} from "./IGettable";
+
+export interface IManager<T> extends ISavable, IDeletable, IGettable<T> {
     addItem(): void;
 
     addItems(): void;
@@ -7,11 +11,7 @@ export interface IManager {
 
     updateItems(): void;
 
-    deleteItem(): void;
+    loadItem(): void;
 
-    deleteItems(): void;
-
-    getItem(): void;
-
-    getItems(): void;
+    loadItems(): void;
 }

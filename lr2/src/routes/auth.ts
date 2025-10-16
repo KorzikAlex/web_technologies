@@ -8,7 +8,9 @@ const authRouter: Router = express.Router();
 
 // Маршрут для страницы входа
 authRouter.get('/login', (req: Request, res: Response, next: NextFunction): void => {
-    res.render('login');
+    res.render('login', {
+        title: 'Вход в библиотеку'
+    });
 });
 
 passport.use(new LocalStrategy((username: any, password: any, cb: any): void => {
