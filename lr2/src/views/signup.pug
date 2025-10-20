@@ -1,17 +1,34 @@
 doctype html
-html(lang="en")
-head
-    meta(charset="utf-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    link(rel='icon' type='image/x-icon' href='/favicon.ico')
-    link(rel='stylesheet' href='/css/w3.css')
-    link(rel='stylesheet' href='/vendor/fontawesome/css/all.min.css')
-    title Регистрация
-body
-    section
-    label(for="username") Имя пользователя
-    input#username(name="username" type="text" autocomplete="username" required)
-    section
-    label(for="password") Пароль
-    input#password(name="password" type="password" autocomplete="new-password" required)
-    button(type="submit") Зарегистрироваться
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet" href="/css/w3.css")
+        link(rel="stylesheet" href="/css/style.css")
+        link(rel="stylesheet" href="/vendor/fontawesome/css/all.min.css")
+        title= title
+    body.w3-light-grey
+        div.w3-display-container(style="min-height:100vh")
+            div.w3-display-middle(style="width:380px")
+                div.w3-card-4.w3-white.w3-round-large
+                    div.w3-container.w3-padding-16.w3-center
+                        i.fas.fa-book-open.w3-xxlarge.w3-text-blue(aria-hidden="true")
+                        h3.w3-margin-top.w3-margin-bottom.w3-text Регистрация
+                        if hint
+                            p.w3-small.w3-text-grey= hint
+                    if error
+                        div.w3-panel.w3-red.w3-round
+                            p= error
+                    form(action="/auth/signup" method="post").w3-container.w3-padding-16
+                        section.w3-section
+                            label.w3-text(for="username") Имя пользователя
+                            input#username.w3-input.w3-border.w3-round-large(name="username" type="text" autocomplete="username" required autofocus)
+                        section.w3-section
+                            label.w3-text(for="email") Email (необязательно)
+                            input#email.w3-input.w3-border.w3-round-large(name="email" type="email" autocomplete="email")
+                        section.w3-section
+                            label.w3-text(for="password") Пароль
+                            input#password.w3-input.w3-border.w3-round-large(name="password" type="password" autocomplete="new-password" required)
+                        button.w3-button.w3-blue.w3-round-large.w3-block(type="submit") Зарегистрироваться
+                    p.w3-center.w3-padding-16.w3-text Есть учетная запись?&nbsp;
+                        a(href="/auth/login") Войдите

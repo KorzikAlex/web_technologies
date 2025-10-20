@@ -3,19 +3,26 @@
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
-    "scripts": {},
+    "scripts": {
+        "build:client": "tsc -p tsconfig.client.json",
+        "watch:client": "tsc -p tsconfig.client.json --watch"
+    },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@types/connect-flash": "^0.0.40",
         "@types/connect-sqlite3": "^0.9.5",
         "@types/cookie-parser": "^1.4.9",
+        "@types/debug": "^4.1.12",
         "@types/express": "^5.0.3",
         "@types/express-session": "^1.18.2",
+        "@types/mkdirp": "^1.0.2",
         "@types/morgan": "^1.9.10",
-        "@types/node": "^24.7.2",
+        "@types/node": "^24.8.1",
         "@types/passport": "^1.0.17",
         "@types/passport-local": "^1.0.38",
+        "@types/session-file-store": "^1.2.5",
         "ts-node": "^10.9.2",
         "tsx": "^4.20.6",
         "typescript": "^5.9.3"
@@ -24,6 +31,8 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^7.1.0",
         "@fortawesome/fontawesome-svg-core": "^7.1.0",
+        "bcryptjs": "^3.0.2",
+        "connect-flash": "^0.1.1",
         "connect-sqlite3": "^0.9.16",
         "cookie-parser": "^1.4.7",
         "express": "^5.1.0",
@@ -31,6 +40,7 @@
         "morgan": "^1.10.1",
         "passport": "^0.7.0",
         "passport-local": "^1.0.0",
-        "pug": "^3.0.3"
+        "pug": "^3.0.3",
+        "session-file-store": "^1.5.0"
     }
 }

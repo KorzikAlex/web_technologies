@@ -1,9 +1,12 @@
 export interface Book {
-    id: string;
+    id: number;
     title: string;
     author: string;
+    publishDate: string;
     isAvailable: boolean;
-    borrowedBy: string | null;
+    borrowedBy: number | null; // ID читателя
+    borrowDate: string | null; // дата выдачи
+    returnDate: string | null; // планируемая дата возврата
 }
 
-export type BookStatus = 'all' | 'available' | 'borrowed';
+export type BookStatus = 'all' | 'available' | 'borrowed' | 'overdue';

@@ -1,0 +1,98 @@
+doctype html
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet" href="/css/w3.css")
+        link(rel="stylesheet" href="/css/style.css")
+        link(rel="stylesheet" href="/vendor/fontawesome/css/all.min.css")
+        script(src="/js/books-client.js" type="module" defer)
+        title= title
+    body.w3-light-grey
+        // Навигация
+        nav.w3-bar.w3-white.w3-card
+            div.w3-bar-item
+                i.fas.fa-book-open.w3-text-blue
+                |  Библиотека
+            div.w3-right
+                span.w3-bar-item= user.username
+                form(action="/auth/logout" method="post" style="display:inline")
+                    button.w3-bar-item.w3-button.w3-hover-grey(type="submit")
+                        i.fas.fa-sign-out-alt
+                        |  Выйти
+
+        div.w3-container.w3-margin-top
+            // Фильтры
+            div.w3-card.w3-white.w3-padding.w3-round-large
+                h4
+                    i.fas.fa-filter
+                    |  Фильтры
+                div.w3-row-padding
+                    div.w3-third
+                        label Статус:
+                        select#statusFilter.w3-select.w3-border.w3-round-large
+                            option(value="all") Все
+                            option(value="available") В наличии
+                            option(value="borrowed") Выдано
+                            option(value="overdue") Просрочено
+                    div.w3-third
+                        label Дата возврата:
+                        input#dateFilter.w3-input.w3-border(type="date").w3-round-large
+                    div.w3-third
+                        label &nbsp;
+                        button#clearFilters.w3-button.w3-grey.w3-block.w3-round-large Сбросить
+
+            // Кнопка добавления (только для админов)
+            if user.role === 'admin'
+                button.w3-button.w3-green.w3-margin-top(onclick="openAddDialog()").w3-round-large
+                    i.fas.fa-plus
+                    |  Добавить книгу
+
+            // Список книг
+            div#booksList.w3-margin-top
+                each book in books
+                    div.w3-card.w3-white.w3-margin-bottom
+                        div.w3-container.w3-padding
+                            div.w3-row
+                                div.w3-col(style="width:80%")
+                                    h4.w3-margin-top
+                                        a(href=`/books/${book.id}`)= book.title
+                                    p.w3-text-grey
+                                        i.fas.fa-user
+                                        |  #{book.author}
+                                    p.w3-text-grey
+                                        i.fas.fa-calendar
+                                        |  #{new Date(book.publishDate).toLocaleDateString('ru-RU')}
+                                    if book.isAvailable
+                                        span.w3-tag.w3-green В наличии
+                                    else
+                                        span.w3-tag.w3-red Выдано
+                                        - const borrower = users.find(u => u.id === book.borrowedBy)
+                                        if borrower
+                                            span.w3-margin-left
+                                                i.fas.fa-user-check
+                                                |  #{borrower.username}
+                                        if book.returnDate
+                                            - const isOverdue = new Date(book.returnDate) < new Date()
+                                            span.w3-margin-left(class=isOverdue ? 'w3-text-red' : 'w3-text-blue')
+                                                i.fas.fa-clock
+                                                |  до #{new Date(book.returnDate).toLocaleDateString('ru-RU')}
+                                div.w3-rest
+                                    if user.role === 'admin'
+                                        button.w3-button.w3-red.w3-right(onclick=`deleteBook(${book.id})`)
+                                            i.fas.fa-trash
+        dialog#addBookDialog.w3-modal
+            div.w3-modal-content.w3-card-4(style="max-width:500px")
+                header.w3-container.w3-blue
+                    span.w3-button.w3-display-topright(onclick="document.getElementById('addBookDialog').close()") &times;
+                    h2 Добавить книгу
+                form#addBookForm.w3-container.w3-padding
+                    label.w3-text Название:
+                    input.w3-input.w3-border.w3-margin-bottom(type="text" name="title" required)
+                    label.w3-text Автор:
+                    input.w3-input.w3-border.w3-margin-bottom(type="text" name="author" required)
+                    label.w3-text Дата публикации:
+                    input.w3-input.w3-border.w3-margin-bottom(type="date" name="publishDate" required)
+                    button.w3-button.w3-blue.w3-block(type="submit") Добавить
+
+
