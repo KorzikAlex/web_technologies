@@ -1,0 +1,64 @@
+// Фильтры
+.filter-container {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    flex: 0 0 250px;
+}
+
+.filter-actions {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+// Карточка книги
+.book-detail {
+    padding: 32px !important;
+
+    .book-actions {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .borrow-form {
+        margin-top: 24px;
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+    }
+}
+
+// Таблица книг
+.books-table {
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+}
+
+// Модальное окно
+.modal-dialog {
+    max-width: 500px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+// Навигация назад
+.back-button {
+    margin-bottom: 16px;
+}
+
+// Отступы для контейнера детальной страницы
+.detail-container {
+    padding: 16px;
+}

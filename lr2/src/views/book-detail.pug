@@ -1,23 +1,23 @@
 extends layout
 
 block content
-    .w3-container.w3-padding-16.w3-round-large
-        a.w3-button.w3-light-grey(href="/books")
+    .detail-container
+        a.w3-button.w3-light-grey.back-button(href="/books")
             i.fas.fa-arrow-left
             |  Назад к списку
-        .w3-card.w3-white.w3-round-large.w3-padding-24.w3-margin-top.w3-round-large
+        .w3-card.w3-white.w3-round-large.book-detail
             h2.w3-text-blue= book.title
             p
-                strong Автор:
+                strong Автор:&nbsp;
                 | #{book.author}
             if book.publishDate
                 p
-                    strong Год публикации:
+                    strong Год публикации:&nbsp;
                     | #{new Date(book.publishDate).toLocaleDateString('ru-RU')}
 
             if book.isAvailable
                 p
-                    span.w3-tag.w3-green Доступна
+                    span.w3-tag.w3-green.w3-round-large Доступна
             else
                 p
                     span.w3-tag.w3-orange На руках
@@ -32,16 +32,18 @@ block content
                             |  Вернуть до #{returnDate}
             hr
             if user
-                if user.role === 'admin'
-                    a.w3-button.w3-blue.w3-round-large(href=`/books/${book.id}/edit`)
-                        i.fas.fa-edit
-                        |  Редактировать
+                .book-actions
+                    if user.role === 'admin'
+                        a.w3-button.w3-blue.w3-round-large(href=`/books/${book.id}/edit`)
+                            i.fas.fa-edit
+                            |  Редактировать
                 if book.isAvailable
-                    form(action=`/books/${book.id}/borrow`, method="post").w3-section
-                        label(for="days") Срок (дней):
-                        input#days.w3-input.w3-border.w3-round-large(name="days", type="number", min="1", max="60", value="14")
+                    form.borrow-form(action=`/books/${book.id}/borrow`, method="post")
+                        .form-group
+                            label.w3-text-grey(for="days") Срок (дней):
+                            input#days.w3-input.w3-border.w3-round-large(name="days", type="number", min="1", max="60", value="14")
                         button.w3-button.w3-green.w3-round-large(type="submit") Взять книгу
                 else
                     if user.role === 'admin' || (borrower && borrower.id === user.id)
-                        form(action=`/books/${book.id}/return`, method="post").w3-section
+                        form.borrow-form(action=`/books/${book.id}/return`, method="post")
                             button.w3-button.w3-orange.w3-round-large(type="submit") Вернуть книгу

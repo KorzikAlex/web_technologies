@@ -43,7 +43,7 @@ app.use(cookieParser()); // Парсим cookies
 const projectRoot: string = path.resolve(__dirname, '..'); // Корневая директория проекта
 
 app.use(express.static(path.join(projectRoot, 'public'))); // Статические файлы из public
-
+// app.use(express.static(path.join(projectRoot, 'public', 'js'))); // Статические файлы JS
 app.use(
     '/vendor/fontawesome/css',
     express.static(path.join(projectRoot, 'node_modules', '@fortawesome', 'fontawesome-free', 'css'))

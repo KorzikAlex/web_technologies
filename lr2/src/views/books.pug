@@ -1,41 +1,42 @@
 extends layout
 
 block head-scripts
-    script(src="/js/books-client.js" type="module" defer)
+    script(src="/js/public/books-client.js" type="module" defer)
 
 block content
     h2.w3-text-blue.w3-center.w3-margin-top Библиотека
 
     //- Фильтры
     .w3-card.w3-white.w3-padding.w3-margin-bottom.w3-round-large
-        .w3-row
-            .w3-col(style="width:250px")
+        .filter-container
+            .filter-item
                 label.w3-text-grey Статус
                 select#statusFilter.w3-select.w3-border.w3-round-large
                     option(value="all") Все книги
                     option(value="available") В наличии
                     option(value="borrowed") Выдано
                     option(value="overdue") Просрочено
-            .w3-col.w3-margin-left(style="width:250px")
+            .filter-item
                 label.w3-text-grey Дата возврата (до)
                 input#dateFilter.w3-input.w3-border.w3-round-large(type="date")
-            .w3-rest.w3-padding-16.w3-margin-left
+            .filter-actions
                 button#clearFilters.w3-button.w3-grey.w3-round-large Сбросить
                 if user.role === 'admin'
-                    button.w3-button.w3-blue.w3-round-large.w3-right(onclick="openAddDialog()")
+                    button.w3-button.w3-blue.w3-round-large(onclick="openAddDialog()")
                         i.fas.fa-plus
                         |  Добавить книгу
 
     //- Список книг
     #booksList
         if books.length
-            table.w3-table.w3-bordered.w3-striped.w3-white.w3-round
+            table.w3-table.w3-bordered.w3-striped.w3-white.w3-round.books-table
                 thead
                     tr.w3-blue-grey
                         th Название
                         th Автор
                         th Статус
                         th Читатель
+                        th Дата возврата
                         th Действия
                 tbody
                     each book in books
@@ -54,19 +55,29 @@ block content
                                 else
                                     | —
                             td
-                                a.w3-button.w3-small.w3-blue.w3-round-large(href=`/books/${book.id}`)
-                                    i.fas.fa-eye
-                                    |  Открыть
-                                if user.role === 'admin'
-                                    button.w3-button.w3-small.w3-red.w3-round-large(data-id=book.id onclick="deleteBook(this)")
-                                        i.fas.fa-trash
-                                        |  Удалить
+                                if book.returnDate
+                                    - const isOverdue = new Date(book.returnDate) < new Date()
+                                    - const returnDate = new Date(book.returnDate).toLocaleDateString('ru-RU')
+                                    span(class=isOverdue ? 'w3-text-red' : 'w3-text-blue')
+                                        = returnDate
+                                else
+                                    | —
+                            td
+                                .action-buttons
+                                    a.w3-button.w3-small.w3-blue.w3-round-large(href=`/books/${book.id}`)
+                                        i.fas.fa-eye
+                                        |  Открыть
+                                    if user.role === 'admin'
+                                        button.w3-button.w3-small.w3-red.w3-round-large(data-id=book.id onclick="deleteBook(this)")
+                                            i.fas.fa-trash
+                                            |  Удалить
         else
             p.w3-center.w3-text-grey Нет доступных книг.
 
+
     //- Модальное окно добавления книги
     if user.role === 'admin'
-        dialog#addBookDialog.w3-card-4.w3-white.w3-round-large(style="max-width:500px")
+        dialog#addBookDialog.w3-card-4.w3-white.w3-round-large.modal-dialog
             .w3-container.w3-padding-16
                 h3.w3-text-blue Добавить книгу
                 form#addBookForm
@@ -78,7 +89,13 @@ block content
                         input#newAuthor.w3-input.w3-border.w3-round-large(name="author" type="text" required)
                     .w3-section
                         label.w3-text-grey(for="newDate") Дата выпуска
-                        input#newDate.w3-input.w3-border.w3-round-large(name="publishDate" type="date" required)
+                        input#newDate.w3-input.w3-border.w3-round-large(
+                            name="publishDate"
+                            type="date"
+                            min="1000-01-01"
+                            max=new Date().toISOString().split('T')[0]
+                            required
+                        )
                     .w3-section
                         button.w3-button.w3-blue.w3-round-large(type="submit") Добавить
                         button.w3-button.w3-grey.w3-round-large.w3-right(type="button" onclick="addBookDialog.close()") Отмена

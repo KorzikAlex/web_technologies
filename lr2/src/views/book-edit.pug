@@ -1,11 +1,11 @@
 extends layout
 
 block content
-    .w3-container.w3-padding-16
-        a.w3-button.w3-light-grey(href=`/books/${book.id}`)
+    .detail-container
+        a.w3-button.w3-light-grey.back-button(href=`/books/${book.id}`)
             i.fas.fa-arrow-left
             |  Назад к книге
-        .w3-card.w3-white.w3-round-large.w3-padding-24.w3-margin-top
+        .w3-card.w3-white.w3-round-large.book-detail
             h2.w3-text-blue Редактирование книги
             if error
                 .w3-panel.w3-red.w3-round
