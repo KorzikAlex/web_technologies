@@ -6,8 +6,8 @@ const booksList = document.getElementById('booksList') as HTMLDivElement;
 const addBookDialog = document.getElementById('addBookDialog') as HTMLDialogElement;
 const addBookForm = document.getElementById('addBookForm') as HTMLFormElement;
 
-import type {Book, BookStatus} from '../data/models/Book.ts';
-import type {User} from '../data/models/User.ts';
+import type {Book, BookStatus} from '../src/models/Book.js';
+import type {User} from '../src/models/User.js';
 
 // Фильтрация через AJAX
 statusFilter.addEventListener('change', filterBooks);

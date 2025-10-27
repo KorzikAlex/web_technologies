@@ -1,0 +1,32 @@
+doctype html
+html(lang="ru")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet" href="/css/w3.css")
+        link(rel="stylesheet" href="/css/style.css")
+        link(rel="stylesheet" href="/vendor/fontawesome/css/all.min.css")
+        link(rel="icon" href="/assets/icon/favicon.svg" type="image/svg+xml")
+        title #{title || 'Библиотека'}
+        block head-scripts
+    body.w3-light-grey(data-user-role=(user && user.role) || 'guest')
+        if !hideNavbar
+            nav.w3-bar.w3-white.w3-card
+                a.w3-bar-item.w3-button(href="/books")
+                    i.fas.fa-book-open.w3-text-blue
+                    |  Библиотека
+                .w3-right
+                    if user
+                        span.w3-bar-item.w3-text-grey #{user.username}
+                        form(action="/auth/logout" method="post" style="display:inline")
+                            button.w3-bar-item.w3-button.w3-hover-grey(type="submit")
+                                i.fas.fa-sign-out-alt
+                                |  Выйти
+                    else
+                        a.w3-bar-item.w3-button(href="/auth/login")
+                            i.fas.fa-sign-in-alt
+                            |  Войти
+        main#wrapper.w3-padding
+            block content
+
+        block page-scripts

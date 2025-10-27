@@ -1,0 +1,23 @@
+extends layout
+
+block content
+    .w3-container.w3-padding-16
+        a.w3-button.w3-light-grey(href=`/books/${book.id}`)
+            i.fas.fa-arrow-left
+            |  Назад к книге
+        .w3-card.w3-white.w3-round-large.w3-padding-24.w3-margin-top
+            h2.w3-text-blue Редактирование книги
+            if error
+                .w3-panel.w3-red.w3-round
+                    p= error
+            form(action=`/books/${book.id}/edit` method="post")
+                .w3-section
+                    label.w3-text-grey(for="title") Название
+                    input#title.w3-input.w3-border.w3-round-large(name="title" type="text" value=book.title required)
+                .w3-section
+                    label.w3-text-grey(for="author") Автор
+                    input#author.w3-input.w3-border.w3-round-large(name="author" type="text" value=book.author required)
+                .w3-section
+                    label.w3-text-grey(for="publishDate") Дата выпуска
+                    input#publishDate.w3-input.w3-border.w3-round-large(name="publishDate" type="date" value=book.publishDate required)
+                button.w3-button.w3-blue.w3-round-large(type="submit") Сохранить

@@ -17,8 +17,8 @@ import passport from "passport";
 import createDebug, {type Debugger} from 'debug';
 import type {Server} from "node:net";
 
-import authRouter from './routes/auth.ts';
-import booksRouter from './routes/books.ts';
+import authRouter from './routes/auth.js';
+import booksRouter from './routes/books.js';
 
 const debug: Debugger = createDebug('todos:server');
 
@@ -32,7 +32,7 @@ const __dirname: string = path.dirname(__filename); // Получаем дире
 
 // Настройка шаблонизатора Pug
 app.set('view engine', 'pug'); // Устанавливаем Pug в качестве движка шаблонов
-app.set('views', path.join(__dirname, 'views')); // Устанавливаем директорию для шаблонов
+app.set('views', path.join(__dirname, '../src/views')); // Устанавливаем директорию для шаблонов
 
 // Middleware
 app.use(bodyParser.json()); // Парсим JSON тела запросов

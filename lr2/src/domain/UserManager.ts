@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import type {User, UserRole} from '../data/models/User.ts';
+import type {User, UserRole} from '../models/User.js';
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);

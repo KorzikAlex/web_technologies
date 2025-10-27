@@ -9,8 +9,8 @@
 import express, { type NextFunction, type Request, type Response, type Router } from 'express';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { UserManager } from '../../domain/UserManager.ts';
-import type { User, UserRole } from '../../data/models/User.ts';
+import { UserManager } from '../domain/UserManager.js';
+import type { User, UserRole } from '../models/User.js';
 
 const router: Router = express.Router(); // Создаем роутер для аутентификации
 const userManager = new UserManager(); // Экземпляр менеджера пользователей
@@ -59,7 +59,8 @@ router.get('/login', (req: Request, res: Response): void => {
     console.log('Error from query:', error); // ← отладка
     res.render('login', {
         title: 'Вход в библиотеку',
-        error: error || null
+        error: error || null,
+        hideNavbar: true
     });
 });
 
@@ -75,7 +76,7 @@ router.post('/login/password', (req: Request, res: Response, next: NextFunction)
             return res.redirect('/auth/login?error=' + encodeURIComponent(info?.message || 'Ошибка входа'));
         }
 
-        req.logIn(user, (loginErr) => {
+        req.login(user, (loginErr) => {
             if (loginErr) return next(loginErr);
             return res.redirect('/books');
         });
@@ -91,6 +92,7 @@ router.get('/signup', async (req: Request, res: Response) => {
     res.render('signup', {
         title: 'Регистрация',
         hint: hasUsers ? 'Новый пользователь получит роль читателя' : 'Первый пользователь станет администратором',
+        hideNavbar: true
     });
 });
 

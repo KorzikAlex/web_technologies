@@ -1,29 +1,23 @@
-doctype html
-html(lang="ru")
-    head
-        meta(charset="utf-8")
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        link(rel="stylesheet" href="/css/w3.css")
-        link(rel="stylesheet" href="/css/style.css")
-        link(rel="stylesheet" href="/vendor/fontawesome/css/all.min.css")
-        title= title
-    body.w3-light-grey
-        div.w3-display-container(style="min-height:100vh")
-            div.w3-display-middle(style="width:380px")
-                div.w3-card-4.w3-white.w3-round-large
-                    div.w3-container.w3-padding-16.w3-center
-                        i.fas.fa-book-open.w3-xxlarge.w3-text-blue(aria-hidden="true")
-                        h3.w3-margin-top.w3-margin-bottom.w3-text Вход в систему
-                    if error
-                        div.w3-panel.w3-red.w3-round.w3-margin
-                            p= error
-                    form(action="/auth/login/password" method="post").w3-container.w3-padding-16
-                        section.w3-section
-                            label.w3-text(for="username") Имя пользователя
-                            input#username.w3-input.w3-border.w3-round-large(name="username" type="text" autocomplete="username" required autofocus)
-                        section.w3-section
-                            label.w3-text(for="password") Пароль
-                            input#password.w3-input.w3-border.w3-round-large(name="password" type="password" autocomplete="current-password" required)
-                        button.w3-button.w3-blue.w3-round-large.w3-block(type="submit") Войти
-                    p.w3-center.w3-padding-16.w3-text Нет учетной записи?&nbsp;
-                        a(href="/auth/signup") Зарегистрируйтесь
+extends layout
+
+block content
+    .w3-display-container(style="min-height:100vh")
+        .w3-display-middle(style="width:380px")
+            .w3-card-4.w3-white.w3-round-large
+                .w3-container.w3-padding-16.w3-center
+                    i.fas.fa-book-open.w3-xxlarge.w3-text-blue(aria-hidden="true")
+                    h3.w3-margin-top.w3-margin-bottom Вход в систему
+                if error
+                    .w3-panel.w3-red.w3-round.w3-margin
+                        p= error
+                form.w3-container.w3-padding-16(action="/auth/login/password" method="post")
+                    section.w3-section
+                        label.w3-text(for="username") Имя пользователя
+                        input#username.w3-input.w3-border.w3-round-large(name="username" type="text" autocomplete="username" required autofocus)
+                    section.w3-section
+                        label.w3-text(for="password") Пароль
+                        input#password.w3-input.w3-border.w3-round-large(name="password" type="password" autocomplete="current-password" required)
+                    button.w3-button.w3-blue.w3-round-large.w3-block(type="submit") Войти
+                p.w3-center.w3-padding-16
+                    | Нет учетной записи?
+                    a(href="/auth/signup") Зарегистрируйтесь

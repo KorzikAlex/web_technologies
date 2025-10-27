@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import type { Book, BookStatus } from '../../data/models/Book.ts';
+import type { Book, BookStatus } from '../models/Book.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,13 +65,20 @@ export class BookManager {
     }
 
     async updateBook(id: number, updates: Partial<Book>): Promise<Book> {
-        const books = await this.readBooks();
-        const index = books.findIndex(b => b.id === id);
-        if (index === -1) throw new Error('Книга не найдена');
+        const books: Book[] = await this.readBooks();
+        const index: number = books.findIndex(b => b.id === id);
+        if (index === -1) {
+            throw new Error('Книга не найдена');
+        }
 
-        books[index] = { ...books[index], ...updates };
+        const currentBook: Book | undefined = books[index];
+        if (!currentBook) {
+            throw new Error('Книга не найдена');
+        }
+
+        books[index] = { ...currentBook, ...updates };
         await this.writeBooks(books);
-        return books[index];
+        return books[index]!;
     }
 
     async deleteBook(id: number): Promise<void> {

@@ -2,12 +2,15 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./public/js",
-        "rootDir": "./public",
-        "module": "ESNext",
-        "target": "ESNext",
-        "lib": ["ES2022", "DOM"],
+        "lib": ["esnext", "dom", "dom.iterable"],
+        "types": [],
+        "module": "esnext",
         "moduleResolution": "bundler",
-        "noEmit": true
+        "declaration": false,
+        "declarationMap": false
     },
-    "include": ["public/**/*.ts"]
+    "include": [
+        "public/**/*.ts",
+        "src/models/**/*.ts"
+    ]
 }
