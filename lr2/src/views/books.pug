@@ -68,7 +68,7 @@ block content
                                         i.fas.fa-eye
                                         |  Открыть
                                     if user.role === 'admin'
-                                        button.w3-button.w3-small.w3-red.w3-round-large(data-id=book.id onclick="deleteBook(this)")
+                                        button.w3-button.w3-small.w3-red.w3-round-large.delete-book-btn(data-id=book.id)
                                             i.fas.fa-trash
                                             |  Удалить
         else

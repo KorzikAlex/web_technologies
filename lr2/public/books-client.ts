@@ -114,10 +114,11 @@ function renderBookRow(book: Book): string {
     }
 
     const deleteBtn: string = userRole === 'admin' ? `
-        <button class="w3-button w3-small w3-red w3-round-large delete-book-btn" data-id="${book.id}">
-            <i class="fas fa-trash"></i> Удалить
-        </button>
+    <button class="w3-button w3-small w3-red w3-round-large delete-book-btn" data-id="${book.id}">
+        <i class="fas fa-trash"></i> Удалить
+    </button>
     ` : '';
+
 
     return `
         <tr>
@@ -201,23 +202,27 @@ addBookForm.addEventListener('submit', async (e: Event): Promise<void> => {
  * @param {HTMLButtonElement} button - Кнопка удаления с data-id
  * @returns {Promise<void>}
  */
-(window as any).deleteBook = async (button: HTMLButtonElement): Promise<void> => {
+booksList.addEventListener('click', async (e: Event): Promise<void> => {
+    const target = e.target as HTMLElement;
+    const button = target.closest('.delete-book-btn') as HTMLButtonElement | null;
+
+    if (!button) return;
+
     if (!confirm('Удалить эту книгу?')) {
         return;
     }
-    const {id} = button.dataset;
-    if (!id) {
-        return;
-    }
+
+    const id = button.dataset.id;
+    if (!id) return;
 
     try {
-        const res: Response = await fetch(`/books/${id}`, {method: 'DELETE'});
+        const res = await fetch(`/books/${id}`, { method: 'DELETE' });
         if (res.ok) {
-            location.reload();
+            await filterBooks(); // Обновляем список без перезагрузки
         } else {
             throw new Error('Ошибка при удалении');
         }
     } catch (err: any) {
         alert(err.message);
     }
-};
+});

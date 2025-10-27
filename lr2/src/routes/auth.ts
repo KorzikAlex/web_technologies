@@ -6,61 +6,45 @@
  * @license MIT
  * @module routes/auth
  */
-import express, {type NextFunction, type Request, type Response, type Router} from 'express';
+import express, { type NextFunction, type Request, type Response, type Router } from 'express';
 import passport from 'passport';
-import {Strategy as LocalStrategy} from 'passport-local';
-import {UserManager} from '../domain/UserManager.js';
-import type {User, UserRole} from '../models/User.js';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { UserManager } from '../domain/UserManager.js';
+import type { User, UserRole } from '../models/User.js';
 
-const router: Router = express.Router();
-const userManager = new UserManager();
+const router: Router = express.Router(); // Создаем роутер для аутентификации
+const userManager = new UserManager(); // Экземпляр менеджера пользователей
 
 /**
- * Настройка локальной стратегии аутентификации Passport.
- * @function
- * @param {string} username - Имя пользователя
- * @param {string} password - Пароль
- * @param {Function} cb - Callback функция
+ * Настройка стратегии локальной аутентификации.
  */
 passport.use(
-    new LocalStrategy(async (username: string, password: string, cb) => {
+    new LocalStrategy(async (username: string, password: string, done): Promise<void> => {
         try {
-            const user = await userManager.verifyPassword(username, password);
+            const user: User | null = await userManager.verifyPassword(username, password);
             if (!user) {
-                return cb(null, false, {message: 'Неверное имя пользователя или пароль.'});
+                return done(null, false, { message: 'Неверный логин или пароль' });
             }
-            return cb(null, user);
+            return done(null, user);
         } catch (err) {
-            return cb(err);
+            return done(err as Error);
         }
     })
 );
 
 /**
- * Сериализация пользователя для сохранения в сессии.
- * @function
- * @param {Express.User} user - Объект пользователя
- * @param {Function} cb - Callback функция
- * @returns {void}
+ * Сериализация пользователя в сессию.
  */
 passport.serializeUser((user: Express.User, cb): void => {
-    process.nextTick(() => {
-        cb(null, {
-            id: (user as User).id
-        });
-    });
+    cb(null, (user as User).id);
 });
 
 /**
- * Десериализация пользователя из сессии по ID.
- * @function
- * @param {number} id - ID пользователя
- * @param {Function} cb - Callback функция
- * @returns {Promise<void>}
+ * Десериализация пользователя по ID.
  */
 passport.deserializeUser(async (id: number, cb) => {
     try {
-        const user: User | undefined = await userManager.findUserById(id);
+        const user = await userManager.findUserById(id);
         cb(null, user ?? false);
     } catch (error) {
         cb(error);
@@ -68,105 +52,60 @@ passport.deserializeUser(async (id: number, cb) => {
 });
 
 /**
- * Middleware для проверки аутентификации пользователя.
- * @function ensureAuthenticated
- * @param {Request} req - Объект запроса Express
- * @param {Response} res - Объект ответа Express
- * @param {NextFunction} next - Функция следующего middleware
- * @returns {void}
+ * GET /auth/login
  */
-export function ensureAuthenticated(req: Request, res: Response, next: NextFunction): void {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/auth/login');
-}
-
-/**
- * Middleware для проверки роли пользователя.
- * @function ensureRole
- * @param {UserRole} role - Требуемая роль пользователя
- * @returns {Function} Middleware функция
- */
-export function ensureRole(role: UserRole) {
-    return (req: Request, res: Response, next: NextFunction): void => {
-        if (!req.user || (req.user as User).role !== role) {
-            res.status(403).send('Доступ запрещен');
-            return;
-        }
-        next();
-    };
-}
-
-
-/**
- * GET /auth/login - Страница входа в систему.
- * @function
- * @param {Request} req - Объект запроса
- * @param {Response} res - Объект ответа
- */
-router.get('/login', (req: Request, res: Response) => {
-    res.render('login', {title: 'Вход', error: req.flash('error')});
-});
-
-/**
- * POST /auth/login/password - Обработка формы входа.
- * @function
- */
-router.post(
-    '/login/password',
-    passport.authenticate('local', {
-        successRedirect: '/books',
-        failureRedirect: '/auth/login',
-        failureFlash: true,
-    })
-);
-
-/**
- * POST /auth/logout - Выход из системы.
- * @function
- * @param {Request} req - Объект запроса
- * @param {Response} res - Объект ответа
- * @param {NextFunction} next - Функция следующего middleware
- */
-router.post('/logout', (req: Request, res: Response, next: NextFunction): void => {
-    req.logout(err => {
-        if (err) return next(err);
-        res.redirect('/');
+router.get('/login', (req: Request, res: Response): void => {
+    const error = req.query.error as string | undefined;
+    console.log('Error from query:', error); // ← отладка
+    res.render('login', {
+        title: 'Вход в библиотеку',
+        error: error || null,
+        hideNavbar: true
     });
 });
 
 /**
- * GET /auth/signup - Страница регистрации.
- * @name GET/auth/signup
- * @function
- * @param {Request} req - Объект запроса
- * @param {Response} res - Объект ответа
+ * POST /auth/login/password
  */
-router.get('/signup', (req: Request, res: Response) => {
-    res.render('signup', {title: 'Регистрация', error: req.flash('error')});
+router.post('/login/password', (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate('local', (err: Error | null, user: Express.User | false, info: any) => {
+        if (err) return next(err);
+
+        if (!user) {
+            // Вместо flash используем query-параметр
+            return res.redirect('/auth/login?error=' + encodeURIComponent(info?.message || 'Ошибка входа'));
+        }
+
+        req.login(user, (loginErr) => {
+            if (loginErr) return next(loginErr);
+            return res.redirect('/books');
+        });
+    })(req, res, next);
 });
 
 /**
- * POST /auth/signup - Обработка формы регистрации.
- * @name POST/auth/signup
- * @function
- * @param {Request} req - Объект запроса
- * @param {Response} res - Объект ответа
- * @param {NextFunction} next - Функция следующего middleware
+ * GET /auth/signup
+ * Страница регистрации нового пользователя.
+ */
+router.get('/signup', async (req: Request, res: Response) => {
+    const hasUsers = await userManager.hasUsers();
+    res.render('signup', {
+        title: 'Регистрация',
+        hint: hasUsers ? 'Новый пользователь получит роль читателя' : 'Первый пользователь станет администратором',
+        hideNavbar: true
+    });
+});
+
+/**
+ * POST /auth/signup
+ * Регистрация нового пользователя.
  */
 router.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {username, email, password} = req.body;
-
-        if (!username || !password) {
-            req.flash('error', 'Имя пользователя и пароль обязательны');
-            return res.redirect('/auth/signup');
-        }
-
-        const user: User = await userManager.createUser({
-            username,
-            email,
+        const { username, email, password, name } = req.body;
+        const user = await userManager.createUser({
+            username: username?.trim(),
+            email: email?.trim(),
             password,
         });
 
@@ -174,10 +113,46 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction) =
             if (err) return next(err);
             res.redirect('/books');
         });
-    } catch (error: any) {
-        req.flash('error', error.message);
-        res.redirect('/auth/signup');
+    } catch (err: any) {
+        res.status(400).render('signup', {
+            title: 'Регистрация',
+            error: err.message,
+        });
     }
 });
 
-export default router;
+/**
+ * POST /auth/logout
+ * Выход пользователя из системы.
+ */
+router.post('/logout', (req: Request, res: Response, next: NextFunction): void => {
+    req.logout(err => {
+        if (err) return next(err);
+        res.redirect('/auth/login');
+    });
+});
+
+/**
+ * Проверяет, аутентифицирован ли пользователь.
+ * @param req - Request
+ * @param res - Response
+ * @param next - NextFunction
+ */
+export function ensureAuthenticated(req: Request, res: Response, next: NextFunction): void {
+    if (req.isAuthenticated()) return next();
+    res.redirect('/auth/login');
+}
+
+/**
+ * Проверяет, что у пользователя есть необходимая роль.
+ * @param role - требуемая роль пользователя
+ */
+export function ensureRole(role: UserRole) {
+    return (req: Request, res: Response, next: NextFunction): void => {
+        const user = req.user as User | undefined;
+        if (user?.role === role) return next();
+        res.status(403).send('Доступ запрещён');
+    };
+}
+
+export default router; // Экспортируем роутер аутентификации
