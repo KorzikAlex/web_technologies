@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack serve --mode development --open",
     "start": "tsx src/server.ts"
   },
   "author": "KorzikAlex",
@@ -37,6 +39,7 @@
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
+    "@types/gulp": "^4.0.18",
     "bootstrap": "^5.3.8",
     "express": "^5.1.0",
     "pug": "^3.0.3"

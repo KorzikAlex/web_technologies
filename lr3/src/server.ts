@@ -29,8 +29,3 @@ const server: Server = app.listen(port, host);
 server.on('listening', (): void => {
     console.log(`Server is running at http://${host}:${port}`);
 });
-
-document.querySelectorAll('[data-bs-toggle="popover"]')
-    .forEach(popover => {
-        new bootstrap.Popover(popover)
-    })
