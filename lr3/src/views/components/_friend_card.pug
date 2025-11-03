@@ -1,0 +1,17 @@
+mixin friend_card(friend = {}, opts = {})
+    .card.mb-3
+        .card-body.d-flex.align-items-center
+            if friend.avatar
+                img.rounded-circle.me-3(src=friend.avatar alt="Avatar" width="50" height="50")
+            else
+                div.rounded-circle.bg-secondary.text-white.d-flex.justify-content-center.align-items-center.me-3(style="width: 50px; height: 50px;")
+                    i.bi.bi-person-fill aria-hidden="true"
+            .flex-grow-1
+                h5.card-title.mb-1= friend.name
+                if friend.status
+                    p.card-text.mb-0
+                        small.text-muted= friend.status
+            if opts.showAddButton
+                button.btn.btn-primary.btn-sm(type="button") Добавить в друзья
+            else if opts.showMessageButton
+                button.btn.btn-secondary.btn-sm(type="button") Написать сообщение

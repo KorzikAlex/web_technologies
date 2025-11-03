@@ -1,8 +1,15 @@
 doctype html
-html lang="en" data-bs-theme="light"
-head
-    link(rel="stylesheet", href="/css/style.css")
-    script(src="/bootstrap/js/bootstrap.bundle.min.js" defer)
-    block head
-body
-    block content
+html
+    head
+        block head
+            title Социальная сеть
+        meta(charset="utf-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        script(src="/webpack-build/main.js" defer)
+    body
+        block content
+
+
+
+
+

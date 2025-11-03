@@ -5,11 +5,11 @@ mixin sidebar(menuItems = [], opts = {})
         | Меню
 
     //- Offcanvas для small screens (hidden on lg+)
-    div.offcanvas.offcanvas-start.d-lg-none#sidebarOffcanvas(tabindex="-1" aria-labelledby="sidebarOffcanvasLabel")
-        div.offcanvas-header
+    .offcanvas.offcanvas-start.d-lg-none#sidebarOffcanvas(tabindex="-1" aria-labelledby="sidebarOffcanvasLabel")
+        .offcanvas-header
             h5.offcanvas-title#sidebarOffcanvasLabel Меню
             button.btn-close(type="button" data-bs-dismiss="offcanvas" aria-label="Закрыть")
-        div.offcanvas-body
+        .offcanvas-body
             nav.sidebar-nav
                 ul.nav.flex-column
                     each item in menuItems
@@ -22,7 +22,7 @@ mixin sidebar(menuItems = [], opts = {})
 
     //- Desktop sidebar (visible on lg+)
     aside.sidebar.d-none.d-lg-block
-        div.sidebar-inner
+        .sidebar-inner
             nav
                 ul.nav.flex-column
                     each item in menuItems
@@ -35,5 +35,5 @@ mixin sidebar(menuItems = [], opts = {})
 
         //- Optional footer area (e.g., user)
         if opts.user
-            div.sidebar-footer.mt-auto.p-3
+            .sidebar-footer.mt-auto.p-3
                 small.text-muted Привет, #{opts.user.name}

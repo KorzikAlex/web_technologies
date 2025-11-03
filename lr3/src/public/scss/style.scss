@@ -1,6 +1,6 @@
 @use './variables';
 @use './mixins';
+@use './bootstrap';
+@use './icons';
 @use './base';
 @use './components';
-
-@use '../../../node_modules/bootstrap/scss/bootstrap';

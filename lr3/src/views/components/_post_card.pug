@@ -1,0 +1,13 @@
+mixin post_card(post = {}, opts = {})
+    .card.mb-3
+        if post.image
+            img.card-img-top(src=post.image alt="Post image")
+        .card-body
+            h5.card-title= post.title
+            p.card-text= post.content
+            if post.author
+                p.card-text
+                    small.text-muted Автор: #{post.author.name}
+            if post.date
+                p.card-text
+                    small.text-muted Дата: #{post.date.toLocaleDateString()}
