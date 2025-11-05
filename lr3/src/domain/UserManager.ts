@@ -230,6 +230,10 @@ export class UserManager {
         await this.saveUsers(filtered);
         return true;
     }
+
+    async getAllUsers(): Promise<User[]> {
+        return this.loadUsers();
+    }
 }
 
 export const userManager: UserManager = new UserManager();

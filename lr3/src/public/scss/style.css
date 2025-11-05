@@ -14,5 +14,5 @@ body::before {
   padding: 1em;
   margin-bottom: 1em;
   border-bottom: 2px solid black;
-  content: "Error: Can't find stylesheet to import.\a   \2577 \a 1 \2502  @use 'bootstrap/scss/bootstrap';\d\a   \2502  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\a   \2575 \a   _bootstrap.scss 1:1  @use\a   style.scss 3:1       root stylesheet";
+  content: "Error: Can't find stylesheet to import.\a   \2577 \a 1 \2502  @use 'bootstrap/scss/bootstrap';\a   \2502  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\a   \2575 \a   _bootstrap.scss 1:1  @use\a   style.scss 3:1       root stylesheet";
 }

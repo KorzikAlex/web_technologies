@@ -6,10 +6,10 @@
 import express, {type Express, type Request, type Response} from "express";
 import fs from "fs";
 import https, {Server}  from "node:https";
-import http from "node:http";
 import path from "node:path";
 
 import {router as usersRouter} from "./routes/users";
+import http from "node:http";
 
 const app: Express = express(); // Создаем экземпляр Express приложения
 
@@ -44,4 +44,18 @@ const server: Server<typeof http.IncomingMessage, typeof http.ServerResponse> = 
 
 server.listen(port, host, (): void => {
     console.log(`Server is running at https://${host}:${port.toString()}`);
+});
+
+// Переадресация с HTTP на HTTPS
+const redirectApp: Express = express(); // Создаем отдельное приложение для редиректа
+const httpPort: number = 8080; // Порт для HTTP
+redirectApp.get('*', (req: Request, res: Response): void => {
+    const hostHeader: string = req.headers.host || '';
+    const hostWithoutPort: string = hostHeader.split(':')[0];
+    res.redirect(`https://${hostWithoutPort}:${port}${req.url}`);
+});
+
+const httpServer = http.createServer(redirectApp);
+httpServer.listen(httpPort, host, (): void => {
+    console.log(`HTTP redirect server is running at http://${host}:${httpPort.toString()}`);
 });
