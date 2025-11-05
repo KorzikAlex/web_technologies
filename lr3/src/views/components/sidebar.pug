@@ -15,6 +15,10 @@ mixin sidebar(activeLink)
                     i.bi.bi-file-text
                     |  Публикации
             li.nav-item
+                a.nav-link(href="/friends" class=(activeLink === 'friends' ? 'active' : ''))
+                    i.bi.bi-person-hearts
+                    |  Друзья
+            li.nav-item
                 a.nav-link(href="/messages" class=(activeLink === 'messages' ? 'active' : ''))
                     i.bi.bi-chat-dots
                     |  Сообщения

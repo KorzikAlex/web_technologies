@@ -6,10 +6,12 @@
 import express, {type Express, type Request, type Response} from "express";
 import fs from "fs";
 import https, {Server}  from "node:https";
+import http from "node:http";
 import path from "node:path";
 
 import {router as usersRouter} from "./routes/users";
-import http from "node:http";
+import {router as postsRouter} from "./routes/posts";
+import {router as friendsRouter} from "./routes/friends";
 
 const app: Express = express(); // Создаем экземпляр Express приложения
 
@@ -28,34 +30,21 @@ app.use('/gulp-build', express.static(path.join(__dirname, '../public', 'gulp-bu
 app.use(express.json()); // Парсинг JSON тел запросов
 app.use(express.urlencoded({extended: true})); // Парсинг URL-кодированных тел запросов
 
-app.use('/users', usersRouter);
-app.use('/api', usersRouter);
+app.use('/users', usersRouter); // Маршруты для пользователей
+app.use('/posts', postsRouter); // Маршруты для постов
+app.use('/friends', friendsRouter); // Маршруты для друзей
 
 app.get('/', (req: Request, res: Response): void => {
-    res.redirect('/users')
+    res.redirect('/users') // Перенаправление на /users
 });
 
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'ssl', 'social_network.key')),
     cert: fs.readFileSync(path.join(__dirname, 'ssl', 'social_network.crt'))
-};
+}; // Опции для HTTPS сервера
 
 const server: Server<typeof http.IncomingMessage, typeof http.ServerResponse> = https.createServer(options, app);
 
 server.listen(port, host, (): void => {
     console.log(`Server is running at https://${host}:${port.toString()}`);
-});
-
-// Переадресация с HTTP на HTTPS
-const redirectApp: Express = express(); // Создаем отдельное приложение для редиректа
-const httpPort: number = 8080; // Порт для HTTP
-redirectApp.get('*', (req: Request, res: Response): void => {
-    const hostHeader: string = req.headers.host || '';
-    const hostWithoutPort: string = hostHeader.split(':')[0];
-    res.redirect(`https://${hostWithoutPort}:${port}${req.url}`);
-});
-
-const httpServer = http.createServer(redirectApp);
-httpServer.listen(httpPort, host, (): void => {
-    console.log(`HTTP redirect server is running at http://${host}:${httpPort.toString()}`);
 });

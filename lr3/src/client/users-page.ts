@@ -1,5 +1,4 @@
 import '../public/scss/style.scss';
-import 'bootstrap';
 import type {User} from '../models/User';
 import { Modal } from "bootstrap";
 
@@ -12,16 +11,20 @@ interface UserFormData {
     birthDate: string;
 }
 
+let deleteConfirmModal: Modal;
+let userIdToDelete: number | null = null;
+
 // Загрузка пользователей при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    loadUsers();
+document.addEventListener('DOMContentLoaded', async () => {
+    deleteConfirmModal = new Modal(document.getElementById('deleteConfirmModal')!);
+    await loadUsers();
     setupEventListeners();
 });
 
 // Загрузка списка пользователей
 async function loadUsers(): Promise<void> {
     try {
-        const response = await fetch('/users/api/users');
+        const response: Response = await fetch('/users/api/users');
         const users: User[] = await response.json();
         renderUsers(users);
     } catch (error) {
@@ -31,8 +34,10 @@ async function loadUsers(): Promise<void> {
 
 // Отрисовка пользователей в таблице
 function renderUsers(users: User[]): void {
-    const tbody = document.getElementById('usersTableBody');
-    if (!tbody) return;
+    const tbody: HTMLElement = document.getElementById('usersTableBody');
+    if (!tbody) {
+        return;
+    }
 
     tbody.innerHTML = users.map(user => `
         <tr>
@@ -92,7 +97,9 @@ function setupTableEventListeners(): void {
     document.querySelectorAll('.edit-user').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const id = (e.currentTarget as HTMLElement).dataset.id;
-            if (id) await openEditModal(parseInt(id));
+            if (id) {
+                await openEditModal(parseInt(id));
+            }
         });
     });
 
@@ -100,8 +107,9 @@ function setupTableEventListeners(): void {
     document.querySelectorAll('.delete-user').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const id = (e.currentTarget as HTMLElement).dataset.id;
-            if (id && confirm('Вы уверены, что хотите удалить пользователя?')) {
-                await deleteUser(parseInt(id));
+            if (id) {
+                userIdToDelete = parseInt(id, 10);
+                deleteConfirmModal.show();
             }
         });
     });
@@ -111,9 +119,16 @@ function setupTableEventListeners(): void {
 function setupEventListeners(): void {
     const addUserBtn = document.getElementById('addUserBtn');
     const saveUserBtn = document.getElementById('saveUserBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
     addUserBtn?.addEventListener('click', handleAddUser);
     saveUserBtn?.addEventListener('click', handleEditUser);
+
+    confirmDeleteBtn?.addEventListener('click', async () => {
+        if (userIdToDelete !== null) {
+            await deleteUser(userIdToDelete);
+        }
+    });
 }
 
 // Открытие модального окна редактирования
@@ -203,9 +218,15 @@ async function deleteUser(id: number): Promise<void> {
         });
 
         if (response.ok) {
+            deleteConfirmModal.hide(); // Скрываем модальное окно при успехе
             await loadUsers();
+        } else {
+            // Можно добавить обработку ошибок, если удаление не удалось
+            alert('Не удалось удалить пользователя.');
         }
     } catch (error) {
         console.error('Ошибка удаления пользователя:', error);
+    } finally {
+        userIdToDelete = null; // Сбрасываем ID
     }
 }

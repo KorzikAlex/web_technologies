@@ -46,7 +46,8 @@ export class UserManager {
      * Хеширование пароля с использованием соли
      * @param password Пароль для хеширования
      * @param salt Соль для хеширования
-     * @private @returns {string} Хешированный пароль
+     * @private
+     * @returns {string} Хешированный пароль
      */
     private hashPassword(password: string, salt: string): string {
         // Хеширование пароля с использованием PBKDF2
@@ -74,7 +75,7 @@ export class UserManager {
         const passwordHash: string = this.hashPassword(password, salt);
 
         const newUser: User = {
-            id: users.length > 0 ? Math.max(...users.map((u: User) => u.id)) + 1 : 1,
+            id: users.length > 0 ? Math.max(...users.map((u: User): number => u.id)) + 1 : 1,
             username,
             email,
             passwordHash,
@@ -103,7 +104,7 @@ export class UserManager {
 
     /**
      * Проверка пароля пользователя
-     * @param username имя пользователя
+     * @param usernameOrEmail имя пользователя или email
      * @param password пароль для проверки
      * @returns {Promise<User | null>} Пользователь, если пароль верен, иначе null
      */
@@ -171,7 +172,7 @@ export class UserManager {
      */
     async updateUser(id: number, updates: Partial<User>): Promise<User | null> {
         const users: User[] = await this.getAllUsers();
-        const index: number = users.findIndex(u => u.id === id);
+        const index: number = users.findIndex((u: User): boolean => u.id === id);
         if (index === -1) {
             return null;
         }
@@ -233,6 +234,54 @@ export class UserManager {
 
     async getAllUsers(): Promise<User[]> {
         return this.loadUsers();
+    }
+
+    /**
+     * Получение списка друзей пользователя
+     * @param userId ID пользователя
+     * @returns {Promise<User[]>} Массив друзей
+     */
+    async getFriends(userId: number): Promise<User[]> {
+        const user: User = await this.getUserById(userId);
+        if (!user || !user.friends) {
+            return [];
+        }
+        const friends = await Promise.all(
+            user.friends.map(friendId => this.getUserById(friendId))
+        );
+        return friends.filter((f): f is User => f !== null);
+    }
+
+    /**
+     * Удаление друга
+     * @param userId ID пользователя
+     * @param friendId ID друга для удаления
+     * @returns {Promise<boolean>} true, если друг удален, иначе false
+     */
+    async removeFriend(userId: number, friendId: number): Promise<boolean> {
+        const users: User[] = await this.loadUsers();
+        const userIndex: number = users.findIndex((u: User): boolean => u.id === userId);
+        const friendIndex: number = users.findIndex((u: User): boolean => u.id === friendId);
+
+        if (userIndex === -1 || friendIndex === -1) {
+            return false;
+        }
+
+        const user: User = users[userIndex];
+        const friend: User = users[friendIndex];
+
+        const userFriendIndex: number = user.friends.indexOf(friendId);
+        if (userFriendIndex > -1) {
+            user.friends.splice(userFriendIndex, 1);
+        }
+
+        const friendUserIndex: number = friend.friends.indexOf(userId);
+        if (friendUserIndex > -1) {
+            friend.friends.splice(friendUserIndex, 1);
+        }
+
+        await this.saveUsers(users);
+        return true;
     }
 }
 

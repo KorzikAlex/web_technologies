@@ -43,7 +43,7 @@ block content
                             input.form-control#editEmail(type="email" required)
                         .mb-3
                             label.form-label Дата рождения
-                            input.form-control#editBirthDate(type="date" required)
+                            input.form-control#editBirthDate(type="date" min="1900-01-01" max=new Date().toISOString().split('T')[0] required)
                         .mb-3
                             label.form-label Роль
                             select.form-select#editRole
@@ -86,5 +86,18 @@ block content
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
                     button.btn.btn-primary#addUserBtn Добавить
+
+    // Модальное окно подтверждения удаления
+    #deleteConfirmModal.modal.fade(tabindex="-1")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    p Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmDeleteBtn Удалить
 
 

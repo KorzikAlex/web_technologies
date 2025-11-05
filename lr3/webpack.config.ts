@@ -8,16 +8,12 @@ import 'webpack-dev-server';
 import {fileURLToPath} from "node:url";
 import {dirname} from "node:path";
 import webpack from "webpack";
-import fs from "fs";
-import HtmlWebpackPlugin from "html-webpack-plugin";
 
 const __filename: string = fileURLToPath(import.meta.url); // Получаем имя текущего файла
 const __dirname: string = dirname(__filename); // Получаем текущую директорию
 
 type Mode = 'development' | 'production'; // Тип режима сборки
 const viewsPath: string = path.resolve(__dirname, 'src', 'views'); // Путь к директории с Pug шаблонами
-const PAGES: string[] = fs.existsSync(viewsPath) ? fs.readdirSync(viewsPath).filter((name: string): boolean =>
-    name.endsWith('.pug')) : []; // Список Pug шаблонов
 
 /**
  * Переменные окружения для конфигурации Webpack.
@@ -39,7 +35,9 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
         name: 'client', // Имя конфигурации
         mode: mode, // Установка режима сборки
         entry: {
-            main: path.resolve(__dirname, 'src', 'client', 'users.ts'), // Точка входа для клиентского кода
+            users: path.resolve(__dirname, 'src', 'client', 'users-page.ts'),
+            posts: path.resolve(__dirname, 'src', 'client', 'posts-page.ts'),
+            friends: path.resolve(__dirname, 'src', 'client', 'friends-page.ts'),
         },
         devtool: mode === 'development' ? 'inline-source-map' : false, // Настройка source map
         target: 'web', // Целевая платформа - веб
@@ -65,11 +63,6 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
                         }
                     ],
                 },
-                // {
-                //     test: /\.pug$/,
-                //     use: '@webdiscus/pug-loader',
-                //     exclude: /node_modules/,
-                // },
                 {
                     test: /\.(woff2?|eot|ttf|otf)$/i, // Обработка файлов шрифтов
                     type: 'asset/resource', // Использование asset/resource
@@ -84,16 +77,12 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
         },
         output: {
             path: path.resolve(__dirname, 'public', 'webpack-build'), // Путь вывода сборки
-            filename: mode === 'development' ? '[name].js' : '[name].[contenthash].js', // Имя выходного файла
+            filename: mode === 'development' ? '[name].bundle.js' : '[name].[contenthash].js', // Имя выходного файла
             clean: true, // Очистка выходной директории перед сборкой
             publicPath: '/webpack-build/', // Публичный путь для ресурсов
         },
         plugins: [
             new webpack.ProgressPlugin(), // Плагин для отображения прогресса сборки
-            ...PAGES.map((file: string) => new HtmlWebpackPlugin({
-                template: `./src/views/${file}`,
-                filename: `./${file.replace(/\.pug/, '.html')}`
-            })) // Генерация HTML файлов из Pug шаблонов
         ],
     };
 };

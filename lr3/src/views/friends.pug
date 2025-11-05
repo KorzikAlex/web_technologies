@@ -1,0 +1,45 @@
+extends layout
+
+block head
+    - const activeLink = 'friends'
+    -
+        const navbarOptions = {
+            actions: [
+                { text: 'Найти друзей', onclick: 'window.location.href="/users/search"', icon: 'bi bi-person-plus' },
+            ]
+        }
+    title Мои друзья
+
+block content
+    .container-fluid
+        .row
+            .col-12
+                h1.my-4 Мои друзья
+
+                .mb-3
+                    input.form-control#searchFriend(type="text" placeholder="Поиск друзей...")
+
+                .row.g-3#friendsGrid
+                    each friend in friends || []
+                        .col-md-6.col-lg-4.col-xl-3
+                            .card.h-100.shadow-sm
+                                .card-body.text-center
+                                    img.rounded-circle.mb-3(
+                                        src=friend.avatar || '/public/assets/default-avatar.png'
+                                        alt=friend.fullName
+                                        style="width: 100px; height: 100px; object-fit: cover;"
+                                    )
+                                    h5.card-title= friend.fullName
+                                    p.card-text.text-muted.small= friend.email
+                                    .d-flex.gap-2.justify-content-center
+                                        a.btn.btn-sm.btn-primary(href=`/users/${friend.id}`)
+                                            i.bi.bi-person
+                                            |  Профиль
+                                        button.btn.btn-sm.btn-outline-danger.remove-friend(data-id=friend.id)
+                                            i.bi.bi-person-dash
+                                            |  Удалить
+                    else
+                        .col-12.text-center.text-muted.py-5
+                            i.bi.bi-people.fs-1.d-block.mb-3
+                            p У вас пока нет друзей
+                            p.small Найдите интересных людей!
