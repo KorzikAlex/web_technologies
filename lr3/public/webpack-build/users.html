@@ -1,0 +1,90 @@
+<head><script defer src="/webpack-build/main.js"></script></head>extends layout
+
+block head
+    - const activeLink = 'users'
+    - const navbarOptions = { actions: [{ text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal' }] }
+    title Управление пользователями
+
+
+block content
+    .container-fluid
+        .row
+            .col-12
+                h1.my-4 Управление пользователями
+
+                .table-responsive
+                    table.table.table-striped.table-hover
+                        thead
+                            tr
+                                th Фото
+                                th ФИО
+                                th Email
+                                th Дата рождения
+                                th Роль
+                                th Статус
+                                th Действия
+                        tbody#usersTableBody
+
+    // Модальное окно редактирования
+    #editUserModal.modal.fade(tabindex="-1")
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title Редактирование пользователя
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    form#editUserForm
+                        input#editUserId(type="hidden")
+                        .mb-3
+                            label.form-label ФИО
+                            input.form-control#editFullName(type="text" required)
+                        .mb-3
+                            label.form-label Email
+                            input.form-control#editEmail(type="email" required)
+                        .mb-3
+                            label.form-label Дата рождения
+                            input.form-control#editBirthDate(type="date" required)
+                        .mb-3
+                            label.form-label Роль
+                            select.form-select#editRole
+                                option(value="user") Пользователь
+                                option(value="admin") Администратор
+                        .mb-3
+                            label.form-label Статус
+                            select.form-select#editStatus
+                                option(value="pending") Не подтверждён
+                                option(value="active") Активный
+                                option(value="blocked") Заблокирован
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-primary#saveUserBtn Сохранить
+
+    // Модальное окно добавления
+    #addUserModal.modal.fade(tabindex="-1")
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title Добавление пользователя
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    form#addUserForm
+                        .mb-3
+                            label.form-label ФИО
+                            input.form-control#addFullName(type="text" required)
+                        .mb-3
+                            label.form-label Email
+                            input.form-control#addEmail(type="email" required)
+                        .mb-3
+                            label.form-label Имя пользователя
+                            input.form-control#addUsername(type="text" required)
+                        .mb-3
+                            label.form-label Пароль
+                            input.form-control#addPassword(type="password" required)
+                        .mb-3
+                            label.form-label Дата рождения
+                            input.form-control#addBirthDate(type="date" min="1900-01-01" max=new Date().toISOString().split('T')[0] required)
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-primary#addUserBtn Добавить
+
+

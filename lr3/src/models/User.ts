@@ -17,19 +17,23 @@
  * @property {string[]} feed - Массив записей в ленте пользователя.
  */
 export interface User {
-    id: number,
-    username: string,
-    email: string,
-    passwordHash: string,
-    salt: string,
-    friends: number[],
+    id: number;
+    username: string;
+    email: string;
+    passwordHash: string;
+    salt: string;
+    fullName: string;
+    friends: number[];
     messages: { [key: number]: string[] }, // ключ - id друга, значение - массив сообщений
     feed: string[] // массив записей в ленте
     role: UserRole,
-    userIcon?: string
+    birthDate: string;
+    status: UserStatus;
+    avatar?: string;
 }
 
 /**
  * Тип, представляющий роль пользователя.
  */
 export type UserRole = 'admin' | 'user';
+export type UserStatus = 'pending' | 'active' | 'blocked';

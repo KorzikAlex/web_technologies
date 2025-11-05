@@ -1,15 +1,82 @@
-.post_card {
-
+body {
+    background-color: #f8f9fa;
+    padding-top: 56px; // Высота navbar
 }
 
 .navbar {
-
-}
-
-.friend_card {
-
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
 }
 
 .sidebar {
+    position: fixed;
+    top: 56px; // Высота navbar
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    overflow-y: auto;
+    z-index: 1000;
 
+    .nav-link {
+        color: rgba(255, 255, 255, 0.75);
+        padding: 0.75rem 1rem;
+        border-radius: 0.25rem;
+        transition: all 0.3s;
+
+        i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        &:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    }
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.table {
+    background-color: white;
+
+    img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+}
+
+.badge {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    body {
+        padding-top: 0;
+    }
 }

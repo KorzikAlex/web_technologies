@@ -33,4 +33,4 @@ export class MessagesManager implements IMessagesManager {
     }
 }
 
-export default MessagesManager;
+export const messagesManager = new MessagesManager();

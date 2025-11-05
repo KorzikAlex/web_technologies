@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "username": "Korzik",
+        "email": "lumic.alex@gmail.com",
+        "passwordHash": "1ca6a63cdd2bb278c665ba4189d0289dea4213b455d28ff467683f70ac833e2c39a740a1b2f8180d3fe82edb33e395f94e3d072d10d0b33962ed0675f06d65b3",
+        "salt": "24eddd8b1418a393fb69822faebf4d9f",
+        "fullName": "Коршков",
+        "birthDate": "2007-02-11",
+        "status": "active",
+        "friends": [],
+        "messages": {},
+        "feed": [],
+        "role": "admin"
+    }
+]

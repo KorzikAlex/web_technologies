@@ -13,9 +13,16 @@ block content
                     .card-body
                         form(method="POST" action="/login")
                             .mb-3
-                                label.form-label(for="email") Email
-                                input.form-control(type="email" id="email" name="email" required)
+                                label.form-label(for="username") Email или имя пользователя
+                                input.form-control(type="text" id="username" name="username" required)
                             .mb-3
                                 label.form-label(for="password") Пароль
                                 input.form-control(type="password" id="password" name="password" required)
-                            button.btn.btn-primary(type="submit") Войти
+                            button.btn.btn-primary.w-100(type="submit") Войти
+                    .card-footer.text-center
+                        a(href="/signup") Нет аккаунта? Зарегистрируйтесь
+    if error
+        .container.mt-3
+            .row.justify-content-center
+                .col-md-6
+                    .alert.alert-danger(role="alert") #{error}

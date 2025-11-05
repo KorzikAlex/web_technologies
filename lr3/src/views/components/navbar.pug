@@ -1,0 +1,24 @@
+mixin navbar(options)
+    - var opts = options || {}
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.shadow-sm
+        .container-fluid
+            a.navbar-brand(href="/users")
+                i.bi.bi-shield-check
+                |  Админ-панель
+
+            button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav")
+                span.navbar-toggler-icon
+
+            .collapse.navbar-collapse#navbarNav
+                if opts.actions
+                    ul.navbar-nav.ms-auto
+                        each action in opts.actions
+                            li.nav-item
+                                button.btn.btn-light.ms-2(
+                                    type="button"
+                                    data-bs-toggle=action.modal ? "modal" : undefined
+                                    data-bs-target=action.modal ? action.modal : undefined
+                                    onclick=action.onclick ? action.onclick : undefined
+                                )
+                                    i(class=action.icon)
+                                    |  #{action.text}

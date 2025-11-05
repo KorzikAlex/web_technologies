@@ -1,15 +1,19 @@
+include components/navbar
+include components/sidebar
+
 doctype html
-html
+html(lang="ru")
     head
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
         block head
             title Социальная сеть
-        meta(charset="utf-8")
-        meta(name="viewport" content="width=device-width, initial-scale=1")
         script(src="/webpack-build/main.js" defer)
+        link(rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml")
     body
-        block content
-
-
-
-
+        +navbar(navbarOptions)
+        .d-flex
+            +sidebar(activeLink)
+            main.main-content.flex-grow-1
+                block content
 

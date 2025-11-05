@@ -24,7 +24,9 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
     return {
         name: 'client',
         mode: mode,
-        entry: path.resolve(__dirname, 'src', 'client.ts'),
+        entry: {
+            main: path.resolve(__dirname, 'src', 'client', 'users.ts'),
+        },
         devtool: mode === 'development' ? 'inline-source-map' : false,
         target: 'web',
         module: {
@@ -49,11 +51,11 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
                         }
                     ],
                 },
-                {
-                    test: /\.pug$/,
-                    use: '@webdiscus/pug-loader',
-                    exclude: /node_modules/,
-                },
+                // {
+                //     test: /\.pug$/,
+                //     use: '@webdiscus/pug-loader',
+                //     exclude: /node_modules/,
+                // },
                 {
                     test: /\.(woff2?|eot|ttf|otf)$/i,
                     type: 'asset/resource',
