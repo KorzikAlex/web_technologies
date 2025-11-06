@@ -1,29 +1,55 @@
 extends layout
 
 block head
+    - const activeTitle = 'Управление пользователями'
     - const activeLink = 'users'
-    - const navbarOptions = { actions: [{ text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal' }] }
-    title Управление пользователями
+    -
+        const navbarOptions = {
+            actions: [{ text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal' }],
+            filterGroups: [
+            {
+                id: 'roleFilter',
+                label: 'Фильтр по роли',
+                itemClass: 'filter-btn',
+                filterType: 'role',
+                items: [
+                    { value: '', text: 'Все' },
+                    { value: 'admin', text: 'Администратор' },
+                    { value: 'user', text: 'Пользователь' }
+                ]
+            },
+            {
+                id: 'statusFilter',
+                label: 'Фильтр по статусу',
+                itemClass: 'filter-btn',
+                filterType: 'status',
+                items: [
+                    { value: '', text: 'Все' },
+                    { value: 'pending', text: 'Не подтверждён' },
+                    { value: 'active', text: 'Активный' },
+                    { value: 'blocked', text: 'Заблокирован' }
+                ]
+            }
+            ]
+        }
 
 
 block content
-    .container-fluid
-        .row
-            .col-12
-                h1.my-4 Управление пользователями
+    .container-fluid.py-4
+        h1.mb-4 Управление пользователями
 
-                .table-responsive
-                    table.table.table-striped.table-hover
-                        thead
-                            tr
-                                th Фото
-                                th ФИО
-                                th Email
-                                th Дата рождения
-                                th Роль
-                                th Статус
-                                th Действия
-                        tbody#usersTableBody
+        .table-responsive
+            table.table.table-striped.table-hover
+                thead
+                    tr
+                        th Фото
+                        th ФИО
+                        th Email
+                        th Дата рождения
+                        th Роль
+                        th Статус
+                        th Действия
+                tbody#usersTableBody
 
     // Модальное окно редактирования
     #editUserModal.modal.fade(tabindex="-1")

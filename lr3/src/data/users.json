@@ -1,28 +1,32 @@
 [
     {
         "id": 1,
-        "username": "adsffsdafsadfs",
+        "username": "Korzik",
         "email": "lumic.alex@gmail.com",
-        "passwordHash": "bd14a7b0bd19aa65b9a749ea500672226dadd3f1ba0762e9103b01dcee41db630ecf12404ba083ae71335236a98cbfa3ecfccc41d5f8d6f56536e62b28af2a9c",
-        "salt": "f9b0caf39cdfdcd7cc15f217a725461e",
-        "fullName": "bfgsfdg",
-        "birthDate": "2008-12-12",
+        "passwordHash": "bdd25134a5dce145ab9c49341da55f43305a3fc1479e8c869566eea15826d744a54eb0afdb869490ff09fde0041f3cee17df313a9689ecb654fad09d2a633f9d",
+        "salt": "85ee2d17f49a0ca79410237ca82836bc",
+        "fullName": "Коржик",
+        "birthDate": "2006-02-19",
         "status": "active",
-        "friends": [],
+        "friends": [
+            2
+        ],
         "messages": {},
         "feed": [],
         "role": "admin"
     },
     {
-        "id": 6,
-        "username": "adsffsdafsadfs",
-        "email": "lumic.alex@gmail.com",
-        "passwordHash": "cc6448c5ac99af0535771132cc27f810eae349f7b1aba575eadd4b60437fd0f3807e450d8c143fa13ac8a60cecd5fb830598c5467c1aae033e971017e3c6602d",
-        "salt": "d6a7416df724e643edadda95aff4f5dc",
-        "fullName": "bfgsfdg",
-        "birthDate": "2008-12-12",
+        "id": 2,
+        "username": "adff",
+        "email": "asdfasf@das.fas",
+        "passwordHash": "396f749bcd88ca093349ae31bf9a5bed3bf08f30ec789ca7cc97ff85ca0bbebb7448fb54b04966414ee639045c90ed315d40b71aed5640256f5878754bdb8878",
+        "salt": "a221f4f3162f543562b34b589f04ae96",
+        "fullName": "adsfads",
+        "birthDate": "2009-11-23",
         "status": "active",
-        "friends": [],
+        "friends": [
+            1
+        ],
         "messages": {},
         "feed": [],
         "role": "user"

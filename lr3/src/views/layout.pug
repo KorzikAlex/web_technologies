@@ -1,5 +1,4 @@
 include components/navbar
-include components/sidebar
 
 doctype html
 html(lang="ru")
@@ -7,14 +6,13 @@ html(lang="ru")
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         block head
-        title Социальная сеть
+        if activeTitle
+            title= activeTitle
         if activeLink
             script(src=`/webpack-build/${activeLink}.bundle.js` defer)
         link(rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml")
     body
         +navbar(navbarOptions)
-        .d-flex
-            +sidebar(activeLink)
-            main.main-content.flex-grow-1
-                block content
+        main
+            block content
 

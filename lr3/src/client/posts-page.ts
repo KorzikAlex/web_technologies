@@ -11,6 +11,9 @@ let viewPostModal: Modal;
 let createPostModal: Modal;
 let deleteConfirmModal: Modal;
 let currentPostId: number | null = null;
+const currentFilters: { [key: string]: string } = {
+    status: ''
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     viewPostModal = new Modal(document.getElementById('viewPostModal')!);
@@ -25,23 +28,21 @@ async function loadPosts(): Promise<void> {
     try {
         const response = await fetch('/posts/api/posts');
         allPosts = await response.json();
-        // Применяем фильтр по умолчанию ("Все") после загрузки
-        const allFilterButton = document.getElementById('filter-all');
-        if (allFilterButton) {
-            filterPosts('all', allFilterButton);
-        } else {
-            renderPosts(allPosts);
-        }
+        renderPosts();
     } catch (error) {
         console.error('Ошибка загрузки публикаций:', error);
     }
 }
 
-function renderPosts(posts: PostWithAuthor[]): void {
+function renderPosts(): void {
     const tbody = document.getElementById('postsTableBody');
     if (!tbody) return;
 
-    tbody.innerHTML = posts.map(post => `
+    const filteredPosts = allPosts.filter(post => {
+        return currentFilters.status ? post.status === currentFilters.status : true;
+    });
+
+    tbody.innerHTML = filteredPosts.map(post => `
         <tr>
             <td>${post.id}</td>
             <td>${post.authorName}</td>
@@ -81,20 +82,6 @@ function setupTableEventListeners(): void {
     });
 }
 
-function filterPosts(status: 'all' | 'active' | 'blocked', element: HTMLElement): void {
-    document.querySelectorAll('.navbar .btn[id^="filter-"]').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    element.classList.add('active');
-
-    if (status === 'all') {
-        renderPosts(allPosts);
-    } else {
-        const filtered = allPosts.filter(p => p.status === status);
-        renderPosts(filtered);
-    }
-}
-
 function setupEventListeners(): void {
     document.getElementById('activatePostBtn')?.addEventListener('click', () => updatePostStatus('active'));
     document.getElementById('blockPostBtn')?.addEventListener('click', () => updatePostStatus('blocked'));
@@ -102,9 +89,29 @@ function setupEventListeners(): void {
 
     document.getElementById('createPostForm')?.addEventListener('submit', handleCreatePost);
 
-    document.getElementById('filter-all')?.addEventListener('click', (e) => filterPosts('all', e.currentTarget as HTMLElement));
-    document.getElementById('filter-active')?.addEventListener('click', (e) => filterPosts('active', e.currentTarget as HTMLElement));
-    document.getElementById('filter-blocked')?.addEventListener('click', (e) => filterPosts('blocked', e.currentTarget as HTMLElement));
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget as HTMLElement;
+            const filterType = target.dataset.filterType;
+            const filterValue = target.dataset.filterValue;
+
+            if (filterType && filterValue !== undefined) {
+                currentFilters[filterType] = filterValue;
+
+                const dropdownButton = target.closest('.dropdown')?.querySelector('.dropdown-toggle');
+                if (dropdownButton) {
+                    const originalLabel = (target.closest('.dropdown-menu')?.getAttribute('aria-labelledby') || '').toString();
+                    const buttonElement = document.getElementById(originalLabel);
+                    if(buttonElement) {
+                        const baseText = buttonElement.textContent.split(':')[0];
+                        dropdownButton.textContent = `${baseText}: ${target.textContent}`;
+                    }
+                }
+                renderPosts();
+            }
+        });
+    });
 }
 
 async function handleCreatePost(e: Event): Promise<void> {

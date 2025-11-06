@@ -283,6 +283,38 @@ export class UserManager {
         await this.saveUsers(users);
         return true;
     }
+
+    /**
+     * Добавление друга
+     * @param userId ID пользователя
+     * @param friendId ID друга для добавления
+     * @returns {Promise<boolean>} true, если друг добавлен, иначе false
+     */
+    async addFriend(userId: number, friendId: number): Promise<boolean> {
+        if (userId === friendId) return false; // Нельзя добавить себя в друзья
+
+        const users: User[] = await this.loadUsers();
+        const userIndex: number = users.findIndex((u: User): boolean => u.id === userId);
+        const friendIndex: number = users.findIndex((u: User): boolean => u.id === friendId);
+
+        if (userIndex === -1 || friendIndex === -1) {
+            return false; // Пользователь или друг не найден
+        }
+
+        const user: User = users[userIndex];
+        const friend: User = users[friendIndex];
+
+        // Проверяем, не являются ли они уже друзьями
+        if (user.friends.includes(friendId)) {
+            return true; // Уже друзья
+        }
+
+        user.friends.push(friendId);
+        friend.friends.push(userId);
+
+        await this.saveUsers(users);
+        return true;
+    }
 }
 
 export const userManager: UserManager = new UserManager();

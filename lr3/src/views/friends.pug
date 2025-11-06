@@ -1,45 +1,58 @@
 extends layout
 
 block head
+    - const activeTitle = 'Управление друзьями'
     - const activeLink = 'friends'
     -
         const navbarOptions = {
             actions: [
-                { text: 'Найти друзей', onclick: 'window.location.href="/users/search"', icon: 'bi bi-person-plus' },
+                { id: 'addFriendBtn', text: 'Добавить друга', modal: '#addFriendModal', icon: 'bi bi-person-plus' },
+                { id: 'backToUsersBtn', text: 'К списку пользователей', icon: 'bi bi-arrow-left' }
             ]
         }
-    title Мои друзья
+    title= pageTitle || 'Мои друзья'
+
 
 block content
-    .container-fluid
-        .row
-            .col-12
-                h1.my-4 Мои друзья
+    .container-fluid.py-4
+        h1.mb-4= pageTitle || 'Мои друзья'
 
-                .mb-3
-                    input.form-control#searchFriend(type="text" placeholder="Поиск друзей...")
+        .mb-3
+            input.form-control#searchFriend(type="text" placeholder="Поиск друзей...")
 
-                .row.g-3#friendsGrid
-                    each friend in friends || []
-                        .col-md-6.col-lg-4.col-xl-3
-                            .card.h-100.shadow-sm
-                                .card-body.text-center
-                                    img.rounded-circle.mb-3(
-                                        src=friend.avatar || '/public/assets/default-avatar.png'
-                                        alt=friend.fullName
-                                        style="width: 100px; height: 100px; object-fit: cover;"
-                                    )
-                                    h5.card-title= friend.fullName
-                                    p.card-text.text-muted.small= friend.email
-                                    .d-flex.gap-2.justify-content-center
-                                        a.btn.btn-sm.btn-primary(href=`/users/${friend.id}`)
-                                            i.bi.bi-person
-                                            |  Профиль
-                                        button.btn.btn-sm.btn-outline-danger.remove-friend(data-id=friend.id)
-                                            i.bi.bi-person-dash
-                                            |  Удалить
-                    else
-                        .col-12.text-center.text-muted.py-5
-                            i.bi.bi-people.fs-1.d-block.mb-3
-                            p У вас пока нет друзей
-                            p.small Найдите интересных людей!
+        .row.g-3#friendsGrid
+            //- Содержимое будет рендериться на клиенте
+
+    //- Модальное окно для добавления друзей
+    #addFriendModal.modal.fade(tabindex="-1" aria-labelledby="addFriendModalLabel" aria-hidden="true")
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title#addFriendModalLabel Добавить друга
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    input.form-control.mb-3#searchAllUsers(type="text" placeholder="Поиск пользователя для добавления...")
+                    .list-group#allUsersList
+                        //- Сюда будут загружаться пользователи
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Закрыть
+
+    //- Модальное окно подтверждения удаления друга
+    #removeFriendModal.modal.fade(tabindex="-1" aria-labelledby="removeFriendModalLabel" aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title#removeFriendModalLabel Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    p Вы уверены, что хотите удалить этого друга из списка?
+                    p.text-muted.small Это действие можно будет отменить, добавив пользователя снова.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmRemoveFriendBtn Удалить
+
+
+
+
+
+

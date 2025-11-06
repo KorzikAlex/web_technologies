@@ -32,7 +32,7 @@ app.use(express.urlencoded({extended: true})); // Парсинг URL-кодир�
 
 app.use('/users', usersRouter); // Маршруты для пользователей
 app.use('/posts', postsRouter); // Маршруты для постов
-app.use('/friends', friendsRouter); // Маршруты для друзей
+app.use('/users/:userId/friends', friendsRouter); // Маршруты для друзей
 
 app.get('/', (req: Request, res: Response): void => {
     res.redirect('/users') // Перенаправление на /users

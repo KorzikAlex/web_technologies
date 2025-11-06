@@ -13,6 +13,11 @@ interface UserFormData {
 
 let deleteConfirmModal: Modal;
 let userIdToDelete: number | null = null;
+let allUsers: User[] = [];
+const currentFilters: { [key: string]: string } = {
+    role: '',
+    status: ''
+};
 
 // Загрузка пользователей при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
@@ -25,21 +30,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadUsers(): Promise<void> {
     try {
         const response: Response = await fetch('/users/api/users');
-        const users: User[] = await response.json();
-        renderUsers(users);
+        allUsers = await response.json();
+        renderUsers();
     } catch (error) {
         console.error('Ошибка загрузки пользователей:', error);
     }
 }
 
 // Отрисовка пользователей в таблице
-function renderUsers(users: User[]): void {
+function renderUsers(): void {
     const tbody: HTMLElement = document.getElementById('usersTableBody');
     if (!tbody) {
         return;
     }
 
-    tbody.innerHTML = users.map(user => `
+    const filteredUsers = allUsers.filter(user => {
+        const roleMatch = currentFilters.role ? user.role === currentFilters.role : true;
+        const statusMatch = currentFilters.status ? user.status === currentFilters.status : true;
+        return roleMatch && statusMatch;
+    });
+
+    tbody.innerHTML = filteredUsers.map(user => `
         <tr>
             <td>
                 <img src="${user.avatar || '/public/assets/default-avatar.png'}" alt="${user.fullName}">
@@ -64,6 +75,9 @@ function renderUsers(users: User[]): void {
                 <button class="btn btn-sm btn-danger delete-user" data-id="${user.id}">
                     <i class="bi bi-trash"></i>
                 </button>
+                <a href="/users/${user.id}/friends" class="btn btn-sm btn-info" title="Друзья пользователя">
+                    <i class="bi bi-people"></i>
+                </a>
             </td>
         </tr>
     `).join('');
@@ -128,6 +142,30 @@ function setupEventListeners(): void {
         if (userIdToDelete !== null) {
             await deleteUser(userIdToDelete);
         }
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.currentTarget as HTMLElement;
+            const filterType = target.dataset.filterType;
+            const filterValue = target.dataset.filterValue;
+
+            if (filterType && filterValue !== undefined) {
+                currentFilters[filterType] = filterValue;
+
+                const dropdownButton = target.closest('.dropdown')?.querySelector('.dropdown-toggle');
+                if (dropdownButton) {
+                    const originalLabel = (target.closest('.dropdown-menu')?.getAttribute('aria-labelledby') || '').toString();
+                    const buttonElement = document.getElementById(originalLabel);
+                    if(buttonElement) {
+                        const baseText = buttonElement.textContent.split(':')[0];
+                        dropdownButton.textContent = `${baseText}: ${target.textContent}`;
+                    }
+                }
+                renderUsers();
+            }
+        });
     });
 }
 

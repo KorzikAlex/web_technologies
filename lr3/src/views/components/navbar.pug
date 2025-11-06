@@ -10,16 +10,37 @@ mixin navbar(options)
                 span.navbar-toggler-icon
 
             .collapse.navbar-collapse#navbarNav
+            ul.navbar-nav.ms-auto
+                if opts.filterGroups
+                    each group in opts.filterGroups
+                        .dropdown.me-2
+                            button.btn.btn-secondary.dropdown-toggle(type="button" id=group.id data-bs-toggle="dropdown" aria-expanded="false")
+                                = group.label
+                            ul.dropdown-menu(aria-labelledby=group.id)
+                                each item in group.items
+                                    li
+                                        a.dropdown-item(class=group.itemClass href="#" data-filter-value=item.value data-filter-type=group.filterType)= item.text
+
                 if opts.actions
-                    ul.navbar-nav.ms-auto
-                        each action in opts.actions
-                            li.nav-item
+                    each action in opts.actions
+                        li.nav-item
+                            if action.modal
                                 button.btn.ms-2(
                                     type="button"
                                     id=action.id
                                     class=action.class || 'btn-light'
-                                    data-bs-toggle=action.modal ? "modal" : undefined
-                                    data-bs-target=action.modal ? action.modal : undefined
+                                    data-bs-toggle="modal"
+                                    data-bs-target=action.modal
+                                )
+                                    if action.icon
+                                        i(class=action.icon)
+                                        |
+                                    | #{action.text}
+                            else
+                                button.btn.ms-2(
+                                    type="button"
+                                    id=action.id
+                                    class=action.class || 'btn-light'
                                 )
                                     if action.icon
                                         i(class=action.icon)
