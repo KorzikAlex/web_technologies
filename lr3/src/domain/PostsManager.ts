@@ -76,6 +76,17 @@ export class PostsManager {
         return newPost;
     }
 
+    async deletePost(id: number): Promise<boolean> {
+        let posts: Post[] = await this.loadPosts();
+        const initialLength: number = posts.length;
+        posts = posts.filter((p: Post): boolean => p.id !== id);
+        if (posts.length === initialLength) {
+            return false;
+        }
+        await this.savePosts(posts);
+        return true;
+    }
+
     async getUserFeed(userId: number): Promise<(Post & { author: any })[]> {
         const posts: Post[] = await this.loadPosts();
         const user: User = await userManager.getUserById(userId);

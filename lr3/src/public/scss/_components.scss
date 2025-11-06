@@ -80,3 +80,11 @@ body {
         padding-top: 0;
     }
 }
+
+// Стили для активной кнопки фильтра в навбаре
+.navbar {
+    .btn.active {
+        background-color: var(--bs-secondary);
+        color: var(--bs-white);
+    }
+}

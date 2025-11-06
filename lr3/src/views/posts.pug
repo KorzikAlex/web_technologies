@@ -5,10 +5,11 @@ block head
     -
         const navbarOptions = {
             actions: [
-                { text: 'Все', onclick: 'filterPosts("all")', icon: 'bi bi-list-ul' },
-                { text: 'Активные', onclick: 'filterPosts("active")', icon: 'bi bi-check-circle' },
-                { text: 'Заблокированные', onclick: 'filterPosts("blocked")', icon: 'bi bi-x-circle' }
-            ]
+                { text: 'Все', icon: 'bi bi-list-ul', id: 'filter-all', class: 'btn-light active' },
+                { text: 'Активные', icon: 'bi bi-check-circle', id: 'filter-active', class: 'btn-light' },
+                { text: 'Заблокированные', icon: 'bi bi-x-circle', id: 'filter-blocked', class: 'btn-light' },
+                { text: 'Добавить публикацию', icon: 'bi bi-plus-circle', modal: '#createPostModal', class: 'btn-light' }
+            ],
         }
     title Управление публикациями
 
@@ -16,7 +17,8 @@ block content
     .container-fluid
         .row
             .col-12
-                h1.my-4 Управление публикациями
+                .d-flex.justify-content-between.align-items-center.my-4
+                    h1 Управление публикациями
 
                 .table-responsive
                     table.table.table-striped.table-hover
@@ -30,27 +32,61 @@ block content
                                 th Действия
                         tbody#postsTableBody
 
+    //- Модальное окно просмотра
     #viewPostModal.modal.fade(tabindex="-1")
         .modal-dialog.modal-lg
             .modal-content
                 .modal-header
                     h5.modal-title Просмотр публикации
+                    span#viewPostStatus.badge.ms-2
                     button.btn-close(type="button" data-bs-dismiss="modal")
                 .modal-body
-                    input#viewPostId(type="hidden")
-                    .mb-3
+                    p
                         strong Автор:
-                        span#viewPostAuthor.ms-2
-                    .mb-3
-                        strong Дата создания:
-                        span#viewPostDate.ms-2
-                    .mb-3
+                        span#viewPostAuthor
+                    p
+                        strong Дата:
+                        span#viewPostDate
+                    p
                         strong Содержание:
-                        p#viewPostContent.mt-2.p-3.bg-light.rounded
-                    .mb-3
-                        strong Статус:
-                        span#viewPostStatus.badge.ms-2
+                    p#viewPostContent.border.p-2.rounded(style="white-space: pre-wrap;")
                 .modal-footer
-                    button.btn.btn-success#activatePostBtn Активировать
-                    button.btn.btn-danger#blockPostBtn Заблокировать
-                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Закрыть
+                    .ms-auto
+                        button#activatePostBtn.btn.btn-success.me-2(type="button") Активировать
+                        button#blockPostBtn.btn.btn-warning.me-2(type="button") Заблокировать
+
+    //- Модальное окно создания
+    #createPostModal.modal.fade(tabindex="-1")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Новая публикация
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    form#createPostForm
+                        .mb-3
+                            label.form-label(for="postAuthor") Автор
+                            select#postAuthor.form-select(required)
+                                option(value="" selected disabled) Выберите автора
+                                if users
+                                    each user in users
+                                        option(value=user.id)= user.fullName
+                        .mb-3
+                            label.form-label(for="postContent") Содержание
+                            textarea#postContent.form-control(rows="5" required)
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-primary#savePostBtn(type="submit" form="createPostForm") Сохранить
+
+    //- Модальное окно подтверждения удаления
+    #deleteConfirmModal.modal.fade(tabindex="-1")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    p Вы уверены, что хотите удалить эту публикацию? Это действие необратимо.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmDeleteBtn Удалить

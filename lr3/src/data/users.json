@@ -14,20 +14,6 @@
         "role": "admin"
     },
     {
-        "id": 5,
-        "username": "adsffsdafsadfs",
-        "email": "lumic.alex@gmail.com",
-        "passwordHash": "d2736b98d3a846c02fb2fb001f2f866201a6428881f58697ebaf07c8af4c4ab8306688d3cf36ef98c86f305a926a7596ba8c9a6f8f61371ac268438cde2d02c9",
-        "salt": "85ce92fc8ce2bbc7e3a2caee79b45f8b",
-        "fullName": "bfgsfdg",
-        "birthDate": "7789-12-12",
-        "status": "pending",
-        "friends": [],
-        "messages": {},
-        "feed": [],
-        "role": "user"
-    },
-    {
         "id": 6,
         "username": "adsffsdafsadfs",
         "email": "lumic.alex@gmail.com",

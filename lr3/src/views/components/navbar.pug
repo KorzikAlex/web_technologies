@@ -14,11 +14,14 @@ mixin navbar(options)
                     ul.navbar-nav.ms-auto
                         each action in opts.actions
                             li.nav-item
-                                button.btn.btn-light.ms-2(
+                                button.btn.ms-2(
                                     type="button"
+                                    id=action.id
+                                    class=action.class || 'btn-light'
                                     data-bs-toggle=action.modal ? "modal" : undefined
                                     data-bs-target=action.modal ? action.modal : undefined
-                                    onclick=action.onclick ? action.onclick : undefined
                                 )
-                                    i(class=action.icon)
-                                    |  #{action.text}
+                                    if action.icon
+                                        i(class=action.icon)
+                                        |
+                                    | #{action.text}

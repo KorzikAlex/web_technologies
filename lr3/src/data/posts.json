@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "id": 1,
+        "authorId": 6,
+        "content": "dsfadsfadsfads\n",
+        "status": "active",
+        "createdAt": "2025-11-06T08:34:09.029Z"
+    }
+]
