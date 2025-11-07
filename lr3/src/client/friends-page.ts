@@ -23,23 +23,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const modalElement = document.getElementById('addFriendModal');
     if (modalElement) {
-        // addFriendModal = new Modal(modalElement); // Удаляем ручную инициализацию
+        addFriendModal = Modal.getOrCreateInstance(modalElement);
         modalElement.addEventListener('shown.bs.modal', loadAllUsers);
     }
 
-    // Получаем экземпляр модального окна, управляемый Bootstrap
-    if (modalElement) {
-        addFriendModal = Modal.getInstance(modalElement);
-        if (!addFriendModal) {
-            // Если экземпляра нет, создаем новый, но это не должно происходить при использовании data-bs-toggle
-            addFriendModal = new Modal(modalElement);
-        }
-    }
-
-    // Инициализация модального окна удаления друга
     const removeModalElement = document.getElementById('removeFriendModal');
     if (removeModalElement) {
-        removeFriendModal = new Modal(removeModalElement);
+        removeFriendModal = Modal.getOrCreateInstance(removeModalElement);
     }
 
     await loadFriends();

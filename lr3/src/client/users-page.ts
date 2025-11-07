@@ -21,7 +21,10 @@ const currentFilters: { [key: string]: string } = {
 
 // Загрузка пользователей при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
-    deleteConfirmModal = new Modal(document.getElementById('deleteConfirmModal')!);
+    const deleteModalElement = document.getElementById('deleteConfirmModal');
+    if (deleteModalElement) {
+        deleteConfirmModal = Modal.getOrCreateInstance(deleteModalElement);
+    }
     await loadUsers();
     setupEventListeners();
 });
@@ -77,6 +80,9 @@ function renderUsers(): void {
                 </button>
                 <a href="/users/${user.id}/friends" class="btn btn-sm btn-info" title="Друзья пользователя">
                     <i class="bi bi-people"></i>
+                </a>
+                <a href="/posts/feed/${user.id}" class="btn btn-sm btn-success" title="Лента новостей">
+                    <i class="bi bi-newspaper"></i>
                 </a>
             </td>
         </tr>

@@ -33,8 +33,7 @@ mixin navbar(options)
                                     data-bs-target=action.modal
                                 )
                                     if action.icon
-                                        i(class=action.icon)
-                                        |
+                                        i(class=action.icon + ' me-2')
                                     | #{action.text}
                             else
                                 button.btn.ms-2(
@@ -43,6 +42,5 @@ mixin navbar(options)
                                     class=action.class || 'btn-light'
                                 )
                                     if action.icon
-                                        i(class=action.icon)
-                                        |
+                                        i(class=action.icon + ' me-2')
                                     | #{action.text}

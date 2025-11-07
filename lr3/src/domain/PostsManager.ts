@@ -60,6 +60,20 @@ export class PostsManager {
         return posts[postIndex];
     }
 
+    async updatePost(id: number, content: string, image?: string): Promise<Post | null> {
+        const posts: Post[] = await this.loadPosts();
+        const postIndex: number = posts.findIndex((p: Post): boolean => p.id === id);
+        if (postIndex === -1) {
+            return null;
+        }
+        posts[postIndex].content = content;
+        if (image !== undefined) {
+            posts[postIndex].image = image || undefined;
+        }
+        await this.savePosts(posts);
+        return posts[postIndex];
+    }
+
     async createPost(authorId: number, content: string, image?: string): Promise<Post> {
         const posts: Post[] = await this.loadPosts();
         const newPost: Post = {
@@ -87,23 +101,19 @@ export class PostsManager {
         return true;
     }
 
-    async getUserFeed(userId: number): Promise<(Post & { author: any })[]> {
+    async getUserFeed(userId: number): Promise<(Post & { author: User | null })[]> {
         const posts: Post[] = await this.loadPosts();
-        const user: User = await userManager.getUserById(userId);
+        const user: User | null = await userManager.getUserById(userId);
+
+        if (!user) {
+            return [];
+        }
 
         const feedPosts: Post[] = posts.filter((p: Post): boolean =>
-            p.authorId === userId || user?.friends.includes(p.authorId)
+            p.authorId === userId || user.friends.includes(p.authorId)
         );
 
-        return Promise.all(feedPosts.map(async (post: Post): Promise<{
-            id: number;
-            authorId: number;
-            content: string;
-            image?: string;
-            status: PostStatus;
-            createdAt: string;
-            author: User
-        }> => ({
+        return Promise.all(feedPosts.map(async (post: Post) => ({
             ...post,
             author: await userManager.getUserById(post.authorId)
         })));

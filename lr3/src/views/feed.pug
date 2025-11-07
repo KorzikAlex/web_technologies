@@ -1,0 +1,97 @@
+extends layout
+
+include components/post-card
+
+block head
+    - const activeTitle = pageTitle || 'Лента новостей'
+    - const activeLink = 'feed'
+    -
+        const navbarOptions = {
+            actions: [
+                { id: 'addPostBtn', text: 'Добавить новость', modal: '#addPostModal', icon: 'bi bi-plus-circle', class: 'btn-light' },
+                { id: 'backToUsersBtn', text: 'К списку пользователей', icon: 'bi bi-arrow-left', class: 'btn-light' }
+            ]
+        }
+    title= pageTitle || 'Лента новостей'
+
+block content
+    .container-fluid.py-4
+        .d-flex.justify-content-between.align-items-center.mb-4
+            .d-flex.align-items-center
+                if userAvatar
+                    img.rounded-circle.me-3(src=userAvatar alt=userName style="width: 60px; height: 60px; object-fit: cover;")
+                else
+                    .rounded-circle.me-3.bg-secondary.d-flex.align-items-center.justify-content-center(style="width: 60px; height: 60px;")
+                        i.bi.bi-person-fill.text-white.fs-3
+                div
+                    h1.mb-0= pageTitle || 'Лента новостей'
+                    p.text-muted.mb-0 Новости от вас и ваших друзей
+
+        .row
+            .col-12
+                //- Лента новостей
+                #feedContainer
+                    if posts && posts.length > 0
+                        each post in posts
+                            +postCard(post, userId)
+                    else
+                        .text-center.py-5
+                            i.bi.bi-newspaper.fs-1.text-muted.d-block.mb-3
+                            h4.text-muted Пока нет новостей
+                            p.text-muted Добавьте друзей или создайте свою первую новость!
+
+
+    //- Модальное окно добавления новости
+    #addPostModal.modal.fade(tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true")
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title#addPostModalLabel Добавить новость
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    form#addPostForm
+                        .mb-3
+                            label.form-label(for="postContent") Что нового?
+                            textarea.form-control#postContent(rows="4" placeholder="Поделитесь новостью с друзьями..." required)
+                        .mb-3
+                            label.form-label(for="postImage") URL изображения (необязательно)
+                            input.form-control#postImage(type="url" placeholder="https://example.com/image.jpg")
+                            .form-text Вставьте ссылку на изображение
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-primary#submitPostBtn Опубликовать
+
+    //- Модальное окно редактирования новости
+    #editPostModal.modal.fade(tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true")
+        .modal-dialog.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title#editPostModalLabel Редактировать новость
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    form#editPostForm
+                        input#editPostId(type="hidden")
+                        .mb-3
+                            label.form-label(for="editPostContent") Содержание
+                            textarea.form-control#editPostContent(rows="4" required)
+                        .mb-3
+                            label.form-label(for="editPostImage") URL изображения
+                            input.form-control#editPostImage(type="url")
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-primary#saveEditPostBtn Сохранить
+
+    //- Модальное окно подтверждения удаления
+    #deletePostModal.modal.fade(tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title#deletePostModalLabel Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                .modal-body
+                    p Вы уверены, что хотите удалить эту новость?
+                    p.text-muted.small Это действие необратимо.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmDeletePostBtn Удалить
+

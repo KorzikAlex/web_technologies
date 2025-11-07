@@ -13,7 +13,6 @@ const __filename: string = fileURLToPath(import.meta.url); // Получаем �
 const __dirname: string = dirname(__filename); // Получаем текущую директорию
 
 type Mode = 'development' | 'production'; // Тип режима сборки
-const viewsPath: string = path.resolve(__dirname, 'src', 'views'); // Путь к директории с Pug шаблонами
 
 /**
  * Переменные окружения для конфигурации Webpack.
@@ -30,14 +29,13 @@ interface EnvVariables {
  */
 export default (env: EnvVariables = {}): webpack.Configuration => {
     const mode: Mode = env.mode ?? 'development'; // Режим сборки по умолчанию - development
-
     return {
         name: 'client', // Имя конфигурации
         mode: mode, // Установка режима сборки
         entry: {
             users: path.resolve(__dirname, 'src', 'client', 'users-page.ts'),
-            posts: path.resolve(__dirname, 'src', 'client', 'posts-page.ts'),
             friends: path.resolve(__dirname, 'src', 'client', 'friends-page.ts'),
+            feed: path.resolve(__dirname, 'src', 'client', 'feed-page.ts'),
         },
         devtool: mode === 'development' ? 'inline-source-map' : false, // Настройка source map
         target: 'web', // Целевая платформа - веб
