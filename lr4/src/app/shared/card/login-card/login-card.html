@@ -1,0 +1,37 @@
+<app-auth-card>
+    <div card-header>
+        <mat-card-title>Вход в аккаунт</mat-card-title>
+    </div>
+
+    <div card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+                <mat-label>Введите Email или Никнейм</mat-label>
+                <input matInput type="text" formControlName="username" autocomplete="username">
+                @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
+                    <mat-error>Поле обязательно для заполнения</mat-error>
+                }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Пароль</mat-label>
+                <input matInput type="password" formControlName="password" autocomplete="current-password">
+                @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+                    <mat-error>Поле обязательно для заполнения</mat-error>
+                }
+                @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+                    <mat-error>Минимальная длина пароля - 6 символов</mat-error>
+                }
+            </mat-form-field>
+        </form>
+    </div>
+
+    <div card-actions>
+        <button mat-stroked-button color="primary" type="submit" (click)="onSubmit()" [disabled]="!loginForm.valid">
+            Войти
+        </button>
+    </div>
+
+    <div card-footer>
+        <p>Ещё нет аккаунта? <a routerLink="/signup">Зарегистрируйтесь</a></p>
+    </div>
+</app-auth-card>

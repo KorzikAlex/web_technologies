@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "./public/webpack-build",
+    "rootDir": "./src"
+  },
+  "include": [
+    "src/client/**/*.ts",
+    "src/models/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/server.ts",
+    "src/routes",
+    "src/domain",
+    "src/data",
+    "src/ssl"
+  ]
+}
+

@@ -1,5 +1,5 @@
 import '../public/scss/style.scss';
-import type {User} from '../models/User';
+import type {User} from '../models/User.js';
 import {Modal} from 'bootstrap';
 
 let allFriends: User[] = [];
@@ -40,7 +40,9 @@ async function loadFriends(): Promise<void> {
     if (!currentUserId) return;
     try {
         const response = await fetch(`/users/${currentUserId}/friends/api/friends`);
-        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
         allFriends = await response.json();
         renderFriends(allFriends);
     } catch (error) {
@@ -65,15 +67,25 @@ function renderFriends(friends: User[]): void {
         return;
     }
 
-    grid.innerHTML = friends.map(friend => `
+    grid.innerHTML = friends.map(renderFriendCard).join('');
+
+    setupGridEventListeners();
+}
+
+function renderFriendCard(friend: User): string {
+    const fullName = friend.patronymic
+        ? `${friend.surname} ${friend.name} ${friend.patronymic}`
+        : `${friend.surname} ${friend.name}`;
+
+    return `
         <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body text-center">
                     <img class="rounded-circle mb-3"
                          src="${friend.avatar || '/public/assets/default-avatar.png'}"
-                         alt="${friend.fullName}"
+                         alt="${fullName}"
                          style="width: 100px; height: 100px; object-fit: cover;">
-                    <h5 class="card-title">${friend.fullName}</h5>
+                    <h5 class="card-title">${fullName}</h5>
                     <p class="card-text text-muted small">${friend.email}</p>
                     <div class="d-flex gap-2 justify-content-center">
                         <a class="btn btn-sm btn-outline-secondary" href="/users/${friend.id}/friends">
@@ -86,29 +98,33 @@ function renderFriends(friends: User[]): void {
                 </div>
             </div>
         </div>
-    `).join('');
-
-    setupGridEventListeners();
+    `;
 }
 
 function setupEventListeners(): void {
     const searchInput = document.getElementById('searchFriend') as HTMLInputElement;
     searchInput?.addEventListener('input', (e) => {
         const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
-        const filteredFriends = allFriends.filter(friend =>
-            friend.fullName.toLowerCase().includes(searchTerm) ||
-            friend.email.toLowerCase().includes(searchTerm)
-        );
+        const filteredFriends = allFriends.filter(friend => {
+            const fullName = friend.patronymic
+                ? `${friend.surname} ${friend.name} ${friend.patronymic}`
+                : `${friend.surname} ${friend.name}`;
+            return fullName.toLowerCase().includes(searchTerm) ||
+                friend.email.toLowerCase().includes(searchTerm);
+        });
         renderFriends(filteredFriends);
     });
 
     const searchAllUsersInput = document.getElementById('searchAllUsers') as HTMLInputElement;
     searchAllUsersInput?.addEventListener('input', (e) => {
         const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
-        const filteredUsers = allUsers.filter(user =>
-            user.fullName.toLowerCase().includes(searchTerm) ||
-            user.email.toLowerCase().includes(searchTerm)
-        );
+        const filteredUsers = allUsers.filter(user => {
+            const fullName = user.patronymic
+                ? `${user.surname} ${user.name} ${user.patronymic}`
+                : `${user.surname} ${user.name}`;
+            return fullName.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm);
+        });
         renderAllUsers(filteredUsers);
     });
 

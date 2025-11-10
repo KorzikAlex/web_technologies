@@ -1,11 +1,14 @@
 [
     {
         "id": 1,
-        "username": "Korzik",
+        "username": "sdfgdfsgsd",
         "email": "lumic.alex@gmail.com",
-        "passwordHash": "bdd25134a5dce145ab9c49341da55f43305a3fc1479e8c869566eea15826d744a54eb0afdb869490ff09fde0041f3cee17df313a9689ecb654fad09d2a633f9d",
-        "salt": "85ee2d17f49a0ca79410237ca82836bc",
-        "fullName": "Коржик",
+        "passwordHash": "0213c3d57f2863e676dc8115eccc924afd0b8c83d7afacef562d629e92c3c48b0c5ef01f86d8d973dadce93c5b0daada18d720d4c39477d4a54ea3bfac4988f2",
+        "salt": "755be651fb8088b4c569b116044993c0",
+        "surname": "Иванов",
+        "name": "Александр",
+        "patronymic": "Петрович",
+        "fullName": "Иванов Александр Петрович",
         "birthDate": "2006-02-19",
         "status": "active",
         "friends": [
@@ -13,20 +16,41 @@
         ],
         "messages": {},
         "feed": [],
-        "role": "admin"
+        "role": "admin",
+        "avatar": "https://example.com/avatar.jpg"
     },
     {
         "id": 2,
-        "username": "adff",
-        "email": "asdfasf@das.fas",
-        "passwordHash": "396f749bcd88ca093349ae31bf9a5bed3bf08f30ec789ca7cc97ff85ca0bbebb7448fb54b04966414ee639045c90ed315d40b71aed5640256f5878754bdb8878",
-        "salt": "a221f4f3162f543562b34b589f04ae96",
-        "fullName": "adsfads",
-        "birthDate": "2009-11-23",
+        "username": "fdgdfsgdfs",
+        "email": "lumic.alex@gmail.com",
+        "passwordHash": "22c10ec5d157f49bd0cb98307a1f0188e68e5b9527a7c807ccedbabaa8617a8d87076f4486f505c319691b63f1206cd35410761d2c3e16f8cd3098010c358f95",
+        "salt": "05ba20e25458e16292db1a99f2038580",
+        "surname": "rtesghsdfg",
+        "name": "fdgsdfgsdfg",
+        "patronymic": "fsgsdfgfdsgfds",
+        "fullName": "rtesghsdfg fdgsdfgsdfg fsgsdfgfdsgfds",
+        "birthDate": "2009-02-12",
         "status": "active",
         "friends": [
             1
         ],
+        "messages": {},
+        "feed": [],
+        "role": "user"
+    },
+    {
+        "id": 3,
+        "username": "fdsgsdfgsdfg",
+        "email": "lumic.alex@gmail.com",
+        "passwordHash": "1c37667738f67ce9c411a1bbb3635f8f8f20a6c1020f734c51c292045902624b748beb24981fbdab1f6497633285c0b50b583784f4eba5c912c5f61dea330041",
+        "salt": "b3a25e4731efae918a002b0910e8c98e",
+        "surname": "fdsgsdfg",
+        "name": "sfdgsdf",
+        "patronymic": "fsdgsdfg",
+        "fullName": "fdsgsdfg sfdgsdf fsdgsdfg",
+        "birthDate": "2008-12-23",
+        "status": "active",
+        "friends": [],
         "messages": {},
         "feed": [],
         "role": "user"

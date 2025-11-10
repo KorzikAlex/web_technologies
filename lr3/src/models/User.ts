@@ -17,19 +17,24 @@
  * @property {string[]} feed - Массив записей в ленте пользователя.
  */
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    passwordHash: string;
-    salt: string;
-    fullName: string;
-    friends: number[];
-    messages: { [key: number]: string[] }, // ключ - id друга, значение - массив сообщений
-    feed: string[] // массив записей в ленте
+    id: number,
+    username: string,
+    email: string,
+    passwordHash: string,
+    salt: string,
+    fullName?: string, // Оставляем для обратной совместимости, но будет формироваться автоматически
+    surname: string,
+    name: string,
+    patronymic?: string,
+    friends: number[],
+    messages?: {
+        [key: number]: string[]
+    }, // ключ - id друга, значение - массив сообщений
+    feed: string[], // массив записей в ленте
     role: UserRole,
-    birthDate: string;
-    status: UserStatus;
-    avatar?: string;
+    birthDate: string,
+    status: UserStatus,
+    avatar?: string,
 }
 
 /**

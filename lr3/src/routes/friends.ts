@@ -1,6 +1,6 @@
 import express, {Router, Request, Response} from 'express';
-import {userManager} from '../domain/UserManager';
-import {User} from "../models/User";
+import {userManager} from '../domain/UserManager.js';
+import {User} from "../models/User.js";
 
 export const router: Router = express.Router({mergeParams: true}); // mergeParams для доступа к :userId
 
@@ -14,10 +14,16 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
         const friends = await userManager.getFriends(userId);
+
+        // Формируем fullName из раздельных полей
+        const fullName = user.patronymic
+            ? `${user.surname} ${user.name} ${user.patronymic}`
+            : `${user.surname} ${user.name}`;
+
         res.render('friends', {
             friends,
             currentUser: user,
-            pageTitle: `Друзья ${user.fullName}`,
+            pageTitle: `Друзья ${fullName}`,
             activeLink: 'users'
         });
     } catch (error) {

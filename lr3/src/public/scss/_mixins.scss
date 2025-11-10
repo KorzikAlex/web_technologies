@@ -1,9 +1,9 @@
-@use 'variables' as *;
+@use 'variables' as vars;
 
 // Миксин для создания карточек
-@mixin card($padding: $spacing-unit, $shadow: true) {
+@mixin card($padding: vars.$spacing-unit, $shadow: true) {
     background: white;
-    border-radius: $border-radius;
+    border-radius: vars.$border-radius;
     padding: $padding;
 
     @if $shadow {
@@ -16,7 +16,7 @@
     background-color: $bg-color;
     color: $text-color;
     border: none;
-    border-radius: $border-radius;
+    border-radius: vars.$border-radius;
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -42,10 +42,16 @@
 // Медиа-запросы
 @mixin responsive($breakpoint) {
     @if $breakpoint == mobile {
-        @media (max-width: 768px) { @content; }
+        @media (max-width: 768px) {
+            @content;
+        }
     } @else if $breakpoint == tablet {
-        @media (min-width: 769px) and (max-width: 1024px) { @content; }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            @content;
+        }
     } @else if $breakpoint == desktop {
-        @media (min-width: 1025px) { @content; }
+        @media (min-width: 1025px) {
+            @content;
+        }
     }
 }

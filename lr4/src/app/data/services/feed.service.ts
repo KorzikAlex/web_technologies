@@ -7,9 +7,9 @@ import {HttpClient} from "@angular/common/http";
 export class FeedService {
     http: HttpClient = inject(HttpClient);
 
-    baseApiUrl: string = '/api/feeds';
+    baseApiUrl: string = 'http://localhost:3000/';
 
     getAllFeeds(){
-        return this.http.get(`${this.baseApiUrl}`);
+        return this.http.get(`${this.baseApiUrl}api/feeds`);
     }
 }

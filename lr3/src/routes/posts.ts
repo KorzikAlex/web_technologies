@@ -1,7 +1,7 @@
 import express, {Router, Request, Response} from 'express';
-import {postsManager} from '../domain/PostsManager';
-import {PostStatus} from "../models/Post";
-import {userManager} from "../domain/UserManager";
+import {postsManager} from '../domain/PostsManager.js';
+import {PostStatus} from "../models/Post.js";
+import {userManager} from "../domain/UserManager.js";
 
 export const router: Router = express.Router();
 
@@ -30,11 +30,15 @@ router.get('/feed/:userId', async (req: Request, res: Response): Promise<void> =
         const posts = await postsManager.getUserFeed(userId);
         posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+        // Формируем fullName из раздельных полей
+        const fullName = user.patronymic
+            ? `${user.surname} ${user.name} ${user.patronymic}`
+            : `${user.surname} ${user.name}`;
 
         res.render('feed', {
-            pageTitle: `Лента новостей - ${user.fullName}`,
+            pageTitle: `Лента новостей - ${fullName}`,
             userId: userId,
-            userName: user.fullName,
+            userName: fullName,
             userAvatar: user.avatar,
             posts: posts
         });

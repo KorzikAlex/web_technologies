@@ -7,4 +7,5 @@ export interface Post {
     image?: string;
     status: PostStatus;
     createdAt: string;
+    createdAtDate?: Date;
 }

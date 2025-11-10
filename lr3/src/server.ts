@@ -9,9 +9,9 @@ import https, {Server}  from "node:https";
 import http from "node:http";
 import path from "node:path";
 
-import {router as usersRouter} from "./routes/users";
-import {router as postsRouter} from "./routes/posts";
-import {router as friendsRouter} from "./routes/friends";
+import {router as usersRouter} from "./routes/users.js";
+import {router as postsRouter} from "./routes/posts.js";
+import {router as friendsRouter} from "./routes/friends.js";
 
 const app: Express = express(); // Создаем экземпляр Express приложения
 
@@ -23,9 +23,10 @@ const __dirname: string = path.resolve(import.meta.dirname); // Получаем
 app.set('view engine', 'pug'); // Устанавливаем Pug в качестве шаблонизатора
 app.set('views', path.join(__dirname, './views')); // Указываем директорию для шаблонов
 
-app.use('/webpack-build', express.static(path.join(__dirname, '../public', 'webpack-build')));// Статические файлы Webpack
-app.use('/public', express.static(path.join(__dirname, 'src', 'public'))); // Статические файлы
-app.use('/gulp-build', express.static(path.join(__dirname, '../public', 'gulp-build'))); // Статические файлы Gulp
+// Статические файлы для обеих сборок (Webpack - основная, Gulp - демонстрационная)
+app.use('/webpack-build', express.static(path.join(__dirname, '../public', 'webpack-build')));// Webpack сборка (используется Pug шаблонами)
+app.use('/public', express.static(path.join(__dirname, 'src', 'public'))); // Исходные статические файлы
+app.use('/gulp-build', express.static(path.join(__dirname, '../public', 'gulp-build'))); // Gulp сборка (статические HTML)
 
 app.use(express.json()); // Парсинг JSON тел запросов
 app.use(express.urlencoded({extended: true})); // Парсинг URL-кодированных тел запросов
@@ -35,7 +36,7 @@ app.use('/posts', postsRouter); // Маршруты для постов
 app.use('/users/:userId/friends', friendsRouter); // Маршруты для друзей
 
 app.get('/', (req: Request, res: Response): void => {
-    res.redirect('/users') // Перенаправление на /users
+    res.render('index'); // Страница с объяснением двух сборок
 });
 
 const options = {

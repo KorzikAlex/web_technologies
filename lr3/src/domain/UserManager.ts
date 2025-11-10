@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
-import type {User, UserRole, UserStatus} from '../models/User';
+import type {User, UserRole, UserStatus} from '../models/User.js';
 import {fileURLToPath} from "node:url";
 
 const __filename: string = fileURLToPath(import.meta.url);
@@ -59,20 +59,31 @@ export class UserManager {
      * @param username - имя пользователя
      * @param email - email пользователя
      * @param password - пароль пользователя
-     * @param fullName - полное имя пользователя
+     * @param surname - фамилия пользователя
+     * @param name - имя пользователя
      * @param birthDate - дата рождения пользователя
+     * @param patronymic - отчество пользователя (необязательно)
+     * @param avatar - URL аватара пользователя (необязательно)
      * @returns {Promise<User>} Созданный пользователь
      */
     async createUser(
         username: string,
         email: string,
         password: string,
-        fullName: string,
-        birthDate: string
+        surname: string,
+        name: string,
+        birthDate: string,
+        patronymic?: string,
+        avatar?: string
     ): Promise<User> {
         const users: User[] = await this.loadUsers();
         const salt: string = crypto.randomBytes(16).toString('hex');
         const passwordHash: string = this.hashPassword(password, salt);
+
+        // Формируем fullName для обратной совместимости
+        const fullName = patronymic
+            ? `${surname} ${name} ${patronymic}`
+            : `${surname} ${name}`;
 
         const newUser: User = {
             id: users.length > 0 ? Math.max(...users.map((u: User): number => u.id)) + 1 : 1,
@@ -80,13 +91,17 @@ export class UserManager {
             email,
             passwordHash,
             salt,
+            surname,
+            name,
+            patronymic,
             fullName,
             birthDate,
             status: 'active', // Автоматически активируем
             friends: [],
             messages: {},
             feed: [],
-            role: (users.length === 0) ? "admin" : "user"
+            role: (users.length === 0) ? "admin" : "user",
+            avatar
         };
 
         users.push(newUser);
@@ -242,14 +257,14 @@ export class UserManager {
      * @returns {Promise<User[]>} Массив друзей
      */
     async getFriends(userId: number): Promise<User[]> {
-        const user: User = await this.getUserById(userId);
+        const user: User | null = await this.getUserById(userId);
         if (!user || !user.friends) {
             return [];
         }
         const friends = await Promise.all(
-            user.friends.map(friendId => this.getUserById(friendId))
+            user.friends.map((friendId: number) => this.getUserById(friendId))
         );
-        return friends.filter((f): f is User => f !== null);
+        return friends.filter((f: User | null): f is User => f !== null);
     }
 
     /**

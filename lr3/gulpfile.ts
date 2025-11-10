@@ -2,11 +2,16 @@ import gulp from 'gulp';
 import sass from 'gulp-sass';
 import sassCompiler from 'sass';
 import path from 'path';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
+import ts from 'gulp-typescript';
+import pug from 'gulp-pug';
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
 const sassProcessor = sass(sassCompiler);
+
+// Загрузка tsconfig.json для клиента
+const tsProject = ts.createProject('tsconfig.json');
 
 // Компиляция SCSS
 export function styles() {
@@ -17,9 +22,10 @@ export function styles() {
         .pipe(gulp.dest('public/gulp-build/css'));
 }
 
-// Сборка через Webpack (альтернативный подход)
+// Компиляция клиентского TypeScript
 export function scripts() {
-    return gulp.src('src/client/admin.ts')
+    return gulp.src(['src/client/**/*.ts'])
+        .pipe(tsProject())
         .pipe(gulp.dest('public/gulp-build/js'));
 }
 
@@ -29,12 +35,29 @@ export function assets() {
         .pipe(gulp.dest('public/gulp-build/assets'));
 }
 
+// Копирование шрифтов
+export function fonts() {
+    return gulp.src('node_modules/bootstrap-icons/font/fonts/*')
+        .pipe(gulp.dest('public/gulp-build/fonts'));
+}
+
+// Компиляция Pug в HTML
+export function views() {
+    return gulp.src('src/views/*.pug')
+        .pipe(pug({
+            // Опции Pug, если нужны
+            pretty: true
+        }))
+        .pipe(gulp.dest('public/gulp-build'));
+}
+
 // Наблюдение за изменениями
 export function watch() {
     gulp.watch('src/public/scss/**/*.scss', styles);
     gulp.watch('src/client/**/*.ts', scripts);
     gulp.watch('src/public/assets/**/*', assets);
+    gulp.watch('src/views/**/*.pug', views);
 }
 
-export const build = gulp.parallel(styles, scripts, assets);
+export const build = gulp.parallel(styles, scripts, assets, fonts, views);
 export default gulp.series(build, watch);

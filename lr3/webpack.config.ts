@@ -7,6 +7,7 @@ import path from 'path';
 import 'webpack-dev-server';
 import {fileURLToPath} from "node:url";
 import {dirname} from "node:path";
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from "webpack";
 
 const __filename: string = fileURLToPath(import.meta.url); // Получаем имя текущего файла
@@ -43,7 +44,12 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
             rules: [
                 {
                     test: /\.tsx?$/, // Обработка TypeScript файлов
-                    use: 'ts-loader', // Использование ts-loader
+                    use: {
+                        loader: 'ts-loader', // Использование ts-loader
+                        options: {
+                            configFile: 'tsconfig.client.json'
+                        }
+                    },
                     exclude: /node_modules/, // Исключение node_modules
                 },
                 {
@@ -67,7 +73,11 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
                     generator: {
                         filename: 'fonts/[name][ext]' // Вывод в папку fonts
                     }
-                }
+                },
+                {
+                    test: /\.pug$/,
+                    loader: '@webdiscus/pug-loader',
+                },
             ],
         },
         resolve: {
@@ -81,6 +91,21 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
         },
         plugins: [
             new webpack.ProgressPlugin(), // Плагин для отображения прогресса сборки
+            new HtmlWebpackPlugin({
+                template: './src/views/users.pug',
+                filename: 'users.html',
+                chunks: ['users'],
+            }),
+            new HtmlWebpackPlugin({
+                template: './src/views/friends.pug',
+                filename: 'friends.html',
+                chunks: ['friends'],
+            }),
+            new HtmlWebpackPlugin({
+                template: './src/views/feed.pug',
+                filename: 'feed.html',
+                chunks: ['feed'],
+            }),
         ],
     };
 };

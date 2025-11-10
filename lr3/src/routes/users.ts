@@ -1,6 +1,6 @@
 import express, {Router, Request, Response} from 'express';
-import {userManager} from '../domain/UserManager';
-import {User} from "../models/User";
+import {userManager} from '../domain/UserManager.js';
+import {User} from "../models/User.js";
 
 export const router: Router = express.Router();
 
@@ -53,8 +53,17 @@ router.put('/api/users/:id', async (req: Request, res: Response): Promise<void> 
 // API для создания пользователя
 router.post('/api/users', async (req: Request, res: Response): Promise<void> => {
     try {
-        const {username, email, password, fullName, birthDate} = req.body;
-        const newUser: User = await userManager.createUser(username, email, password, fullName, birthDate);
+        const {username, email, password, surname, name, patronymic, birthDate, avatar} = req.body;
+        const newUser: User = await userManager.createUser(
+            username,
+            email,
+            password,
+            surname,
+            name,
+            birthDate,
+            patronymic,
+            avatar
+        );
         res.status(201).json(newUser);
     } catch (error) {
         console.error('Ошибка создания пользователя:', error);

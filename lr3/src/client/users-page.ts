@@ -1,14 +1,17 @@
 import '../public/scss/style.scss';
-import type {User} from '../models/User';
+import type {User} from '../models/User.js';
 import { Modal } from "bootstrap";
 
 // Интерфейсы для типизации
 interface UserFormData {
-    fullName: string;
+    surname: string;
+    name: string;
+    patronymic?: string;
     email: string;
     username: string;
     password: string;
     birthDate: string;
+    avatar?: string;
 }
 
 let deleteConfirmModal: Modal;
@@ -42,7 +45,7 @@ async function loadUsers(): Promise<void> {
 
 // Отрисовка пользователей в таблице
 function renderUsers(): void {
-    const tbody: HTMLElement = document.getElementById('usersTableBody');
+    const tbody= document.getElementById('usersTableBody') as HTMLTableElement;
     if (!tbody) {
         return;
     }
@@ -53,12 +56,20 @@ function renderUsers(): void {
         return roleMatch && statusMatch;
     });
 
-    tbody.innerHTML = filteredUsers.map(user => `
+    tbody.innerHTML = filteredUsers.map(user => {
+        // Формируем полное имя для alt текста
+        const fullName = user.patronymic
+            ? `${user.surname} ${user.name} ${user.patronymic}`
+            : `${user.surname} ${user.name}`;
+
+        return `
         <tr>
             <td>
-                <img src="${user.avatar || '/public/assets/default-avatar.png'}" alt="${user.fullName}">
+                <img src="${user.avatar || '/public/assets/default-avatar.png'}" alt="${fullName}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
             </td>
-            <td>${user.fullName}</td>
+            <td>${user.surname}</td>
+            <td>${user.name}</td>
+            <td>${user.patronymic || '—'}</td>
             <td>${user.email}</td>
             <td>${new Date(user.birthDate).toLocaleDateString('ru-RU')}</td>
             <td>
@@ -86,7 +97,8 @@ function renderUsers(): void {
                 </a>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 
     setupTableEventListeners();
 }
@@ -182,7 +194,10 @@ async function openEditModal(id: number): Promise<void> {
         const user: User = await response.json();
 
         (document.getElementById('editUserId') as HTMLInputElement).value = user.id.toString();
-        (document.getElementById('editFullName') as HTMLInputElement).value = user.fullName;
+        (document.getElementById('editAvatar') as HTMLInputElement).value = user.avatar || '';
+        (document.getElementById('editSurname') as HTMLInputElement).value = user.surname;
+        (document.getElementById('editName') as HTMLInputElement).value = user.name;
+        (document.getElementById('editPatronymic') as HTMLInputElement).value = user.patronymic || '';
         (document.getElementById('editEmail') as HTMLInputElement).value = user.email;
         (document.getElementById('editBirthDate') as HTMLInputElement).value = user.birthDate;
         (document.getElementById('editRole') as HTMLSelectElement).value = user.role;
@@ -204,11 +219,14 @@ async function handleAddUser(): Promise<void> {
     }
 
     const formData: UserFormData = {
-        fullName: (document.getElementById('addFullName') as HTMLInputElement).value,
+        surname: (document.getElementById('addSurname') as HTMLInputElement).value,
+        name: (document.getElementById('addName') as HTMLInputElement).value,
+        patronymic: (document.getElementById('addPatronymic') as HTMLInputElement).value || undefined,
         email: (document.getElementById('addEmail') as HTMLInputElement).value,
         username: (document.getElementById('addUsername') as HTMLInputElement).value,
         password: (document.getElementById('addPassword') as HTMLInputElement).value,
-        birthDate: (document.getElementById('addBirthDate') as HTMLInputElement).value
+        birthDate: (document.getElementById('addBirthDate') as HTMLInputElement).value,
+        avatar: (document.getElementById('addAvatar') as HTMLInputElement).value || undefined
     };
 
     try {
@@ -232,11 +250,14 @@ async function handleAddUser(): Promise<void> {
 async function handleEditUser(): Promise<void> {
     const id = (document.getElementById('editUserId') as HTMLInputElement).value;
     const updates = {
-        fullName: (document.getElementById('editFullName') as HTMLInputElement).value,
+        surname: (document.getElementById('editSurname') as HTMLInputElement).value,
+        name: (document.getElementById('editName') as HTMLInputElement).value,
+        patronymic: (document.getElementById('editPatronymic') as HTMLInputElement).value || undefined,
         email: (document.getElementById('editEmail') as HTMLInputElement).value,
         birthDate: (document.getElementById('editBirthDate') as HTMLInputElement).value,
         role: (document.getElementById('editRole') as HTMLSelectElement).value,
-        status: (document.getElementById('editStatus') as HTMLSelectElement).value
+        status: (document.getElementById('editStatus') as HTMLSelectElement).value,
+        avatar: (document.getElementById('editAvatar') as HTMLInputElement).value || undefined
     };
 
     try {
@@ -274,3 +295,4 @@ async function deleteUser(id: number): Promise<void> {
         userIdToDelete = null; // Сбрасываем ID
     }
 }
+

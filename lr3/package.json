@@ -4,14 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:server\"",
-        "dev:webpack": "webpack --mode development --watch",
-        "dev:server": "nodemon",
-        "dev:gulp": "gulp",
-        "build": "npm run build:gulp && npm run build:webpack",
-        "build:gulp": "gulp build",
+        "start": "node dist/server.js",
+        "build": "npm run build:server && npm run copy:assets && npm run build:webpack && npm run build:gulp",
+        "build:server": "tsc",
+        "copy:assets": "node -e \"const fs=require('fs');const path=require('path');const copyDir=(s,d)=>{fs.mkdirSync(d,{recursive:true});fs.readdirSync(s,{withFileTypes:true}).forEach(e=>{const sp=path.join(s,e.name),dp=path.join(d,e.name);e.isDirectory()?copyDir(sp,dp):fs.copyFileSync(sp,dp)})};['ssl','views','data'].forEach(dir=>copyDir(path.join('src',dir),path.join('dist',dir)))\"",
         "build:webpack": "webpack --mode production",
-        "start": "node dist/server.js"
+        "build:gulp": "gulp build",
+        "dev": "concurrently \"npm:dev:server\" \"npm:dev:webpack\" \"npm:dev:gulp\"",
+        "dev:server": "nodemon",
+        "dev:webpack": "webpack --mode development --watch",
+        "dev:gulp": "gulp watch"
     },
     "author": "KorzikAlex",
     "license": "ISC",

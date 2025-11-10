@@ -1,19 +1,20 @@
 import {Routes} from '@angular/router';
+import {SignupPage} from "./pages/signup-page/signup-page";
+import {LoginPage} from "./pages/login-page/login-page";
+import {Layout} from "./shared/layout/layout";
 
 export const routes: Routes = [
-    // {
-    //     path: '',
-    //     redirectTo: 'login',
-    //     pathMatch: 'full'
-    // },
-    // {
-    //     path: 'login',
-    //     title: 'Login page',
-    //     component: Login
-    // },
-    // {
-    //     path: 'signup',
-    //     title: 'Signup page',
-    //     component: Signup
-    // }
+    {
+        path: '', component: Layout, children: [
+        ],
+        canActivate: []
+    },
+    {
+        path: 'signup',
+        component: SignupPage
+    },
+    {
+        path: 'login',
+        component: LoginPage
+    },
 ];

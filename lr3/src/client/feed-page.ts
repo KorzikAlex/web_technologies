@@ -1,6 +1,6 @@
 import '../public/scss/style.scss';
 import { Modal } from 'bootstrap';
-import type { Post } from '../models/Post';
+import type { Post } from '../models/Post.js';
 
 interface PostWithAuthor extends Post {
     author: {

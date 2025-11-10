@@ -1,49 +1,54 @@
 extends layout
 
 block head
-    - const activeTitle = 'Управление пользователями'
-    - const activeLink = 'users'
+    - const activeTitle = 'Управление пользователями' // Заголовок страницы
+    - const activeLink = 'users' // Активная ссылка в навигации
     -
         const navbarOptions = {
-            actions: [{ text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal' }],
+            actions: [
+                {text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal'}
+            ], // Действия в навигационной панели
             filterGroups: [
-            {
-                id: 'roleFilter',
-                label: 'Фильтр по роли',
-                itemClass: 'filter-btn',
-                filterType: 'role',
-                items: [
-                    { value: '', text: 'Все' },
-                    { value: 'admin', text: 'Администратор' },
-                    { value: 'user', text: 'Пользователь' }
-                ]
-            },
-            {
-                id: 'statusFilter',
-                label: 'Фильтр по статусу',
-                itemClass: 'filter-btn',
-                filterType: 'status',
-                items: [
-                    { value: '', text: 'Все' },
-                    { value: 'pending', text: 'Не подтверждён' },
-                    { value: 'active', text: 'Активный' },
-                    { value: 'blocked', text: 'Заблокирован' }
-                ]
-            }
+                {
+                    id: 'roleFilter',
+                    label: 'Фильтр по роли',
+                    itemClass: 'filter-btn',
+                    filterType: 'role',
+                    items: [
+                        {value: '', text: 'Все'},
+                        {value: 'admin', text: 'Администратор'},
+                        {value: 'user', text: 'Пользователь'}
+                    ]
+                }, // Группа фильтров по ролям
+                {
+                    id: 'statusFilter',
+                    label: 'Фильтр по статусу',
+                    itemClass: 'filter-btn',
+                    filterType: 'status',
+                    items: [
+                        {value: '', text: 'Все'},
+                        {value: 'pending', text: 'Не подтверждён'},
+                        {value: 'active', text: 'Активный'},
+                        {value: 'blocked', text: 'Заблокирован'}
+                    ]
+                } // Группа фильтров по статусу
             ]
-        }
+        } // Опции для навигационной панели
 
 
 block content
     .container-fluid.py-4
         h1.mb-4 Управление пользователями
 
+        // Таблица пользователей
         .table-responsive
             table.table.table-striped.table-hover
                 thead
                     tr
                         th Фото
-                        th ФИО
+                        th Фамилия
+                        th Имя
+                        th Отчество
                         th Email
                         th Дата рождения
                         th Роль
@@ -62,8 +67,19 @@ block content
                     form#editUserForm
                         input#editUserId(type="hidden")
                         .mb-3
-                            label.form-label ФИО
-                            input.form-control#editFullName(type="text" required)
+                            label.form-label Аватар (URL)
+                            input.form-control#editAvatar(type="url" placeholder="https://example.com/avatar.jpg")
+                            small.form-text.text-muted Введите URL изображения для аватара
+                        .mb-3
+                            label.form-label Фамилия
+                            input.form-control#editSurname(type="text" required)
+                        .mb-3
+                            label.form-label Имя
+                            input.form-control#editName(type="text" required)
+                        .mb-3
+                            label.form-label Отчество
+                            input.form-control#editPatronymic(type="text")
+                            small.form-text.text-muted Необязательное поле
                         .mb-3
                             label.form-label Email
                             input.form-control#editEmail(type="email" required)
@@ -95,13 +111,24 @@ block content
                 .modal-body
                     form#addUserForm
                         .mb-3
-                            label.form-label ФИО
-                            input.form-control#addFullName(type="text" required)
+                            label.form-label Аватар (URL)
+                            input.form-control#addAvatar(type="url" placeholder="https://example.com/avatar.jpg")
+                            small.form-text.text-muted Введите URL изображения для аватара
+                        .mb-3
+                            label.form-label Фамилия
+                            input.form-control#addSurname(type="text" required)
+                        .mb-3
+                            label.form-label Имя
+                            input.form-control#addName(type="text" required)
+                        .mb-3
+                            label.form-label Отчество
+                            input.form-control#addPatronymic(type="text")
+                            small.form-text.text-muted Необязательное поле
                         .mb-3
                             label.form-label Email
                             input.form-control#addEmail(type="email" required)
                         .mb-3
-                            label.form-label Имя пользователя
+                            label.form-label Никнейм
                             input.form-control#addUsername(type="text" required)
                         .mb-3
                             label.form-label Пароль
