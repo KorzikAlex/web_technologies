@@ -29,7 +29,6 @@ import {MatCardTitle} from "@angular/material/card";
         MatError,
         ReactiveFormsModule,
         MatCardTitle,
-        MatHint,
         MatSuffix
     ],
     templateUrl: './signup-card.html',

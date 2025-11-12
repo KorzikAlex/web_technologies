@@ -1,0 +1,7 @@
+mixin friendCard(friend)
+    .friend-card
+        .friend-avatar
+            img(src=friend.avatarUrl alt=`${friend.name}'s avatar`)
+        .friend-info
+            h3.friend-name= friend.name
+            p.friend-status= friend.status

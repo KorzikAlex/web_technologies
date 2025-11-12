@@ -1,0 +1,50 @@
+{
+    "name": "admin-social-media",
+    "version": "1.0.0",
+    "description": "This project contains server and admin front page for user management",
+    "homepage": "https://github.com/KorzikAlex/web_technologies#readme",
+    "bugs": {
+        "url": "https://github.com/KorzikAlex/web_technologies/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KorzikAlex/web_technologies.git"
+    },
+    "license": "ISC",
+    "author": "KorzikAlex",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "build": "webpack"
+    },
+    "devDependencies": {
+        "@svgr/webpack": "^8.1.0",
+        "@types/express": "^5.0.5",
+        "@types/node": "^24.10.1",
+        "autoprefixer": "^10.4.22",
+        "css-loader": "^7.1.2",
+        "gulp": "^5.0.1",
+        "html-webpack-plugin": "^5.6.4",
+        "pug-plugin": "^6.0.0",
+        "sass": "^1.94.0",
+        "sass-loader": "^16.0.6",
+        "style-loader": "^4.0.0",
+        "ts-loader": "^9.5.4",
+        "ts-node": "^10.9.2",
+        "tslib": "^2.8.1",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3",
+        "webpack": "^5.102.1",
+        "webpack-cli": "^6.0.1",
+        "webpack-dev-server": "^5.2.2"
+    },
+    "dependencies": {
+        "@popperjs/core": "^2.11.8",
+        "@webdiscus/pug-loader": "^2.11.1",
+        "bootstrap": "^5.3.8",
+        "bootstrap-icons": "^1.13.1",
+        "express": "^5.1.0",
+        "fontawesome-free": "^1.0.4",
+        "pug": "^3.0.3"
+    }
+}

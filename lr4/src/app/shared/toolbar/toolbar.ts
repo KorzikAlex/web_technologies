@@ -6,8 +6,8 @@ import {MatToolbar} from "@angular/material/toolbar";
     imports: [
         MatToolbar
     ],
-    templateUrl: './navbar.html',
-    styleUrl: './navbar.scss',
+    templateUrl: './toolbar.html',
+    styleUrl: './toolbar.scss',
 })
 export class Toolbar {
 

@@ -1,10 +1,15 @@
 import { Component } from '@angular/core';
+import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/material/sidenav";
 
 @Component({
   selector: 'app-sidenav',
-  imports: [],
-  templateUrl: './sidebar.html',
-  styleUrl: './sidebar.scss',
+  imports: [
+    MatSidenavContent,
+    MatSidenavContainer,
+    MatSidenav
+  ],
+  templateUrl: './sidenav.html',
+  styleUrl: './sidenav.scss',
 })
 export class Sidenav {
 

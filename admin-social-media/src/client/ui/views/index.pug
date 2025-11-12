@@ -1,0 +1,39 @@
+extends layout
+
+block content
+    .container-fluid.py-4
+        h1.mb-4 У правление пользователями
+            .table-responsive
+                table.table.table-bordered.table-hover.rounded
+                    thead
+                        tr
+                            th ID
+                            th Имя пользователя
+                            th Email
+                            th Роль
+                            th Дата регистрации
+                            th Действия
+                    tbody#usersTableBody
+    #editUserModal.modal.fade(tabindex='-1')
+        .modal-dialog.modal-dialog-centered(role='document')
+            .modal-content
+                .modal-header
+                    h5.modal-title Редактировать пользователя
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') &times;
+                .modal-body
+                    form#editUserForm
+                        .form-group
+                            label(for='editUsername') Имя пользователя
+                            input#editUsername.form-control(type='text', required=true)
+                        .form-group
+                            label(for='editEmail') Email
+                            input#editEmail.form-control(type='email', required=true)
+                        .form-group
+                            label(for='editRole') Роль
+                            select#editRole.form-control
+                                option(value='user') Пользователь
+                                option(value='admin') Администратор
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Закрыть
+                    button#saveUserChangesBtn.btn.btn-primary(type='submit') Сохранить изменения

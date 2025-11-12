@@ -1,0 +1,10 @@
+mixin navbar(options, activePage)
+    nav.navbar
+        ul.navbar-menu
+            each item in options
+                if item.page === activePage
+                    li.navbar-item.active
+                        a(href=item.link)= item.name
+                else
+                    li.navbar-item
+                        a(href=item.link)= item.name

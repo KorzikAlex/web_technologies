@@ -9,6 +9,8 @@ import {fileURLToPath} from "node:url";
 import {dirname} from "node:path";
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 const __filename: string = fileURLToPath(import.meta.url); // Получаем имя текущего файла
 const __dirname: string = dirname(__filename); // Получаем текущую директорию
@@ -30,6 +32,8 @@ interface EnvVariables {
  */
 export default (env: EnvVariables = {}): webpack.Configuration => {
     const mode: Mode = env.mode ?? 'development'; // Режим сборки по умолчанию - development
+    const isProd = mode === 'production';
+
     return {
         name: 'client', // Имя конфигурации
         mode: mode, // Установка режима сборки
@@ -55,20 +59,29 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
                 {
                     test: /\.s?css$/, // Обработка SCSS и CSS файлов
                     use: [
-                        'style-loader', // Внедрение стилей в DOM
-                        'css-loader', // Обработка CSS
+                        isProd ? MiniCssExtractPlugin.loader : 'style-loader', // Внедрение стилей в DOM или в отдельный файл
+                        {
+                            loader: 'css-loader', // Обработка CSS
+                            options: {
+                                sourceMap: true, // Включаем source maps для css-loader
+                            }
+                        },
+                        {
+                            loader: 'resolve-url-loader', // Обработка относительных путей в SCSS
+                            options: {
+                                sourceMap: true, // Обязательно для работы resolve-url-loader
+                            }
+                        },
                         {
                             loader: 'sass-loader', // Компиляция SCSS в CSS
                             options: {
-                                sassOptions: {
-                                    includePaths: [path.resolve(__dirname, 'node_modules')] // Пути для импорта SCSS
-                                }
+                                sourceMap: true, // Включаем source maps для sass-loader
                             }
                         }
                     ],
                 },
                 {
-                    test: /\.(woff2?|eot|ttf|otf)$/i, // Обработка файлов шрифтов
+                    test: /\.(woff|woff2|eot|ttf|otf)$/i, // Обработка файлов шрифтов
                     type: 'asset/resource', // Использование asset/resource
                     generator: {
                         filename: 'fonts/[name][ext]' // Вывод в папку fonts
@@ -85,12 +98,16 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
         },
         output: {
             path: path.resolve(__dirname, 'public', 'webpack-build'), // Путь вывода сборки
-            filename: mode === 'development' ? '[name].bundle.js' : '[name].[contenthash].js', // Имя выходного файла
+            filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js', // Имя выходного файла
             clean: true, // Очистка выходной директории перед сборкой
             publicPath: '/webpack-build/', // Публичный путь для ресурсов
         },
         plugins: [
             new webpack.ProgressPlugin(), // Плагин для отображения прогресса сборки
+            isProd && new MiniCssExtractPlugin({
+                filename: '[name].[contenthash].css',
+                chunkFilename: '[id].[contenthash].css',
+            }),
             new HtmlWebpackPlugin({
                 template: './src/views/users.pug',
                 filename: 'users.html',
@@ -106,6 +123,23 @@ export default (env: EnvVariables = {}): webpack.Configuration => {
                 filename: 'feed.html',
                 chunks: ['feed'],
             }),
-        ],
+        ].filter(Boolean),
+        optimization: {
+            minimize: isProd,
+            minimizer: [
+                `...`, // Использует TerserPlugin по умолчанию для JS
+                new CssMinimizerPlugin(),
+            ],
+            splitChunks: {
+                cacheGroups: {
+                    // Создаем отдельный чанк для всех библиотек из node_modules
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name: 'vendors',
+                        chunks: 'all',
+                    },
+                },
+            },
+        },
     };
 };
