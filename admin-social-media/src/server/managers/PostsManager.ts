@@ -1,10 +1,10 @@
 import path from "node:path";
 import type {Post} from "../models/Post.js";
 import fs from "fs/promises";
+import {fileURLToPath} from "node:url";
 
-const __pathname: string = import.meta.url;
-const __filename: string = path.basename(__pathname);
-const __dirname: string = path.dirname(__pathname);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
 export class PostsManager {
     private readonly dataPath: string = path.resolve(__dirname, '../data/', 'posts.json');

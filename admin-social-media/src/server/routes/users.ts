@@ -1,6 +1,11 @@
 import express, {type Router} from 'express';
 import {userManager} from "../managers/UserManager.js";
 import type {User} from "../models/User.js";
+import {fileURLToPath} from "node:url";
+import path from "node:path";
+
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
 const router: Router = express.Router();
 

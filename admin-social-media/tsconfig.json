@@ -32,6 +32,7 @@
         "skipLibCheck": true,
         "noImplicitAny": true,
         "allowJs": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*"

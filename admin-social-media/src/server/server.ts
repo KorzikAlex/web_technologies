@@ -3,12 +3,12 @@ import path from "node:path";
 import fs from "node:fs";
 import https, {type Server} from "node:https";
 import http from "node:http";
+import {fileURLToPath} from "node:url";
 
 const app: Express = express();
 
-const __pathname: string = import.meta.url;
-const __filename: string = path.basename(__pathname);
-const __dirname: string = path.dirname(__pathname);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
 const host: string = process.env.HOST || "localhost";
 const port: number = parseInt(process.env.PORT || "3000", 10);
