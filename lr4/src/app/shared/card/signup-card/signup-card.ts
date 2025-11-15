@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {AuthCard} from "../auth-card/auth-card";
-import {MatFormField, MatLabel, MatError, MatHint, MatSuffix} from "@angular/material/form-field";
+import {MatFormField, MatLabel, MatError, MatSuffix} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatButton} from "@angular/material/button";
 import {RouterLink} from "@angular/router";

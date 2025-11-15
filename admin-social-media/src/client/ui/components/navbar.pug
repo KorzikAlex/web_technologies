@@ -1,10 +1,47 @@
-mixin navbar(options, activePage)
-    nav.navbar
-        ul.navbar-menu
-            each item in options
-                if item.page === activePage
-                    li.navbar-item.active
-                        a(href=item.link)= item.name
-                else
-                    li.navbar-item
-                        a(href=item.link)= item.name
+mixin navbar(options, activeTitle)
+    - options = options || {};
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.shadow-sm
+        .container-fluid
+            a.navbar-brand(href="/")
+                i.bi.bi-shield-check
+                |  #{activeTitle}
+
+            button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav")
+                span.navbar-toggler-icon
+
+            .collapse.navbar-collapse.mt-3.mt-lg-0#navbarNav
+                ul.navbar-nav.ms-lg-auto
+                    li.nav-item.w-100
+                        div.d-flex.flex-wrap.gap-2
+                            if options.filterGroups
+                                each group in options.filterGroups
+                                    .dropdown
+                                        button.btn.btn-secondary.dropdown-toggle(type="button" id=group.id data-bs-toggle="dropdown" aria-expanded="false")
+                                            = group.label
+                                        ul.dropdown-menu(aria-labelledby=group.id)
+                                            each item in group.items
+                                                li
+                                                    a.dropdown-item(class=group.itemClass href="#" data-filter-value=item.value data-filter-type=group.filterType)= item.text
+
+                            if options.actions
+                                each action in options.actions
+                                    if action.modal
+                                        button.btn(
+                                            type="button"
+                                            id=action.id
+                                            class=action.class || 'btn-light'
+                                            data-bs-toggle="modal"
+                                            data-bs-target=action.modal
+                                        )
+                                            if action.icon
+                                                i(class=action.icon + ' me-2')
+                                            | #{action.text}
+                                    else
+                                        button.btn(
+                                            type="button"
+                                            id=action.id
+                                            class=action.class || 'btn-light'
+                                        )
+                                            if action.icon
+                                                i(class=action.icon + ' me-2')
+                                            | #{action.text}

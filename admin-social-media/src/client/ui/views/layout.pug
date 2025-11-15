@@ -1,9 +1,17 @@
-doctype html(lang="en")
-head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    link(rel="stylesheet" href="/styles/base.css")
-    link(rel="icon" href="../../public/assets/favicon.svg" type="image/svg+xml")
-    block head
-body
-    block content
+include ../components/navbar.pug
+
+doctype html
+html(lang="en")
+    head
+        block variables
+            - const activeTitle = ''
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        link(rel="icon" href="@assets/favicon.svg" type="image/svg+xml")
+        title= activeTitle ? activeTitle + ' - Панель Администратора' : 'Панель Администратора'
+        block head
+
+    body
+        +navbar(navbarOptions, activeTitle)
+        main
+            block content

@@ -1,10 +1,10 @@
 import path from "node:path";
 import type {User} from "../models/User.js";
 import fs from 'fs/promises';
-import {fileURLToPath} from "node:url";
 
-const __filename: string = fileURLToPath(import.meta.url);
-const __dirname: string = path.dirname(__filename);
+const __pathname: string = import.meta.url;
+const __filename: string = path.basename(__pathname);
+const __dirname: string = path.dirname(__pathname);
 
 export type UserInfo = Omit<User, 'id' | 'createdAt' | 'status'>;
 
@@ -75,8 +75,9 @@ export class UserManager {
             email: existingUser.email,
             passwordHash: existingUser.passwordHash,
             status: existingUser.status,
+            role: existingUser.role,
+            updatedAt: new Date(),
             ...updates,
-            updatedAt: new Date()
         };
 
         const userIndex: number = users.indexOf(existingUser);

@@ -1,12 +1,46 @@
 extends layout
 
+block variables
+    - const activeTitle = 'Управление Пользователями'
+    -
+        const navbarOptions = {
+            actions: [
+                {text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal'}
+            ],
+            filterGroups: [
+                {
+                    id: 'roleFilter',
+                    label: 'Фильтр по роли',
+                    itemClass: 'filter-btn',
+                    filterType: 'role',
+                    items: [
+                        {value: '', text: 'Все'},
+                        {value: 'admin', text: 'Администратор'},
+                        {value: 'user', text: 'Пользователь'}
+                    ]
+                },
+                {
+                    id: 'statusFilter',
+                    label: 'Фильтр по статусу',
+                    itemClass: 'filter-btn',
+                    filterType: 'status',
+                    items: [
+                        {value: '', text: 'Все'},
+                        {value: 'pending', text: 'Не подтверждён'},
+                        {value: 'active', text: 'Активный'},
+                        {value: 'blocked', text: 'Заблокирован'}
+                    ]
+                }
+            ]
+        }
+
 block head
-    title Управление пользователями
-    script(src='/js/user-page.js')
+    link(rel='stylesheet' href='@scss/style.scss')
+    script(src='@ts/index.ts' defer)
 
 block content
     .container-fluid.py-4
-        h1.mb-4 У правление пользователями
+        mb-4
             .table-responsive
                 table.table.table-bordered.table-hover.rounded
                     thead
@@ -18,13 +52,13 @@ block content
                             th Дата регистрации
                             th Действия
                     tbody#usersTableBody
-    #editUserModal.modal.fade(tabindex='-1')
-        .modal-dialog.modal-dialog-centered(role='document')
+
+    #editUserModal.modal.fade(tabindex='-1' data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
             .modal-content
                 .modal-header
-                    h5.modal-title Редактировать пользователя
+                    h5.modal-title Редактирование пользователя
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
-                        span(aria-hidden='true') &times;
                 .modal-body
                     form#editUserForm
                         .form-group
@@ -39,5 +73,60 @@ block content
                                 option(value='user') Пользователь
                                 option(value='admin') Администратор
                 .modal-footer
-                    button.btn.btn-secondary(type='button', data-dismiss='modal') Закрыть
-                    button#saveUserChangesBtn.btn.btn-primary(type='submit') Сохранить изменения
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button#saveUserBtn.btn.btn-primary Сохранить
+
+    #addUserModal.modal.fade(tabindex="-1" data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+            .modal-content
+                .modal-header
+                    h5.modal-title Добавление пользователя
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    form#addUserForm
+                        .mb-3
+                            label.form-label Аватар (URL)
+                            input.form-control#addAvatar(type="url" placeholder="https://example.com/avatar.jpg")
+                            small.form-text.text-muted Введите URL изображения для аватара
+                        .mb-3
+                            label.form-label Фамилия
+                            input.form-control#addSurname(type="text" required)
+                        .mb-3
+                            label.form-label Имя
+                            input.form-control#addName(type="text" required)
+                        .mb-3
+                            label.form-label Отчество
+                            input.form-control#addPatronymic(type="text")
+                            small.form-text.text-muted Необязательное поле
+                        .mb-3
+                            label.form-label Email
+                            input.form-control#addEmail(type="email" required autocomplete="email")
+                        .mb-3
+                            label.form-label Никнейм
+                            input.form-control#addUsername(type="text" required autocomplete="username")
+                        .mb-3
+                            label.form-label Пароль
+                            input.form-control#addPassword(type="password" required autocomplete="new-password")
+                        .mb-3
+                            label.form-label Дата рождения
+                            input.form-control#addBirthDate(type="date" min="1900-01-01" max=new Date().toISOString().split('T')[0] required)
+                        .mb-3
+                            label.form-label Роль
+                            select.form-select#addRole(required)
+                                option(value="user" selected) Пользователь
+                                option(value="admin") Администратор
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button#addUserBtn.btn.btn-primary Добавить
+
+    #deleteConfirmModal.modal.fade(tabindex="-1" data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered
+            .modal-content
+                .modal-header
+                    h5.modal-title Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    p Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmDeleteBtn Удалить

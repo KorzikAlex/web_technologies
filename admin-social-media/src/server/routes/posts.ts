@@ -7,7 +7,7 @@ import path from "node:path";
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
 
-const router: Router = express.Router();
+export const router: Router = express.Router();
 
 
 router.get('/', async (req, res) => {
@@ -43,5 +43,3 @@ router.delete('/:id', async (req, res) => {
 
     res.json({message: 'Post deleted successfully'});
 });
-
-export default router;

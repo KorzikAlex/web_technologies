@@ -7,7 +7,7 @@ import path from "node:path";
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
 
-const router: Router = express.Router();
+export const router: Router = express.Router();
 
 router.get('/:id', async (req, res) => {
     const userId: number = Number(req.params.id);
@@ -45,6 +45,15 @@ router.delete('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
     const users: User[] = await userManager.getAllUsers();
     res.json(users);
+});
+
+router.post('/', async (req, res) => {
+    try {
+        const newUser = await userManager.createUser(req.body);
+        res.status(201).json(newUser);
+    } catch (error) {
+        res.status(400).json({ message: (error as Error).message });
+    }
 });
 
 export default router;

@@ -1,0 +1,6 @@
+{
+    "watch": ["ssl", "dist/server"],
+    "exec": "npm run copy:ssl && node ./dist/server/server.js",
+    "delay": "250ms",
+    "ext": "js,json,crt,key,pem"
+}
