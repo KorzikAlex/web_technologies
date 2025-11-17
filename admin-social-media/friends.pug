@@ -1,0 +1,71 @@
+extends layout
+
+block variables
+    - const activeTitle = 'Друзья пользователя ' + user.username
+    -
+        const navbarOptions = {
+            actions: [
+                {text: 'Назад', class: 'btn-secondary', id: 'backBtn'},
+                {text: 'Добавить друга', icon: 'bi bi-person-plus', modal: '#addFriendModal'}
+            ],
+            filterGroups: []
+        }
+
+block head
+    link(rel='stylesheet' href='@scss/style.scss')
+    script(src='@ts/friends.ts' defer)
+
+block content
+    .container-fluid.py-4
+        h1.mb-4 Друзья пользователя #{user.name} #{user.surname}
+
+        .table-responsive
+            table.table.table-bordered.table-hover.rounded
+                thead
+                    tr
+                        th.text-center ID
+                        th.text-center Аватар
+                        th.text-center Имя пользователя
+                        th.text-center ФИО
+                        th.text-center Email
+                        th.text-center День рождения
+                        th.text-center Роль
+                        th.text-center Статус
+                        th.text-center Действия
+                tbody#friendsTableBody
+
+    #addFriendModal.modal.fade(tabindex="-1" data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered
+            .modal-content
+                .modal-header
+                    h5.modal-title Добавить друга
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    form#addFriendForm
+                        .mb-3
+                            label.form-label Выберите пользователя
+                            select.form-select#addFriendSelect(required)
+                                option(value="") Выберите пользователя
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button#addFriendBtn.btn.btn-primary Добавить
+
+    #removeFriendModal.modal.fade(tabindex="-1" data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered
+            .modal-content
+                .modal-header
+                    h5.modal-title Удалить друга
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    p Вы уверены, что хотите удалить этого друга?
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmRemoveBtn Удалить
+
+    #viewUserModal.modal.fade(tabindex="-1")
+        .modal-dialog.modal-dialog-centered.modal-lg
+            .modal-content
+                .modal-header
+                    h5.modal-title Информация о пользователе
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body#userInfoBody

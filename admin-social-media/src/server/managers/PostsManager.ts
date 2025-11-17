@@ -1,3 +1,8 @@
+/**
+ * @file PostsManager.ts
+ * @fileoverview Менеджер для работы с постами: добавление, получение, удаление и обновление постов
+ * @module PostsManager
+ */
 import path from "node:path";
 import type {Post} from "../models/Post.js";
 import fs from "fs/promises";

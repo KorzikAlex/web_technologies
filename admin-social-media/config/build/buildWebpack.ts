@@ -1,3 +1,8 @@
+/**
+ * @file buildWebpack.ts
+ * @fileoverview Функция для создания конфигурации Webpack на основе переданных опций сборки
+ * @module buildWebpack
+ */
 import webpack from "webpack";
 import { buildDevServer } from "./buildDevServer";
 import { buildLoaders } from "./buildLoaders";
@@ -5,8 +10,14 @@ import { BuildOptions } from "./types/types";
 import { buildResolvers } from "./buildResolvers";
 import { buildPlugins } from "./buildPlugins";
 
+/**
+ * Создает конфигурацию Webpack на основе переданных опций сборки
+ * @function buildWebpack
+ * @param options Опции сборки
+ * @returns {webpack.Configuration} Конфигурация Webpack
+ */
 export function buildWebpack(options: BuildOptions): webpack.Configuration {
-    const {mode, paths} = options
+    const { mode, paths } = options;
     const isDev = mode === 'development';
 
     return {

@@ -1,7 +1,20 @@
+/**
+ * @file buildLoaders.ts
+ * @fileoverview Функция для создания набора загрузчиков (loaders) для Webpack на основе переданных опций сборки
+ * @module buildLoaders
+ */
 import { ModuleOptions } from "webpack";
 import { BuildOptions } from "./types/types";
 
-export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
+/**
+ * Создает набор загрузчиков (loaders) для Webpack на основе переданных опций сборки
+ * @function buildLoaders
+ * @param options Опции сборки
+ * @returns {ModuleOptions['rules']} Набор загрузчиков для Webpack
+ */
+export function buildLoaders(options: BuildOptions): ModuleOptions['rules'] {
+    const { paths } = options;
+
     const scssLoader = {
         test: /\.(s?css|sass)$/,
         use: [
@@ -10,7 +23,7 @@ export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
                 loader: 'sass-loader',
                 options: {
                     sassOptions: {
-                        quietDeps: true,
+                        quietDeps: true, // Подавление предупреждений от зависимостей Sass
                     },
                 },
             },
@@ -21,7 +34,7 @@ export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
         test: /\.(ico|png|jp?g|webp|svg|gif)$/,
         type: 'asset/resource',
         generator: {
-            filename: 'img/[name].[hash:8][ext][query]',
+            filename: 'img/[name].[hash:8][ext][query]', // Шаблон имени файла для изображений
         },
     };
 
@@ -30,7 +43,7 @@ export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
         loader: 'ts-loader',
         exclude: /node_modules/,
         options: {
-            configFile: paths.tsConfig,
+            configFile: paths.tsConfig, // Использование указанного файла конфигурации TypeScript
         }
     };
 
@@ -38,7 +51,7 @@ export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
         generator: {
-            filename: 'fonts/[name].[hash:8][ext][query]',
+            filename: 'fonts/[name].[hash:8][ext][query]', // Шаблон имени файла для шрифтов
         },
     };
 
@@ -47,5 +60,5 @@ export function buildLoaders({paths}: BuildOptions): ModuleOptions['rules'] {
         assetsLoader,
         tsLoader,
         fontsLoader,
-    ];
+    ]; // Возврат массива загрузчиков
 }

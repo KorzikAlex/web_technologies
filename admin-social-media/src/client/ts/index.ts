@@ -86,6 +86,7 @@ function renderUsers(users: User[]): void {
             <td class="text-center align-middle">
                 <div class="d-flex flex-column gap-2 d-sm-inline-flex d-sm-flex-row">
                     <button class="btn btn-sm btn-primary edit-btn" data-id="${user.id}">Редактировать</button>
+                    <button class="btn btn-sm btn-info friends-btn" data-id="${user.id}">Друзья</button>
                     <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Удалить</button>
                 </div>
             </td>
@@ -269,6 +270,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (target.classList.contains('edit-btn')) {
             const userId = parseInt(target.getAttribute('data-id')!);
             editUser(userId);
+        } else if (target.classList.contains('friends-btn')) {
+            const userId = parseInt(target.getAttribute('data-id')!);
+            window.location.href = `/friends/${userId}`;
         } else if (target.classList.contains('delete-btn')) {
             const userId = parseInt(target.getAttribute('data-id')!);
             deleteUser(userId);

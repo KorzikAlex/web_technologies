@@ -15,12 +15,10 @@
     "main": "index.js",
     "scripts": {
         "build:webpack": "webpack --env mode=production",
-        "build:gulp": "gulp build",
-        "build:server": "gulp -f gulpfile.server.ts build",
-        "build": "npm run build:webpack && npm run build:gulp && npm run build:server",
+        "build:server": "gulp build",
+        "build": "npm run build:webpack && npm run build:server",
         "dev:server": "nodemon",
         "dev:webpack": "webpack serve --env mode=development",
-        "dev:gulp": "gulp",
         "dev": "concurrently \"npm run dev:server\" \"npm run dev:webpack\"",
         "start:server": "node ./dist/server/server.js"
     },
@@ -47,6 +45,7 @@
         "gulp": "^5.0.1",
         "gulp-clean-css": "^4.3.0",
         "gulp-sass": "^6.0.1",
+        "gulp-terser": "^2.1.0",
         "gulp-typescript": "^6.0.0-alpha.1",
         "jiti": "^2.6.1",
         "nodemon": "^3.1.11",

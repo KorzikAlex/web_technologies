@@ -1,14 +1,13 @@
+/**
+ * @file posts.ts
+ * @fileoverview Роуты для работы с постами: создание, получение, обновление и удаление постов
+ * @module postsRoutes
+ */
 import express, {type Router} from "express";
 import {type Post} from "../models/Post.js";
 import {postsManager} from "../managers/PostsManager.js";
-import {fileURLToPath} from "node:url";
-import path from "node:path";
 
-const __filename: string = fileURLToPath(import.meta.url);
-const __dirname: string = path.dirname(__filename);
-
-export const router: Router = express.Router();
-
+export const router: Router = express.Router(); // Создание роутера для постов
 
 router.get('/', async (req, res) => {
     res.json(postsManager.getAllPosts());

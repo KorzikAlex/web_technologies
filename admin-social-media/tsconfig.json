@@ -1,18 +1,16 @@
 {
     "compilerOptions": {
-        // File Layout
+        // Вывод компилированных файлов
         "outDir": "./dist",
-        // Environment Settings
+        // Корневая директория исходных файлов
         "module": "esnext",
         "target": "es2020",
-        "types": [],
-        // Other Outputs
+        // Библиотеки, используемые в проекте
         "sourceMap": true,
         "declaration": true,
         "declarationMap": true,
-        // Stricter Typechecking Options
+        // Строгие проверки типов
         "noUncheckedIndexedAccess": true,
-        // Recommended Options
         "strict": true,
         "jsx": "react-jsx",
         "isolatedModules": true,
@@ -23,22 +21,28 @@
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
+        // Разрешение модулей
         "moduleResolution": "node",
+        // Разрешение модулей относительно базового URL
         "baseUrl": ".",
+        // Пути для модулей
         "paths": {
             "@/*": [
                 "./src/*"
             ]
         },
+        // Типы, используемые в проекте
         "typeRoots": [
             "./node_modules/@types",
             "./src/types"
         ]
     },
+    // Файлы, включаемые в компиляцию
     "include": [
         "src/**/*",
         "webpack.config.ts",
     ],
+    // Настройки для ts-node
     "ts-node": {
         "compilerOptions": {
             "module": "commonjs",

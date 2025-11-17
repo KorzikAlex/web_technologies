@@ -1,14 +1,17 @@
+/**
+ * @file users.ts
+ * @fileoverview Роуты для работы с пользователями: создание, получение, обновление и удаление пользователей
+ * @module usersRoutes
+ */
 import express, {type Router} from 'express';
 import {userManager} from "../managers/UserManager.js";
 import type {User} from "../models/User.js";
-import {fileURLToPath} from "node:url";
-import path from "node:path";
 
-const __filename: string = fileURLToPath(import.meta.url);
-const __dirname: string = path.dirname(__filename);
+export const router: Router = express.Router(); // Создание роутера для пользователей
 
-export const router: Router = express.Router();
-
+/**
+ * Получение пользователя по ID
+ */
 router.get('/:id', async (req, res) => {
     const userId: number = Number(req.params.id);
     const user: User | null = await userManager.getUserById(userId);
@@ -19,7 +22,9 @@ router.get('/:id', async (req, res) => {
     res.json(user);
 });
 
-
+/**
+ * Обновление пользователя по ID
+ */
 router.post('/:id', async (req, res) => {
     const userId: number = Number(req.params.id);
     const updates: Partial<User> = req.body;
@@ -27,11 +32,14 @@ router.post('/:id', async (req, res) => {
     try {
         await userManager.updateUser(userId, updates);
         res.json({message: 'User updated successfully'});
-    } catch (error) {
+    } catch {
         res.status(404).json({message: 'User not found'});
     }
 })
 
+/**
+ * Удаление пользователя по ID
+ */
 router.delete('/:id', async (req, res) => {
     const userId: number = Number(req.params.id);
     const success: boolean = await userManager.deleteUser(userId);
@@ -42,11 +50,17 @@ router.delete('/:id', async (req, res) => {
     res.json({message: 'User deleted successfully'});
 });
 
+/**
+ * Получение всех пользователей
+ */
 router.get('/', async (req, res) => {
     const users: User[] = await userManager.getAllUsers();
     res.json(users);
 });
 
+/**
+ * Создание нового пользователя
+ */
 router.post('/', async (req, res) => {
     try {
         const newUser = await userManager.createUser(req.body);
@@ -56,5 +70,46 @@ router.post('/', async (req, res) => {
     }
 });
 
+/**
+ * Получение друзей пользователя
+ */
+router.get('/:id/friends', async (req, res) => {
+    const userId: number = Number(req.params.id);
+    try {
+        const friends = await userManager.getFriends(userId);
+        res.json(friends);
+    } catch (error) {
+        res.status(404).json({ message: (error as Error).message });
+    }
+});
 
-export default router;
+/**
+ * Добавление друга пользователю
+ */
+router.post('/:id/friends/:friendId', async (req, res) => {
+    const userId: number = Number(req.params.id);
+    const friendId: number = Number(req.params.friendId);
+    try {
+        await userManager.addFriend(userId, friendId);
+        res.json({ message: 'Друг добавлен успешно' });
+    } catch (error) {
+        res.status(400).json({ message: (error as Error).message });
+    }
+});
+
+/**
+ * Удаление друга у пользователя
+ */
+router.delete('/:id/friends/:friendId', async (req, res) => {
+    const userId: number = Number(req.params.id);
+    const friendId: number = Number(req.params.friendId);
+    try {
+        await userManager.removeFriend(userId, friendId);
+        res.json({ message: 'Друг удален успешно' });
+    } catch (error) {
+        res.status(400).json({ message: (error as Error).message });
+    }
+});
+
+
+export default router; // Экспорт роутера пользователей
