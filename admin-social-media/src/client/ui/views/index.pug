@@ -5,6 +5,7 @@ block variables
     -
         const navbarOptions = {
             actions: [
+                {text: 'Сбросить фильтры', class: 'btn-warning d-none', id: 'resetFiltersBtn'},
                 {text: 'Добавить пользователя', icon: 'bi bi-plus-circle', modal: '#addUserModal'}
             ],
             filterGroups: [
@@ -26,9 +27,9 @@ block variables
                     filterType: 'status',
                     items: [
                         {value: '', text: 'Все'},
-                        {value: 'pending', text: 'Не подтверждён'},
                         {value: 'active', text: 'Активный'},
-                        {value: 'blocked', text: 'Заблокирован'}
+                        {value: 'unconfirmed', text: 'Не подтверждён'},
+                        {value: 'banned', text: 'Заблокирован'}
                     ]
                 }
             ]
@@ -45,12 +46,17 @@ block content
                 table.table.table-bordered.table-hover.rounded
                     thead
                         tr
-                            th ID
-                            th Имя пользователя
-                            th Email
-                            th Роль
-                            th Дата регистрации
-                            th Действия
+                            th.text-center ID
+                            th.text-center Аватар
+                            th.text-center Имя пользователя
+                            th.text-center ФИО
+                            th.text-center Email
+                            th.text-center День рождения
+                            th.text-center Роль
+                            th.text-center Статус
+                            th.text-center Дата регистрации
+                            th.text-center Обновлено
+                            th.text-center Действия
                     tbody#usersTableBody
 
     #editUserModal.modal.fade(tabindex='-1' data-bs-backdrop="static")
@@ -58,20 +64,47 @@ block content
             .modal-content
                 .modal-header
                     h5.modal-title Редактирование пользователя
-                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
                 .modal-body
                     form#editUserForm
-                        .form-group
-                            label(for='editUsername') Имя пользователя
-                            input#editUsername.form-control(type='text', required=true)
-                        .form-group
-                            label(for='editEmail') Email
-                            input#editEmail.form-control(type='email', required=true)
-                        .form-group
-                            label(for='editRole') Роль
+                        .form-group.mb-3
+                            label.form-label(for='editAvatar') Аватар (URL)
+                            input#editAvatar.form-control(type='url' placeholder='https://example.com/avatar.jpg')
+                            small.form-text.text-muted Введите URL изображения для аватара
+                        .form-group.mb-3
+                            label.form-label(for='editSurname') Фамилия
+                            input#editSurname.form-control(type='text' required)
+                        .form-group.mb-3
+                            label.form-label(for='editName') Имя
+                            input#editName.form-control(type='text' required)
+                        .form-group.mb-3
+                            label.form-label(for='editPatronymic') Отчество
+                            input#editPatronymic.form-control(type='text')
+                            small.form-text.text-muted Необязательное поле
+                        .form-group.mb-3
+                            label.form-label(for='editUsername') Имя пользователя
+                            input#editUsername.form-control(type='text' required)
+                        .form-group.mb-3
+                            label.form-label(for='editEmail') Email
+                            input#editEmail.form-control(type='email' required)
+                        .form-group.mb-3
+                            label.form-label(for='editPassword') Пароль
+                            input#editPassword.form-control(type='password')
+                            small.form-text.text-muted Оставьте пустым, чтобы не менять
+                        .form-group.mb-3
+                            label.form-label(for='editBirthday') Дата рождения
+                            input#editBirthday.form-control(type='date' required)
+                        .form-group.mb-3
+                            label.form-label(for='editRole') Роль
                             select#editRole.form-control
                                 option(value='user') Пользователь
                                 option(value='admin') Администратор
+                        .form-group.mb-3
+                            label.form-label(for='editStatus') Статус
+                            select#editStatus.form-control
+                                option(value='active') Активный
+                                option(value='unconfirmed') Не подтверждён
+                                option(value='banned') Заблокирован
                 .modal-footer
                     button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
                     button#saveUserBtn.btn.btn-primary Сохранить

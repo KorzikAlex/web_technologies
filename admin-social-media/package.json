@@ -22,7 +22,7 @@
         "dev:webpack": "webpack serve --env mode=development",
         "dev:gulp": "gulp",
         "dev": "concurrently \"npm run dev:server\" \"npm run dev:webpack\"",
-        "start:server": "node ./dist/server/server.js && open ./dist/client/index.html"
+        "start:server": "node ./dist/server/server.js"
     },
     "devDependencies": {
         "@eslint/css": "^0.14.1",

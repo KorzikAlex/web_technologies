@@ -3,7 +3,7 @@ import { BuildOptions } from "./types/types";
 
 export function buildDevServer({ port, paths }: BuildOptions): DevServerConfiguration {
     return {
-        port: port ?? 3000,
+        port: port ?? 5000,
         open: true,
         historyApiFallback: true,
         hot: true,

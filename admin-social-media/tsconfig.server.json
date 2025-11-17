@@ -16,8 +16,10 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true,
+        "verbatimModuleSyntax": true
     },
     "include": [
         "src/server/**/*"
-    ]
+    ],
+
 }

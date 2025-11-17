@@ -13,16 +13,6 @@ mixin navbar(options, activeTitle)
                 ul.navbar-nav.ms-lg-auto
                     li.nav-item.w-100
                         div.d-flex.flex-wrap.gap-2
-                            if options.filterGroups
-                                each group in options.filterGroups
-                                    .dropdown
-                                        button.btn.btn-secondary.dropdown-toggle(type="button" id=group.id data-bs-toggle="dropdown" aria-expanded="false")
-                                            = group.label
-                                        ul.dropdown-menu(aria-labelledby=group.id)
-                                            each item in group.items
-                                                li
-                                                    a.dropdown-item(class=group.itemClass href="#" data-filter-value=item.value data-filter-type=group.filterType)= item.text
-
                             if options.actions
                                 each action in options.actions
                                     if action.modal
@@ -45,3 +35,13 @@ mixin navbar(options, activeTitle)
                                             if action.icon
                                                 i(class=action.icon + ' me-2')
                                             | #{action.text}
+
+                            if options.filterGroups
+                                each group in options.filterGroups
+                                    .dropdown
+                                        button.btn.btn-secondary.dropdown-toggle(type="button" id=group.id data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 220px;")
+                                            span(id=`${group.id}Text`) = group.label
+                                        ul.dropdown-menu(aria-labelledby=group.id)
+                                            each item in group.items
+                                                li
+                                                    a.dropdown-item(class=group.itemClass href="#" data-filter-value=item.value data-filter-type=group.filterType)= item.text

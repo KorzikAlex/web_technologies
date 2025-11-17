@@ -1,10 +1,10 @@
 import path from "node:path";
 import type {User} from "../models/User.js";
 import fs from 'fs/promises';
+import {fileURLToPath} from "node:url";
 
-const __pathname: string = import.meta.url;
-const __filename: string = path.basename(__pathname);
-const __dirname: string = path.dirname(__pathname);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
 export type UserInfo = Omit<User, 'id' | 'createdAt' | 'status'>;
 
@@ -26,11 +26,12 @@ export class UserManager {
 
     async createUser(userInfo: UserInfo): Promise<User> {
         const users: User[] = await this.getUsers();
+
         const newUser: User = {
             id: users.length + 1,
             createdAt: new Date(),
             status: 'unconfirmed',
-            ...userInfo
+            ...userInfo,
         };
         users.push(newUser);
         await this.saveUsers(users);
@@ -71,9 +72,12 @@ export class UserManager {
             username: existingUser.username,
             name: existingUser.name,
             surname: existingUser.surname,
+            patronymic: existingUser.patronymic,
             birthday: existingUser.birthday,
             email: existingUser.email,
             passwordHash: existingUser.passwordHash,
+            avatarPath: existingUser.avatarPath,
+            createdAt: existingUser.createdAt,
             status: existingUser.status,
             role: existingUser.role,
             updatedAt: new Date(),

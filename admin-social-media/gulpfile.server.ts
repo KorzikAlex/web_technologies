@@ -5,19 +5,21 @@ import fs from 'fs';
 const tsProject = ts.createProject('tsconfig.json');
 
 // Очистка папки dist
-export const clean = async () => {
-    fs.rmSync('dist/server', { recursive: true, force: true });
+export async function clean() {
+    fs.rmSync('dist/server', {
+        recursive: true, force: true
+    });
 }
 
 // Компиляция TypeScript
-export const compileTs = () => {
+export async function compileTs() {
     return gulp.src('src/server/**/*.ts')
         .pipe(tsProject())
         .pipe(gulp.dest('dist/server'));
 };
 
 // Копирование JSON и SSL
-export const copyAssets = () => {
+export async function copyAssets() {
     return gulp.src([
         'src/server/data/**/*',
         'src/server/ssl/**/*'

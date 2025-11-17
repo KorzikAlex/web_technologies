@@ -17,11 +17,10 @@ const host: string = process.env.HOST || "localhost";
 const port: number = parseInt(process.env.PORT || "3000", 10);
 
 app.use(cors()); // Enable CORS for all routes
-app.use('/users', usersRouter);
-app.use('/posts', postsRouter);
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use('/users', usersRouter);
+app.use('/posts', postsRouter);
 
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'ssl', 'social_network.key')),
