@@ -5,6 +5,7 @@
  */
 import webpack, { Configuration } from "webpack";
 import { BuildOptions } from "./types/types";
+// @ts-expect-error у плагина pug-plugin нет типов
 import PugPlugin from "pug-plugin";
 
 /**
@@ -19,7 +20,10 @@ export function buildPlugins(options: BuildOptions): Configuration['plugins'] {
 
     const plugins: Configuration['plugins'] = [
         new PugPlugin({
-            entry: paths.views,
+            entry: {
+                index: paths.views + '/index.pug',
+                friends: paths.views + '/friends.pug',
+            },
             js: {
                 filename: 'js/[name].[contenthash:8].js',
             },

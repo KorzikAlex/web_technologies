@@ -1,7 +1,7 @@
 extends layout
 
 block variables
-    - const activeTitle = 'Друзья пользователя ' + user.username
+    - const activeTitle = 'Друзья пользователя '
     -
         const navbarOptions = {
             actions: [
@@ -12,12 +12,11 @@ block variables
         }
 
 block head
-    link(rel='stylesheet' href='@scss/style.scss')
     script(src='@ts/friends.ts' defer)
 
 block content
     .container-fluid.py-4
-        h1.mb-4 Друзья пользователя #{user.name} #{user.surname}
+        h1.mb-4 Друзья пользователя
 
         .table-responsive
             table.table.table-bordered.table-hover.rounded
