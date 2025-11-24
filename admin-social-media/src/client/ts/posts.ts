@@ -13,7 +13,7 @@ type Post = {
 function createModalHtml(): HTMLElement {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
-    <div class="modal fade" id="userPostsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade custom-modal" id="userPostsModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
@@ -57,15 +57,16 @@ function renderPosts(posts: Post[], container: HTMLElement) {
         return;
     }
     const list = document.createElement('div');
+    list.className = 'posts-list';
     posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     posts.forEach(p => {
         const el = document.createElement('div');
-        el.className = 'card mb-2';
+        el.className = 'post-item';
         el.innerHTML = `
           <div class="card-body">
-            <p class="card-text">${escapeHtml(p.content)}</p>
+            <p class="post-content">${escapeHtml(p.content)}</p>
             ${p.imagePath ? `<img src="${escapeAttr(p.imagePath)}" class="img-fluid rounded" alt="post image" />` : ''}
-            <p class="text-muted small mt-2">Создано: ${new Date(p.createdAt).toLocaleString()}</p>
+            <p class="post-meta">Создано: ${new Date(p.createdAt).toLocaleString()}</p>
           </div>
         `;
         list.appendChild(el);

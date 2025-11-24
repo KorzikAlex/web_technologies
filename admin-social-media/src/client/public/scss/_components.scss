@@ -1,0 +1,80 @@
+// _components.scss: Компоненты с вложенными блоками и операторами
+@use 'variables';
+@use 'mixins';
+
+.custom-card {
+  background-color: variables.$light-color;
+  border: 1px solid variables.$secondary-color;
+  @include mixins.border-radius(variables.$border-radius);
+  @include mixins.box-shadow();
+  @include mixins.transition();
+
+  .card-header {
+    background-color: variables.$primary-color;
+    color: white;
+    padding: map-get(variables.$spacers, 3);
+    border-bottom: 1px solid variables.$secondary-color;
+
+    h5 {
+      margin: 0;
+      font-size: variables.$font-size-base * 1.25;
+    }
+  }
+
+  .card-body {
+    padding: map-get(variables.$spacers, 3);
+
+    p {
+      margin-bottom: map-get(variables.$spacers, 2);
+      line-height: variables.$line-height-base;
+    }
+
+    .btn {
+      @include mixins.button-variant(white, variables.$primary-color, variables.$primary-color);
+      margin-right: map-get(variables.$spacers, 2);
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &:hover {
+    @include mixins.box-shadow(0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+    transform: translateY(-2px);
+  }
+}
+
+.custom-modal {
+  .modal-dialog {
+    @include mixins.media-breakpoint-up(md) {
+      max-width: 600px;
+    }
+  }
+
+  .modal-content {
+    @include mixins.border-radius(variables.$border-radius-lg);
+  }
+}
+
+.posts-list {
+  .post-item {
+    border-bottom: 1px solid variables.$light-color;
+    padding: map-get(variables.$spacers, 3) 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .post-content {
+      font-size: variables.$font-size-base;
+      color: variables.$dark-color;
+    }
+
+    .post-meta {
+      font-size: variables.$font-size-base * 0.875;
+      color: variables.$secondary-color;
+      margin-top: map-get(variables.$spacers, 1);
+    }
+  }
+}
