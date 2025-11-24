@@ -10,38 +10,18 @@ type Post = {
     status: string;
 };
 
-function createModalHtml(): HTMLElement {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-    <div class="modal fade custom-modal" id="userPostsModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Новости</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div id="postsList" class="mb-3"></div>
+type User = {
+    id: number;
+    name: string;
+    surname: string;
+    avatarPath?: string;
+};
 
-            <hr />
-            <h6>Создать новость</h6>
-            <form id="createPostForm">
-              <div class="mb-2">
-                <textarea class="form-control" id="postContent" rows="3" placeholder="Текст новости" required></textarea>
-              </div>
-              <div class="mb-2">
-                <input class="form-control" id="postImage" placeholder="Ссылка на изображение (опционально)" />
-              </div>
-              <div class="text-end">
-                <button type="submit" class="btn btn-primary">Опубликовать</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    `;
-    return wrapper.firstElementChild as HTMLElement;
+async function fetchUsersByIds(ids: number[]): Promise<User[]> {
+    const param = ids.join(',');
+    const resp = await fetch(`https://localhost:3000/users?ids=${encodeURIComponent(param)}`);
+    if (!resp.ok) throw new Error('Failed to fetch users');
+    return await resp.json();
 }
 
 async function fetchPostsForAuthors(authorIds: number[]): Promise<Post[]> {
@@ -51,28 +31,34 @@ async function fetchPostsForAuthors(authorIds: number[]): Promise<Post[]> {
     return await resp.json();
 }
 
-function renderPosts(posts: Post[], container: HTMLElement) {
+function renderPosts(posts: Post[], users: Record<string, User>, container: HTMLElement) {
     if (posts.length === 0) {
         container.innerHTML = '<p class="text-muted">Нет новостей.</p>';
         return;
     }
-    const list = document.createElement('div');
-    list.className = 'posts-list';
+    container.innerHTML = '';
     posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     posts.forEach(p => {
+        const user = users[p.authorId];
+        const avatarHtml = user?.avatarPath ? `<img src="${user.avatarPath}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">` : `<i class="bi bi-person-circle text-muted me-2" style="font-size: 40px;"></i>`;
+        const fullName = user ? `${user.name} ${user.surname}` : 'Неизвестный пользователь';
         const el = document.createElement('div');
-        el.className = 'post-item';
+        el.className = 'card mb-3';
         el.innerHTML = `
           <div class="card-body">
-            <p class="post-content">${escapeHtml(p.content)}</p>
-            ${p.imagePath ? `<img src="${escapeAttr(p.imagePath)}" class="img-fluid rounded" alt="post image" />` : ''}
-            <p class="post-meta">Создано: ${new Date(p.createdAt).toLocaleString()}</p>
+            <div class="d-flex align-items-center mb-2">
+              ${avatarHtml}
+              <div>
+                <h6 class="card-title mb-0">${escapeHtml(fullName)}</h6>
+                <small class="text-muted">${new Date(p.createdAt).toLocaleString()}</small>
+              </div>
+            </div>
+            <p class="card-text">${escapeHtml(p.content)}</p>
+            ${p.imagePath ? `<img src="${escapeAttr(p.imagePath)}" class="card-img-bottom" alt="Post image" />` : ''}
           </div>
         `;
-        list.appendChild(el);
+        container.appendChild(el);
     });
-    container.innerHTML = '';
-    container.appendChild(list);
 }
 
 function escapeHtml(s: string) {
@@ -86,32 +72,40 @@ function escapeAttr(s: string) {
     return String(s).replace(/"/g, '&quot;');
 }
 
-export async function openPostsModal(userId: number, friendIds: number[]) {
-    // Ensure modal exists
-    let modalEl = document.getElementById('userPostsModal');
-    if (!modalEl) {
-        const created = createModalHtml();
-        document.body.appendChild(created);
-        modalEl = document.getElementById('userPostsModal')!;
-    }
+export function openPostsPage(userId: number, friendIds: number[]) {
+    const friendIdsParam = friendIds.join(',');
+    window.location.href = `/posts-page/${userId}?friendIds=${encodeURIComponent(friendIdsParam)}`;
+}
 
-    const modal = new Modal(modalEl);
-    const postsList = modalEl.querySelector('#postsList') as HTMLElement;
+// Логика для страницы новостей
+document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = parseInt(window.location.pathname.split('/').pop() || '0');
+    const friendIdsParam = urlParams.get('friendIds') || '';
+    const friendIds = friendIdsParam ? friendIdsParam.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
+
+    if (!userId) return;
 
     const authorIds = [userId, ...friendIds];
+    const postsList = document.getElementById('postsList') as HTMLElement;
+
     try {
         const posts = await fetchPostsForAuthors(authorIds);
-        renderPosts(posts, postsList);
+        const uniqueAuthorIds: number[] = [...new Set(posts.map(p => Number(p.authorId)))];
+        const users = await fetchUsersByIds(uniqueAuthorIds);
+        const usersMap: Record<string, User> = users.reduce((map, u) => { map[u.id.toString()] = u; return map; }, {} as Record<string, User>);
+        renderPosts(posts, usersMap, postsList);
     } catch (err) {
+        console.error(err);
         postsList.innerHTML = '<p class="text-danger">Не удалось загрузить новости.</p>';
     }
 
     // Handle create form
-    const form = modalEl.querySelector('#createPostForm') as HTMLFormElement;
+    const form = document.getElementById('createPostForm') as HTMLFormElement;
     form.onsubmit = async (e) => {
         e.preventDefault();
-        const content = (modalEl!.querySelector('#postContent') as HTMLTextAreaElement).value.trim();
-        const imagePath = (modalEl!.querySelector('#postImage') as HTMLInputElement).value.trim() || undefined;
+        const content = (document.getElementById('postContent') as HTMLTextAreaElement).value.trim();
+        const imagePath = (document.getElementById('postImage') as HTMLInputElement).value.trim() || undefined;
         if (!content) return;
         try {
           const resp = await fetch('https://localhost:3000/posts', {
@@ -121,16 +115,17 @@ export async function openPostsModal(userId: number, friendIds: number[]) {
           });
           if (!resp.ok) throw new Error('create failed');
           // on success reload posts
-          const newPost = await resp.json();
           const updated = await fetchPostsForAuthors(authorIds);
-          renderPosts(updated, postsList);
+          const uniqueAuthorIds: number[] = [...new Set(updated.map(p => Number(p.authorId)))];
+          const users = await fetchUsersByIds(uniqueAuthorIds);
+          const usersMap: Record<string, User> = users.reduce((map, u) => { map[u.id.toString()] = u; return map; }, {} as Record<string, User>);
+          renderPosts(updated, usersMap, postsList);
           form.reset();
         } catch (err) {
+          console.error(err);
           alert('Не удалось создать новость');
         }
     };
+});
 
-    modal.show();
-}
-
-export default { openPostsModal };
+export default { openPostsPage };

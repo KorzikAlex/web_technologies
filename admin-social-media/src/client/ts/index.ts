@@ -1,6 +1,6 @@
 // import '@scss/style.scss';
 import { Modal } from 'bootstrap';
-import { openPostsModal } from './posts.js';
+import { openPostsPage } from './posts.js';
 
 import type {User} from '../../shared/models/User.js';
 
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const userId = parseInt(target.getAttribute('data-id')!);
             const user = allUsers.find(u => u.id === userId);
             const friends = user ? user.friends || [] : [];
-            openPostsModal(userId, friends);
+            openPostsPage(userId, friends);
         } else if (target.classList.contains('friends-btn')) {
             const userId = parseInt(target.getAttribute('data-id')!);
             window.location.href = `/friends/${userId}`;

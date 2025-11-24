@@ -17,14 +17,16 @@ const srcPaths = {
     scss: path.join(srcClientPath, 'public', 'scss', '**', '*.scss'),
     pug: path.join(srcClientPath, 'ui', 'views', '**', '*.pug'),
     ts: path.join(srcClientPath, 'ts', '**/*.ts'),
-    assets: path.join(srcClientPath, 'public', 'assets', '**')
+    assets: path.join(srcClientPath, 'public', 'assets', '**'),
+    fonts: path.join('node_modules', 'bootstrap-icons', 'font', 'fonts', '**')
 };
 
 const distPaths = {
     base: distClientPath,
     css: path.join(distClientPath, 'css'),
     js: path.join(distClientPath, 'js'),
-    assets: path.join(distClientPath, 'assets')
+    assets: path.join(distClientPath, 'assets'),
+    fonts: path.join(distClientPath, 'css', 'fonts')
 };
 
 function deleteFolderRecursive() {
@@ -42,10 +44,11 @@ function styles() {
 function views() {
     return src(srcPaths.pug)
         .pipe(pug())
-        .pipe(replace('../../ts/index.ts', '/js/client/ts/index.js'))
-        .pipe(replace('../../ts/friends.ts', '/js/client/ts/friends.js'))
-        .pipe(replace('../../ts/posts-page.ts', '/js/client/ts/post-page.js'))
-        .pipe(replace('../../public/scss/style.scss', '/css/style.css'))
+        .pipe(replace('../../ts/index.ts', './js/client/ts/index.js'))
+        .pipe(replace('../../ts/friends.ts', './js/client/ts/friends.js'))
+        .pipe(replace('../../ts/posts.ts', './js/client/ts/post.js'))
+        .pipe(replace('../../public/scss/style.scss', './css/style.css'))
+        .pipe(replace('../../public/assets/', './assets/'))
         .pipe(dest(distPaths.base));
 }
 
@@ -58,5 +61,9 @@ function copyAssets() {
     return src(srcPaths.assets).pipe(dest(distPaths.assets));
 }
 
-exports.build = series(deleteFolderRecursive, styles, views, scripts, copyAssets);
+function copyFonts() {
+    return src(srcPaths.fonts).pipe(dest(distPaths.fonts));
+}
+
+exports.build = series(deleteFolderRecursive, styles, views, scripts, copyAssets, copyFonts);
 

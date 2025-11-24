@@ -54,7 +54,14 @@ router.delete('/:id', async (req, res) => {
  * Получение всех пользователей
  */
 router.get('/', async (req, res) => {
+    const idsParam = req.query.ids as string | undefined;
     const users: User[] = await userManager.getAllUsers();
+
+    if (idsParam) {
+        const ids = idsParam.split(',').map(s => Number(s)).filter(n => !isNaN(n));
+        return res.json(users.filter(u => ids.includes(u.id)));
+    }
+
     res.json(users);
 });
 

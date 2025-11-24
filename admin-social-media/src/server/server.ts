@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { router as postsRouter } from './routes/posts.js';
 import { router as usersRouter } from './routes/users.js';
 import { router as friendsRouter } from './routes/friends.js';
+import { router as postsPageRouter } from './routes/posts-page.js';
 import cors from 'cors';
 
 const __filename: string = fileURLToPath(import.meta.url); // Получение имени текущего файла
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: true })); // Middleware для парси
 app.use('/users', usersRouter); // Использование роутов пользователей
 app.use('/posts', postsRouter); // Использование роутов постов
 app.use('/friends', friendsRouter); // Роут для страницы друзей
+app.use('/posts-page', postsPageRouter); // Роут для страницы новостей
 
 
 

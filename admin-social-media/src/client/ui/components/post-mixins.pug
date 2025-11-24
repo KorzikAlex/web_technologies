@@ -1,0 +1,19 @@
+mixin post-card(post)
+  .card.mb-3
+    .card-body
+      p.card-text= post.content
+      if post.imagePath
+        img.card-img-bottom(src=post.imagePath alt='Post image')
+      .card-footer.text-muted
+        small= new Date(post.createdAt).toLocaleString()
+
+mixin create-post-form
+  .card.mb-3
+    .card-header Создать новость
+    .card-body
+      form#createPostForm
+        .mb-3
+          textarea.form-control#postContent(rows='3' placeholder='Текст новости' required)
+        .mb-3
+          input.form-control#postImage(placeholder='Ссылка на изображение (опционально)')
+        button.btn.btn-primary(type='submit') Опубликовать

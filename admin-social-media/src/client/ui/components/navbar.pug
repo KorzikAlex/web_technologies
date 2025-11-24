@@ -26,6 +26,15 @@ mixin navbar(options, activeTitle)
                                             if action.icon
                                                 i(class=action.icon + ' me-2')
                                             | #{action.text}
+                                    else if action.href
+                                        a.btn(
+                                            href=action.href
+                                            id=action.id
+                                            class=action.class || 'btn-light'
+                                        )
+                                            if action.icon
+                                                i(class=action.icon + ' me-2')
+                                            | #{action.text}
                                     else
                                         button.btn(
                                             type="button"

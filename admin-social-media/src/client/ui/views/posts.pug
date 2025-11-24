@@ -1,0 +1,20 @@
+extends layout
+
+block variables
+    - const activeTitle = 'Новости'
+    -
+        const navbarOptions = {
+            actions: [
+                {text: 'Назад', class: 'btn-secondary', href: '/'}
+            ]
+        }
+
+block head
+    script(src='../../ts/posts.ts' defer)
+
+block content
+    .container.py-4
+        +create-post-form
+
+        #postsList
+            // Посты будут загружены сюда

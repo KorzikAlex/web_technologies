@@ -3,9 +3,7 @@
         "id": 1,
         "createdAt": "2025-11-21T20:01:09.914Z",
         "status": "unconfirmed",
-        "friends": [
-            2
-        ],
+        "friends": [],
         "avatarPath": "",
         "surname": "fgdsgfds",
         "name": "kjl.jl;kljkh",
@@ -15,7 +13,7 @@
         "passwordHash": "fasdfasdfas",
         "birthday": "2001-02-19T00:00:00.000Z",
         "role": "user",
-        "updatedAt": "2025-11-24T11:03:22.016Z"
+        "updatedAt": "2025-11-24T12:58:03.676Z"
     },
     {
         "id": 2,
@@ -33,6 +31,6 @@
         "passwordHash": "uidasfadsf",
         "birthday": "2001-02-19T00:00:00.000Z",
         "role": "user",
-        "updatedAt": "2025-11-21T20:32:10.622Z"
+        "updatedAt": "2025-11-24T13:06:10.510Z"
     }
 ]
