@@ -15,7 +15,6 @@ export type PostStatus = 'active' | 'blocked'; // Статусы поста
  * @property {Date} updatedAt - Дата и время последнего обновления поста
  * @property {string} [imagePath] - Путь к изображению, прикрепленному к посту (необязательно)
  * @property {PostStatus} status - Статус поста (активен или заблокирован)
- * @property {string} title - Заголовок/название поста
  */
 export interface Post {
     id: number,

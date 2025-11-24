@@ -2,7 +2,6 @@ import { Modal } from 'bootstrap';
 
 type Post = {
     id: number;
-    title: string;
     authorId: string;
     content: string;
     createdAt: string | Date;
@@ -27,9 +26,6 @@ function createModalHtml(): HTMLElement {
             <hr />
             <h6>Создать новость</h6>
             <form id="createPostForm">
-              <div class="mb-2">
-                <input class="form-control" id="postTitle" placeholder="Заголовок" required />
-              </div>
               <div class="mb-2">
                 <textarea class="form-control" id="postContent" rows="3" placeholder="Текст новости" required></textarea>
               </div>

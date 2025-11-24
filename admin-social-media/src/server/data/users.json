@@ -3,7 +3,9 @@
         "id": 1,
         "createdAt": "2025-11-21T20:01:09.914Z",
         "status": "unconfirmed",
-        "friends": [],
+        "friends": [
+            2
+        ],
         "avatarPath": "",
         "surname": "fgdsgfds",
         "name": "kjl.jl;kljkh",
@@ -13,7 +15,7 @@
         "passwordHash": "fasdfasdfas",
         "birthday": "2001-02-19T00:00:00.000Z",
         "role": "user",
-        "updatedAt": "2025-11-24T08:36:21.133Z"
+        "updatedAt": "2025-11-24T11:03:22.016Z"
     },
     {
         "id": 2,

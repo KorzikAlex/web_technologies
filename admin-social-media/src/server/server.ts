@@ -19,10 +19,6 @@ const __dirname: string = path.dirname(__filename); // Получение дир
 
 const app: Express = express(); // Создание экземпляра приложения Express
 
-// Настройка Pug как шаблонизатора для серверной отрисовки страниц
-app.set('views', path.join(__dirname, '..', 'client', 'ui', 'views'));
-app.set('view engine', 'pug');
-
 const host: string = process.env.HOST || "localhost"; // Получение хоста из переменных окружения или использование localhost
 const port: number = parseInt(process.env.PORT || "3000", 10); // Получение порта из переменных окружения или использование 3000
 
