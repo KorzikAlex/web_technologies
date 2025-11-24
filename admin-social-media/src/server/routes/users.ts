@@ -5,7 +5,7 @@
  */
 import express, {type Router} from 'express';
 import {userManager} from "../managers/UserManager.js";
-import type {User} from "../models/User.js";
+import type {User} from "../../shared/models/User.js";
 
 export const router: Router = express.Router(); // Создание роутера для пользователей
 

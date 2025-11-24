@@ -3,27 +3,23 @@
         <mat-card-title>Вход в аккаунт</mat-card-title>
     </div>
 
-    <div card-content>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="outline">
-                <mat-label>Введите Email или Никнейм</mat-label>
-                <input matInput type="text" formControlName="username" autocomplete="username">
-                @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
-                    <mat-error>Поле обязательно для заполнения</mat-error>
-                }
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Пароль</mat-label>
-                <input matInput type="password" formControlName="password" autocomplete="current-password">
-                @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
-                    <mat-error>Поле обязательно для заполнения</mat-error>
-                }
-                @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
-                    <mat-error>Минимальная длина пароля - 6 символов</mat-error>
-                }
-            </mat-form-field>
-        </form>
-    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        @for (field of formFields; track field) {
+        <mat-form-field appearance="outline">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput formControlName="{{ field.controlName }}" [type]="field.type"
+                [autocomplete]="field.controlName === 'username' ? 'username' : 'current-password'">
+            @if (loginForm.get(field.controlName)?.hasError('required') &&
+            loginForm.get(field.controlName)?.touched) {
+            <mat-error>Поле обязательно для заполнения</mat-error>
+            }
+            @if (field.controlName === 'password' && loginForm.get('password')?.hasError('minlength') &&
+            loginForm.get('password')?.touched) {
+            <mat-error>Минимальная длина пароля - 6 символов</mat-error>
+            }
+        </mat-form-field>
+        }
+    </form>
 
     <div card-actions>
         <button mat-stroked-button color="primary" type="submit" (click)="onSubmit()" [disabled]="!loginForm.valid">

@@ -4,7 +4,7 @@
     "compilerOptions": {
         // Путь вывода скомпилированных файлов
         "outDir": "./dist/client/webpack",
-        "rootDir": "./src/client",
+        "rootDir": "./src/",
         // Модульная система и целевая версия JavaScript
         "module": "ESNext",
         "target": "ES2020",
@@ -16,12 +16,13 @@
         // Разрешение модулей и дополнительные опции
         "moduleResolution": "bundler",
         "esModuleInterop": true,
-        "declaration": true,
-        "declarationMap": true,
+        "declaration": false,
+        "declarationMap": false,
         "verbatimModuleSyntax": true,
     },
     // Файлы, включаемые в компиляцию
     "include": [
-        "src/client/**/*"
+        "src/client/**/*",
+        "src/shared/**/*"
     ]
 }

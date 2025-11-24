@@ -1,7 +1,8 @@
 // import '@scss/style.scss';
 import { Modal } from 'bootstrap';
+import { openPostsModal } from './posts.js';
 
-import type {User} from '../models/User.js';
+import type {User} from '../../shared/models/User.js';
 
 function parseUserDates(user: any): User {
     return {
@@ -86,6 +87,7 @@ function renderUsers(users: User[]): void {
             <td class="text-center align-middle">
                 <div class="d-flex flex-column gap-2 d-sm-inline-flex d-sm-flex-row">
                     <button class="btn btn-sm btn-primary edit-btn" data-id="${user.id}">Редактировать</button>
+                    <button class="btn btn-sm btn-secondary posts-btn" data-id="${user.id}">Новости</button>
                     <button class="btn btn-sm btn-info friends-btn" data-id="${user.id}">Друзья</button>
                     <button class="btn btn-sm btn-danger delete-btn" data-id="${user.id}">Удалить</button>
                 </div>
@@ -270,6 +272,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (target.classList.contains('edit-btn')) {
             const userId = parseInt(target.getAttribute('data-id')!);
             editUser(userId);
+        } else if (target.classList.contains('posts-btn')) {
+            const userId = parseInt(target.getAttribute('data-id')!);
+            const user = allUsers.find(u => u.id === userId);
+            const friends = user ? user.friends || [] : [];
+            openPostsModal(userId, friends);
         } else if (target.classList.contains('friends-btn')) {
             const userId = parseInt(target.getAttribute('data-id')!);
             window.location.href = `/friends/${userId}`;

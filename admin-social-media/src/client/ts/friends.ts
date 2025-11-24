@@ -1,7 +1,7 @@
 // import '@scss/style.scss';
 import { Modal } from 'bootstrap';
 
-import type {User} from '../models/User.js';
+import type {User} from '../../shared/models/User.js';
 
 const userId = parseInt(window.location.pathname.split('/').pop() || '0');
 

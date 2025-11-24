@@ -1,10 +1,8 @@
-<mat-sidenav-container>
-    <mat-sidenav-container>
-        <mat-sidenav mode="side" opened>
-            <ng-content select="[sidenav]"></ng-content>
-        </mat-sidenav>
-    </mat-sidenav-container>
+<mat-sidenav-container class="sidenav-container" hasBackdrop="false">
+    <mat-sidenav autosize opened mode="push">
+        <ng-content select="[sidenav]" />
+    </mat-sidenav>
     <mat-sidenav-content>
-        <ng-content select="[sidenav-content]"></ng-content>
+        <ng-content />
     </mat-sidenav-content>
 </mat-sidenav-container>

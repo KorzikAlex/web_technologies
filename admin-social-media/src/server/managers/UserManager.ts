@@ -4,7 +4,7 @@
  * @module UserManager
  */
 import path from "node:path";
-import type { User } from "../models/User.js";
+import type { User } from "../../shared/models/User.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from "node:url";
 

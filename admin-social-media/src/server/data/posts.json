@@ -1,1 +1,42 @@
-[]
+[
+    {
+        "id": 1,
+        "authorId": "1",
+        "content": "cxvcxzvzxc",
+        "createdAt": "2025-11-21T21:07:34.603Z",
+        "updatedAt": "2025-11-21T21:07:34.603Z",
+        "status": "active"
+    },
+    {
+        "id": 2,
+        "authorId": "2",
+        "content": "ASdASDAsdASDasd",
+        "createdAt": "2025-11-21T21:07:48.040Z",
+        "updatedAt": "2025-11-21T21:07:48.040Z",
+        "status": "active"
+    },
+    {
+        "id": 3,
+        "authorId": "1",
+        "content": "аавпрваыпавып",
+        "createdAt": "2025-11-24T08:36:01.273Z",
+        "updatedAt": "2025-11-24T08:36:01.273Z",
+        "status": "active"
+    },
+    {
+        "id": 4,
+        "authorId": "1",
+        "content": "апвпывапыва",
+        "createdAt": "2025-11-24T08:36:03.657Z",
+        "updatedAt": "2025-11-24T08:36:03.657Z",
+        "status": "active"
+    },
+    {
+        "id": 5,
+        "authorId": "1",
+        "content": "ваыпвыапывап",
+        "createdAt": "2025-11-24T08:36:06.957Z",
+        "updatedAt": "2025-11-24T08:36:06.957Z",
+        "status": "active"
+    }
+]

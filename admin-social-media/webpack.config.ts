@@ -31,22 +31,11 @@ export default (env: EnvVariables): webpack.Configuration => {
         tsConfig: path.join('tsconfig.client.webpack.json'),
     }
 
-    // Алиасы для путей
-    const alias: Record<string, string> = {
-        '@': path.join(__dirname, 'src', 'client'),
-        '@scss': path.join(__dirname, 'src', 'client', 'public', 'scss'),
-        '@images': path.join(__dirname, 'src', 'client', 'public', 'assets', 'images'),
-        '@ts': path.join(__dirname, 'src', 'client', 'ts'),
-        '@ui': path.join(__dirname, 'src', 'client', 'ui'),
-        '@components': path.join(__dirname, 'src', 'client', 'ui', 'components'),
-        '@assets': path.join(__dirname, 'src', 'client', 'public', 'assets'),
-    }
     // Создание конфигурации Webpack с использованием buildWebpack
     const config: webpack.Configuration = buildWebpack({
         port: env.port ?? 5000,
         mode: env.mode ?? 'development',
         paths: paths,
-        alias: alias,
     });
 
     return config; // Возврат конфигурации Webpack

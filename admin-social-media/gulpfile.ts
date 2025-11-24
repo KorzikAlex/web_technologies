@@ -1,48 +1,62 @@
-/**
- * @file gulpfile.ts
- * @fileoverview Файл конфигурации Gulp для сборки серверной части проекта на TypeScript.
- * Содержит задачи для очистки, компиляции TypeScript и копирования статических файлов.
- * @module gulpfile
- */
-import gulp from 'gulp';
+import { src, dest, series } from 'gulp';
+import sass from 'gulp-sass';
+import sassCompiler from 'sass';
+import pug from 'gulp-pug';
 import ts from 'gulp-typescript';
-import fs from 'fs';
+import path from 'node:path';
+import replace from 'gulp-replace';
+import { deleteAsync } from 'del';
 
-const tsProject = ts.createProject('tsconfig.json'); // Создание проекта TypeScript на основе tsconfig.json
+const sassProcessor = sass(sassCompiler);
 
-/**
- * @function clean
- * Удаляет папку dist/server перед сборкой
- */
-export async function clean() {
-    fs.rmSync('dist/server', {
-        recursive: true, force: true
-    });
+const srcClientPath: string = path.join('src', 'client');
+const distClientPath: string = path.join('dist', 'client', 'gulp');
+
+const srcPaths = {
+    base: srcClientPath,
+    scss: path.join(srcClientPath, 'public', 'scss', '**', '*.scss'),
+    pug: path.join(srcClientPath, 'ui', 'views', '**', '*.pug'),
+    ts: path.join(srcClientPath, 'ts', '**/*.ts'),
+    assets: path.join(srcClientPath, 'public', 'assets', '**')
+};
+
+const distPaths = {
+    base: distClientPath,
+    css: path.join(distClientPath, 'css'),
+    js: path.join(distClientPath, 'js'),
+    assets: path.join(distClientPath, 'assets')
+};
+
+function deleteFolderRecursive() {
+    return deleteAsync([distClientPath], { force: true });
 }
 
-/**
- * @function compileTs
- * Компилирует TypeScript файлы в JavaScript
- */
-export async function compileTs() {
-    return gulp.src('src/server/**/*.ts')
-        .pipe(tsProject())
-        .pipe(gulp.dest('dist/server'));
-};
+function styles() {
+    return src(srcPaths.scss).pipe(sassProcessor(
+        {
+            loadPaths: ['node_modules']
+        }
+    )).on('error', sassProcessor.logError).pipe(dest(distPaths.css));
+}
 
-/**
- * @function copyAssets
- * Копирует статические файлы (данные и SSL сертификаты) в папку dist/server
- */
-export async function copyAssets() {
-    return gulp.src([
-        'src/server/data/**/*',
-        'src/server/ssl/**/*'
-    ], { base: 'src/server' })
-        .pipe(gulp.dest('dist/server'));
-};
+function views() {
+    return src(srcPaths.pug)
+        .pipe(pug())
+        .pipe(replace('../../ts/index.ts', '/js/client/ts/index.js'))
+        .pipe(replace('../../ts/friends.ts', '/js/client/ts/friends.js'))
+        .pipe(replace('../../ts/posts-page.ts', '/js/client/ts/post-page.js'))
+        .pipe(replace('../../public/scss/style.scss', '/css/style.css'))
+        .pipe(dest(distPaths.base));
+}
 
+function scripts() {
+    const tsProject = ts.createProject('tsconfig.client.gulp.json');
+    return tsProject.src().pipe(tsProject()).js.pipe(dest(distPaths.js));
+}
 
-export const build = gulp.series(clean, gulp.parallel(compileTs, copyAssets)); // Основная задача сборки
+function copyAssets() {
+    return src(srcPaths.assets).pipe(dest(distPaths.assets));
+}
 
-export default build;
+exports.build = series(deleteFolderRecursive, styles, views, scripts, copyAssets);
+

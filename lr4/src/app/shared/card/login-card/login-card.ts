@@ -5,15 +5,15 @@
  * а также кнопку для отправки формы.
  * @module LoginCard
  */
-import {Component} from '@angular/core';
-import {AuthCard} from "../auth-card/auth-card";
-import {MatButton} from "@angular/material/button";
-import {MatError, MatFormField, MatLabel} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {RouterLink} from "@angular/router";
-import {MatIconModule} from '@angular/material/icon';
-import {MatCardTitle} from "@angular/material/card";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import { Component } from '@angular/core';
+import { AuthCard } from "../auth-card/auth-card";
+import { MatButton } from "@angular/material/button";
+import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { RouterLink } from "@angular/router";
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardTitle } from "@angular/material/card";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 
 /**
  * Элемент интерфейса для входа пользователя в систему.
@@ -52,6 +52,11 @@ export class LoginCard {
         username: ['', [Validators.required]],
         password: ['', [Validators.required, Validators.minLength(6)]],
     });
+
+    protected readonly formFields = [
+        { label: 'Имя пользователя', controlName: 'username', type: 'text' },
+        { label: 'Пароль', controlName: 'password', type: 'password' },
+    ];
 
     /**
      * Обработчик события отправки формы входа.

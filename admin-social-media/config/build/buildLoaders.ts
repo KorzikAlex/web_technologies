@@ -13,7 +13,8 @@ import { BuildOptions } from "./types/types";
  * @returns {ModuleOptions['rules']} Набор загрузчиков для Webpack
  */
 export function buildLoaders(options: BuildOptions): ModuleOptions['rules'] {
-    const { paths } = options;
+    const { paths, mode } = options;
+    const isDev = mode === 'development';
 
     const scssLoader = {
         test: /\.(s?css|sass)$/,
@@ -34,7 +35,7 @@ export function buildLoaders(options: BuildOptions): ModuleOptions['rules'] {
         test: /\.(ico|png|jp?g|webp|svg|gif)$/,
         type: 'asset/resource',
         generator: {
-            filename: 'img/[name].[hash:8][ext][query]', // Шаблон имени файла для изображений
+            filename: isDev ? 'img/[name].[ext][query]': 'img/[name].[hash:8][ext][query]', // Шаблон имени файла для изображений
         },
     };
 
@@ -51,7 +52,7 @@ export function buildLoaders(options: BuildOptions): ModuleOptions['rules'] {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
         generator: {
-            filename: 'fonts/[name].[hash:8][ext][query]', // Шаблон имени файла для шрифтов
+            filename: isDev ? 'fonts/[name].[ext][query]': 'fonts/[name].[hash:8][ext][query]', // Шаблон имени файла для шрифтов
         },
     };
 

@@ -1,1 +1,36 @@
-[]
+[
+    {
+        "id": 1,
+        "createdAt": "2025-11-21T20:01:09.914Z",
+        "status": "unconfirmed",
+        "friends": [],
+        "avatarPath": "",
+        "surname": "fgdsgfds",
+        "name": "kjl.jl;kljkh",
+        "patronymic": "hgkjhkjlghkjl",
+        "email": "hjkjhkjkh@dfgasd",
+        "username": "dafadsf",
+        "passwordHash": "fasdfasdfas",
+        "birthday": "2001-02-19T00:00:00.000Z",
+        "role": "user",
+        "updatedAt": "2025-11-24T08:36:21.133Z"
+    },
+    {
+        "id": 2,
+        "createdAt": "2025-11-21T20:31:44.964Z",
+        "status": "unconfirmed",
+        "friends": [
+            1
+        ],
+        "avatarPath": "",
+        "surname": "fdgsdfg",
+        "name": "hjhjkyj",
+        "patronymic": "hg",
+        "email": "iuuih@dfsgas.asdfas",
+        "username": "ewqfawefads",
+        "passwordHash": "uidasfadsf",
+        "birthday": "2001-02-19T00:00:00.000Z",
+        "role": "user",
+        "updatedAt": "2025-11-21T20:32:10.622Z"
+    }
+]

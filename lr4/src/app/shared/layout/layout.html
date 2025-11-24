@@ -1,6 +1,26 @@
-<div>
-    <app-navbar>
-
+<div class="layout-container">
+    <app-navbar >
+        <button matIconButton (click)="sidenav.toggle()">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span></span>
     </app-navbar>
+
+    <app-sidenav #sidenav="appSidenav">
+        <div sidenav>
+            <mat-nav-list>
+                @for (option of listOptions; track option) {
+                <a mat-list-item [routerLink]="option.route">
+                    <mat-icon matListItemIcon aria-hidden="false" aria-label="{{option.name}}">
+                        {{option.icon}}
+                    </mat-icon>
+                    {{option.name}}
+                </a>
+                }
+            </mat-nav-list>
+        </div>
+        <div class="layout-container__content">
+            <router-outlet />
+        </div>
+    </app-sidenav>
 </div>
-<router-outlet/>

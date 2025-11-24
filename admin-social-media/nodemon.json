@@ -1,6 +1,0 @@
-{
-    "watch": ["src/server"],
-    "exec": "npm run build:server && node ./dist/server/server.js",
-    "delay": "250ms",
-    "ext": "ts,json,crt,key,pem"
-}

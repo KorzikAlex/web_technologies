@@ -1,0 +1,9 @@
+.sidenav-container {
+    background-color: var(--mat-sys-surface-container-high);
+
+    mat-sidenav {
+        background-color: var(--mat-sys-surface-container-highest);
+        border-radius: 0;
+        width: 250px;
+    }
+}

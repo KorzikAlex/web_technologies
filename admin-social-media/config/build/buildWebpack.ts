@@ -4,7 +4,6 @@
  * @module buildWebpack
  */
 import webpack from "webpack";
-import { buildDevServer } from "./buildDevServer";
 import { buildLoaders } from "./buildLoaders";
 import { BuildOptions } from "./types/types";
 import { buildResolvers } from "./buildResolvers";
@@ -26,14 +25,13 @@ export function buildWebpack(options: BuildOptions): webpack.Configuration {
         target: 'web',
         output: {
             path: paths.output,
-            publicPath: '',
+            publicPath: '/',
             clean: true,
         },
         plugins: buildPlugins(options),
         module: {
             rules: buildLoaders(options),
         },
-        resolve: buildResolvers(options),
-        devServer: isDev ? buildDevServer(options) : undefined,
+        resolve: buildResolvers(),
     };
 }

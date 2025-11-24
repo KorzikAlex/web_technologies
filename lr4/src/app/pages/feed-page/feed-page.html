@@ -1,0 +1,21 @@
+<div class="feed-page-container">
+    <app-post-card>
+        <div card-header class="feed-page-container__header">
+            @if (authorAvatarUrl) {
+            <div mat-card-avatar class="feed-page-container__avatar">
+                <img [src]="authorAvatarUrl" alt="Author avatar" />
+            </div>
+            }
+            <mat-card-title>{{authorName}}</mat-card-title>
+        </div>
+        @if (postImageUrl) {
+        <div class="feed-page-container__img">
+            <img mat-card-image [src]="postImageUrl" alt="Post image" />
+        </div>
+        }
+        <p>{{postContent}}</p>
+    </app-post-card>
+    <app-post-card />
+    <app-post-card />
+    <app-post-card />
+</div>

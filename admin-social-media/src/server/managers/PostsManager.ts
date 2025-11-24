@@ -4,7 +4,7 @@
  * @module PostsManager
  */
 import path from "node:path";
-import type {Post} from "../models/Post.js";
+import type {Post} from "../../shared/models/Post.js";
 import fs from "fs/promises";
 import {fileURLToPath} from "node:url";
 
@@ -17,20 +17,43 @@ export class PostsManager {
     private async getPosts(): Promise<Post[]> {
         try {
             const data: string = await fs.readFile(this.dataPath, 'utf-8');
-            return JSON.parse(data);
+            const parsed = JSON.parse(data) as any[];
+            return parsed.map((p: any) => ({
+                ...p,
+                createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+                updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+            })) as Post[];
         } catch {
             return [];
         }
     }
 
     private async savePosts(posts: Post[]): Promise<void> {
-        await fs.writeFile(this.dataPath, JSON.stringify(posts, null, 4), 'utf-8');
+        // Serialize dates to ISO strings for storage
+        const toSave = posts.map(p => ({
+            ...p,
+            createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
+            updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
+        }));
+        await fs.writeFile(this.dataPath, JSON.stringify(toSave, null, 4), 'utf-8');
     }
 
-    async addPost(post: Post): Promise<void> {
+    async addPost(post: Partial<Post> & { authorId: string; content: string; imagePath?: string }): Promise<Post> {
         const posts: Post[] = await this.getPosts();
-        posts.push(post);
+        const newId = posts.length > 0 ? Math.max(...posts.map(p => p.id)) + 1 : 1;
+        const now = new Date();
+        const newPost: Post = {
+            id: newId,
+            authorId: post.authorId,
+            content: post.content,
+            createdAt: now,
+            updatedAt: now,
+            imagePath: post.imagePath,
+            status: 'active',
+        } as Post;
+        posts.push(newPost);
         await this.savePosts(posts);
+        return newPost;
     }
 
     async getAllPosts(): Promise<Post[]> {
@@ -60,8 +83,9 @@ export class PostsManager {
             authorId: existingPost.authorId,
             content: existingPost.content,
             createdAt: existingPost.createdAt,
-            updatedAt: existingPost.updatedAt,
+            updatedAt: new Date(),
             status: existingPost.status,
+            imagePath: existingPost.imagePath,
             ...updates
         };
 

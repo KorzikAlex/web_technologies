@@ -20,15 +20,12 @@ export function buildPlugins(options: BuildOptions): Configuration['plugins'] {
 
     const plugins: Configuration['plugins'] = [
         new PugPlugin({
-            entry: {
-                index: paths.views + '/index.pug',
-                friends: paths.views + '/friends.pug',
-            },
+            entry: paths.views,
             js: {
-                filename: 'js/[name].[contenthash:8].js',
+                filename: isDev ? 'js/[name].js' : 'js/[name].[contenthash:8].js',
             },
             css: {
-                filename: 'css/[name].[contenthash:8].css',
+                filename: isDev ? 'css/[name].css' : 'css/[name].[contenthash:8].css',
             },
         })
     ];

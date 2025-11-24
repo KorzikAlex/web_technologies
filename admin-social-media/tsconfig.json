@@ -41,6 +41,8 @@
     "include": [
         "src/**/*",
         "webpack.config.ts",
+        "gulpfile.ts",
+        "gulpfile.server.ts",
     ],
     // Настройки для ts-node
     "ts-node": {

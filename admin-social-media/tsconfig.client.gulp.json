@@ -1,0 +1,28 @@
+{
+    // Базовый конфигурационный файл
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        // Путь вывода скомпилированных файлов
+        "outDir": "./dist/client/gulp",
+        "rootDir": "./src/",
+        // Модульная система и целевая версия JavaScript
+        "module": "ESNext",
+        "target": "ES2020",
+        // Библиотеки, используемые в проекте
+        "lib": [
+            "DOM",
+            "ES2020"
+        ],
+        // Разрешение модулей и дополнительные опции
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "declaration": false,
+        "declarationMap": false,
+        "verbatimModuleSyntax": true,
+    },
+    // Файлы, включаемые в компиляцию
+    "include": [
+        "src/client/**/*",
+        "src/shared/**/*"
+    ]
+}

@@ -1,17 +1,17 @@
-import {Component} from '@angular/core';
-import {AuthCard} from "../auth-card/auth-card";
-import {MatFormField, MatLabel, MatError, MatSuffix} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {MatButton} from "@angular/material/button";
-import {RouterLink} from "@angular/router";
+import { Component } from '@angular/core';
+import { AuthCard } from "../auth-card/auth-card";
+import { MatFormField, MatLabel, MatError, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatButton } from "@angular/material/button";
+import { RouterLink } from "@angular/router";
 import {
     MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerToggle
+    MatDatepickerToggle,
+    MatDatepickerModule
 } from "@angular/material/datepicker";
-import {MatIconModule} from "@angular/material/icon";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl} from "@angular/forms";
-import {MatCardTitle} from "@angular/material/card";
+import { MatIconModule } from "@angular/material/icon";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from "@angular/forms";
+import { MatCardTitle } from "@angular/material/card";
 
 @Component({
     selector: 'app-signup-card',
@@ -22,14 +22,14 @@ import {MatCardTitle} from "@angular/material/card";
         MatButton,
         RouterLink,
         MatDatepicker,
-        MatDatepickerInput,
         MatDatepickerToggle,
         MatIconModule,
         MatLabel,
         MatError,
         ReactiveFormsModule,
         MatCardTitle,
-        MatSuffix
+        MatSuffix,
+        MatDatepickerModule
     ],
     templateUrl: './signup-card.html',
     styleUrl: './signup-card.scss',
@@ -44,6 +44,15 @@ export class SignupCard {
         confirmPassword: ['', [Validators.required]],
         birthDate: ['', [Validators.required]],
     }, { validators: this.passwordMatchValidator });
+
+    protected readonly formFields = [
+        { label: 'Имя пользователя', controlName: 'username', type: 'text' },
+        { label: 'Email', controlName: 'email', type: 'email' },
+        { label: 'Пароль', controlName: 'password', type: 'password' },
+        { label: 'Подтверждение пароля', controlName: 'confirmPassword', type: 'password' },
+    ];
+
+    protected readonly birthDateField = { label: 'Дата рождения', controlName: 'birthDate', type: 'date' };
 
     private passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
         const password = control.get('password');
