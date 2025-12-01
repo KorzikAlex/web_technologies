@@ -1,41 +1,5 @@
-.feed-page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 2rem;
-    gap: 1rem;
-
-    &__header {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    &__img {
-        width: 100%;
-        height: 400px;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 5%;
-            display: block;
-        }
-    }
-
-    &__avatar {
-        border-radius: 50%;
-        overflow: hidden;
-        max-width: 50px;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-    }
+.feed-page {
+    display: grid;
+    justify-items: center;
+    gap: 2rem;
 }

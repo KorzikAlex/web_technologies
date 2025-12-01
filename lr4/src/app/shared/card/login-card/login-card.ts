@@ -6,7 +6,7 @@
  * @module LoginCard
  */
 import { Component } from '@angular/core';
-import { AuthCard } from "../auth-card/auth-card";
+import { BaseCard } from "../base-card/base-card";
 import { MatButton } from "@angular/material/button";
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
@@ -23,7 +23,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angula
 @Component({
     selector: 'app-login-card',
     imports: [
-        AuthCard,
+        BaseCard,
         MatButton,
         MatFormField,
         MatInput,
@@ -54,8 +54,16 @@ export class LoginCard {
     });
 
     protected readonly formFields = [
-        { label: 'Имя пользователя', controlName: 'username', type: 'text' },
-        { label: 'Пароль', controlName: 'password', type: 'password' },
+        {
+            label: 'Имя пользователя',
+            controlName: 'username',
+            type: 'text'
+        },
+        {
+            label: 'Пароль',
+            controlName: 'password',
+            type: 'password'
+        },
     ];
 
     /**

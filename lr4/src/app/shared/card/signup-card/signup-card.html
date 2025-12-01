@@ -1,55 +1,57 @@
-<app-auth-card>
-    <div card-header>
-        <mat-card-title>Регистрация</mat-card-title>
+<app-base-card class="signup-card">
+    <div card-header class="signup-card__header">
+        <mat-card-title class="signup-card__title">Регистрация</mat-card-title>
     </div>
-    
-    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-        @for (field of formFields; track field) {
-        <mat-form-field appearance="outline">
-            <mat-label>{{ field.label }}</mat-label>
-            <input matInput formControlName="{{ field.controlName }}" [type]="field.type"
-                [autocomplete]="field.type === 'password' ? 'new-password' : null">
-            @if (signupForm.get(field.controlName)?.hasError('required') &&
-            signupForm.get(field.controlName)?.touched) {
-            <mat-error>Поле обязательно для заполнения</mat-error>
-            }
-            @if (field.controlName === 'username' && signupForm.get('username')?.hasError('minlength') &&
-            signupForm.get('username')?.touched) {
-            <mat-error>Минимальная длина - 3 символа</mat-error>
-            }
-            @if (field.controlName === 'email' && signupForm.get('email')?.hasError('email') &&
-            signupForm.get('email')?.touched) {
-            <mat-error>Введите корректный email</mat-error>
-            }
-            @if (field.controlName === 'password' && signupForm.get('password')?.hasError('minlength') &&
-            signupForm.get('password')?.touched) {
-            <mat-error>Минимальная длина пароля - 6 символов</mat-error>
-            }
-            @if (field.controlName === 'confirmPassword' && signupForm.hasError('passwordMismatch') &&
-            signupForm.get('confirmPassword')?.touched) {
-            <mat-error>Пароли не совпадают</mat-error>
-            }
-        </mat-form-field>
-        }
 
-        <mat-form-field appearance="outline">
-            <mat-label>{{birthDateField.label}}</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="birthDate">
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            @if (signupForm.get('birthDate')?.hasError('required') && signupForm.get('birthDate')?.touched) {
-            <mat-error>Поле обязательно для заполнения</mat-error>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <div class="signup-card__content">
+            @for (field of formFields; track field) {
+            <mat-form-field appearance="outline">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput formControlName="{{ field.controlName }}" [type]="field.type"
+                    [autocomplete]="field.type === 'password' ? 'new-password' : null">
+                @if (signupForm.get(field.controlName)?.hasError('required') &&
+                signupForm.get(field.controlName)?.touched) {
+                <mat-error>Поле обязательно для заполнения</mat-error>
+                }
+                @if (field.controlName === 'username' && signupForm.get('username')?.hasError('minlength') &&
+                signupForm.get('username')?.touched) {
+                <mat-error>Минимальная длина - 3 символа</mat-error>
+                }
+                @if (field.controlName === 'email' && signupForm.get('email')?.hasError('email') &&
+                signupForm.get('email')?.touched) {
+                <mat-error>Введите корректный email</mat-error>
+                }
+                @if (field.controlName === 'password' && signupForm.get('password')?.hasError('minlength') &&
+                signupForm.get('password')?.touched) {
+                <mat-error>Минимальная длина пароля - 6 символов</mat-error>
+                }
+                @if (field.controlName === 'confirmPassword' && signupForm.hasError('passwordMismatch') &&
+                signupForm.get('confirmPassword')?.touched) {
+                <mat-error>Пароли не совпадают</mat-error>
+                }
+            </mat-form-field>
             }
-        </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>{{birthDateField.label}}</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="birthDate">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                @if (signupForm.get('birthDate')?.hasError('required') && signupForm.get('birthDate')?.touched) {
+                <mat-error>Поле обязательно для заполнения</mat-error>
+                }
+            </mat-form-field>
+        </div>
     </form>
 
-    <div card-actions>
+    <div card-actions class="signup-card__actions">
         <button mat-stroked-button color="primary" (click)="onSubmit()" [disabled]="!signupForm.valid">
             Зарегистрироваться
         </button>
     </div>
 
-    <div card-footer>
+    <div card-footer class="signup-card__footer">
         <p>Уже есть аккаунт? <a routerLink="/login">Войти</a></p>
     </div>
-</app-auth-card>
+</app-base-card>

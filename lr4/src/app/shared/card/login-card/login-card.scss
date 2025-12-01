@@ -1,6 +1,5 @@
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
+@use 'mixins' as mixins;
+
+.login-card {
+    @include mixins.auth-card-base();
 }

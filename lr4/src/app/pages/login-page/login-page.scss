@@ -1,7 +1,5 @@
-.login-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    height: 100dvh;
+@use 'mixins' as mixins;
+
+.login-page {
+    @include mixins.auth-page-base();
 }

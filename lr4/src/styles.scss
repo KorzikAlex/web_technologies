@@ -4,8 +4,7 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
-@use 'styles/fonts' as fonts;
-@use 'styles/breakpoints' as breakpoints;
+@use 'styles/mixins' as mixins;
 
 html {
     @include mat.theme((

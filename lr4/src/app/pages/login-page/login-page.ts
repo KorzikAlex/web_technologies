@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {LoginCard} from "../../shared/card/login-card/login-card";
 import {NgOptimizedImage} from "@angular/common";
-import {AuthService} from "../../auth/auth.service";
+import {AuthService} from "../../data/services/auth.service";
 
 @Component({
     selector: 'app-login-page',
@@ -11,6 +11,4 @@ import {AuthService} from "../../auth/auth.service";
 })
 export class LoginPage {
     authService: AuthService = inject(AuthService);
-
-
 }

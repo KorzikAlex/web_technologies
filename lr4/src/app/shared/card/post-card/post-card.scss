@@ -1,9 +1,36 @@
-:host {
-    max-width: 500px;
-    width: 100%;
-    display: block;
-}
+.post-card {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
 
-.post-card-container {
-    background-color: var(--mat-sys-surface-container);
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    &__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__content {
+        font-size: 1rem;
+    }
+
+    &__img {
+        img {
+            width: 100%;
+            border-radius: 8px;
+        }
+    }
 }

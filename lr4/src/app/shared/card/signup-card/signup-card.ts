@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthCard } from "../auth-card/auth-card";
+import { BaseCard } from "../base-card/base-card";
 import { MatFormField, MatLabel, MatError, MatSuffix } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatButton } from "@angular/material/button";
@@ -16,7 +16,6 @@ import { MatCardTitle } from "@angular/material/card";
 @Component({
     selector: 'app-signup-card',
     imports: [
-        AuthCard,
         MatFormField,
         MatInput,
         MatButton,
@@ -29,7 +28,8 @@ import { MatCardTitle } from "@angular/material/card";
         ReactiveFormsModule,
         MatCardTitle,
         MatSuffix,
-        MatDatepickerModule
+        MatDatepickerModule,
+        BaseCard
     ],
     templateUrl: './signup-card.html',
     styleUrl: './signup-card.scss',

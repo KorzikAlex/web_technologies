@@ -1,5 +1,15 @@
-.layout-container {
+.layout {
+    &__sidenav {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+    }
+
     &__content {
         height: 100dvh;
+    }
+
+    &__sidenav-spacer {
+        flex-grow: 1;
     }
 }

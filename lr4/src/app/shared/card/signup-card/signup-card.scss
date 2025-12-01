@@ -1,8 +1,5 @@
-form {
-    gap: 1rem;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+@use 'mixins' as mixins;
+
+.signup-card {
+    @include mixins.auth-card-base();
 }
-
-
