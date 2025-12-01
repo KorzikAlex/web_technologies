@@ -1,4 +1,6 @@
 <div class="feed-page">
+    <app-create-post-card (postCreated)="onPostCreated($event)" />
+
     <app-post-card [authorAvatarUrl]="authorAvatarUrl" [authorName]="authorName" [postImageUrl]="postImageUrl"
         [postContent]="postContent" />
 </div>

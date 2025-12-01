@@ -1,1 +1,24 @@
-<p>create-post-card works!</p>
+<app-base-card class="create-post-card">
+    <div class="create-post-card__header" card-header>
+        <mat-card-title class="create-post-card__title">Создать новый пост</mat-card-title>
+    </div>
+    <div class="create-post-card__content">
+        <mat-form-field appearance="outline" class="create-post-card__field">
+            <mat-label class="create-post-card__label">Ссылка на изображение</mat-label>
+            <input matInput [(ngModel)]="imageUrl" class="create-post-card__input" placeholder="https://example.com/image.jpg">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="create-post-card__field">
+            <mat-label class="create-post-card__label">Текст поста</mat-label>
+            <textarea matInput [(ngModel)]="postText" class="create-post-card__textarea" rows="4" placeholder="Что у вас нового?"></textarea>
+        </mat-form-field>
+    </div>
+    <div class="create-post-card__actions" card-actions>
+        <button mat-button color="primary" class="create-post-card__button" (click)="onPublish()" [disabled]="!postText.trim()">
+            Опубликовать
+        </button>
+        <button mat-button class="create-post-card__button" (click)="onClear()">
+            Очистить
+        </button>
+    </div>
+</app-base-card>

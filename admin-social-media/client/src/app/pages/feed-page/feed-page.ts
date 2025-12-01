@@ -3,10 +3,11 @@ import { PostCard } from "../../shared/card/post-card/post-card";
 import { ProfileService } from '../../data/services/profile.service';
 import { User } from '../../data/interfaces/profile.interface';
 import { JsonPipe } from '@angular/common';
+import { CreatePostCard, NewPost } from '../../shared/card/create-post-card/create-post-card';
 
 @Component({
     selector: 'app-feed-page',
-    imports: [PostCard, JsonPipe],
+    imports: [PostCard, JsonPipe, CreatePostCard],
     templateUrl: './feed-page.html',
     styleUrl: './feed-page.scss',
 })
@@ -28,5 +29,11 @@ export class FeedPage {
                 console.log('User Profile:', this.userProfile);
             }
         );
+    }
+
+    onPostCreated(newPost: NewPost): void {
+        console.log('Новый пост создан:', newPost);
+        // Здесь можно добавить логику для отправки поста на сервер
+        // и обновления списка постов
     }
 }

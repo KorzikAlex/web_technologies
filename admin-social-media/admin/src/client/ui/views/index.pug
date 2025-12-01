@@ -92,7 +92,7 @@ block content
                             small.form-text.text-muted Оставьте пустым, чтобы не менять
                         .form-group.mb-3
                             label.form-label(for='editBirthday') Дата рождения
-                            input#editBirthday.form-control(type='date' required)
+                            input#editBirthday.form-control(type="date" min="1900-01-01" max=new Date().toISOString().split('T')[0] required)
                         .form-group.mb-3
                             label.form-label(for='editRole') Роль
                             select#editRole.form-control

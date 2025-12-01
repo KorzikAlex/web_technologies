@@ -176,7 +176,27 @@ async function editUser(userId: number): Promise<void> {
         editModal.show();
 
         const saveBtn = document.getElementById('saveUserBtn');
-        saveBtn?.addEventListener('click', async () => {
+        // Создаем обработчик, который будет вызываться при клике
+        const handleSave = async () => {
+            const form = document.getElementById('editUserForm') as HTMLFormElement;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const birthdayInput = (document.getElementById('editBirthday') as HTMLInputElement).value;
+            const birthday = new Date(birthdayInput);
+
+            const today = new Date();
+            let age = today.getFullYear() - birthday.getFullYear();
+            const monthDiff = today.getMonth() - birthday.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                alert('Пользователю меньше 18 лет!');
+            }
 
             const password = (document.getElementById('editPassword') as HTMLInputElement).value;
             const updatedUser: any = {
@@ -186,7 +206,7 @@ async function editUser(userId: number): Promise<void> {
                 patronymic: (document.getElementById('editPatronymic') as HTMLInputElement).value || undefined,
                 username: (document.getElementById('editUsername') as HTMLInputElement).value,
                 email: (document.getElementById('editEmail') as HTMLInputElement).value,
-                birthday: new Date((document.getElementById('editBirthday') as HTMLInputElement).value),
+                birthday: birthday,
                 role: (document.getElementById('editRole') as HTMLSelectElement).value,
                 status: (document.getElementById('editStatus') as HTMLSelectElement).value,
             };
@@ -211,11 +231,16 @@ async function editUser(userId: number): Promise<void> {
 
                 editModal.hide();
                 await loadUsers(); // Refresh the user list
+                // Удаляем обработчик после успешного сохранения
+                saveBtn?.removeEventListener('click', handleSave);
 
             } catch (error) {
                 console.error('Failed to update user:', error);
             }
-        }, { once: true }); // Use once to avoid multiple listeners
+        };
+
+        // Добавляем обработчик без once, чтобы он работал при повторных попытках
+        saveBtn?.addEventListener('click', handleSave);
     }
 }
 
