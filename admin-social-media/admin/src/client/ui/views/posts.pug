@@ -1,0 +1,32 @@
+extends layout
+
+block variables
+    - const activeTitle = 'Новости'
+    -
+        const navbarOptions = {
+            actions: [
+                {text: 'Назад', class: 'btn-secondary', href: '/'}
+            ]
+        }
+
+block head
+    script(src='../../ts/posts.ts' defer)
+
+block content
+    .container.py-4
+        +create-post-form
+
+        #postsList
+            // Посты будут загружены сюда
+
+    #deletePostConfirmModal.modal.fade(tabindex="-1" data-bs-backdrop="static")
+        .modal-dialog.modal-dialog-centered
+            .modal-content
+                .modal-header
+                    h5.modal-title Подтверждение удаления
+                    button.btn-close(type="button" data-bs-dismiss="modal")
+                .modal-body
+                    p Вы уверены, что хотите удалить эту новость? Это действие необратимо.
+                .modal-footer
+                    button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Отмена
+                    button.btn.btn-danger#confirmDeletePostBtn Удалить

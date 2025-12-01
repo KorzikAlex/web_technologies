@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "createdAt": "2025-12-01T09:02:27.772Z",
+        "status": "active",
+        "friends": [
+            2
+        ],
+        "avatarPath": "https://avatars.githubusercontent.com/u/93537237?v=4&size=64",
+        "surname": "Коршков",
+        "name": "Александр",
+        "patronymic": "Александрович",
+        "email": "lumic.alex@gmail.com",
+        "username": "Korzik",
+        "passwordHash": "$2b$10$aYaTUol3WlGK2jxIh5qQ9e7Oi.RKHxOZtIg5EPhOgq2l4Jb/Faq0K",
+        "birthday": "2001-02-19T00:00:00.000Z",
+        "role": "admin",
+        "updatedAt": "2025-12-01T09:48:14.150Z"
+    }
+]

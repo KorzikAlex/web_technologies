@@ -1,0 +1,5 @@
+@use 'mixins' as mixins;
+
+.signup-card {
+    @include mixins.auth-card-base();
+}

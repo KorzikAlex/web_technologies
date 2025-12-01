@@ -1,0 +1,17 @@
+<app-base-card class="profile-card">
+    <div card-header class="profile-card__header">
+        @if (avatarUrl) {
+        <div mat-card-avatar class="profile-card__avatar">
+            <img [src]="avatarUrl" alt="User avatar" />
+        </div>
+        }
+        <mat-card-title>{{ username }}</mat-card-title>
+    </div>
+
+    <div class="profile-card__content">
+        <p><strong>ФИО:</strong> {{ fullName }}</p>
+        <p><strong>Дата рождения:</strong> {{ birthDate }}</p>
+        <p><strong>Email:</strong> {{ email }}</p>
+    </div>
+
+</app-base-card>

@@ -1,0 +1,5 @@
+@use 'mixins' as mixins;
+
+.login-page {
+    @include mixins.auth-page-base();
+}

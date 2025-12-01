@@ -1,0 +1,21 @@
+<app-base-card class="post-card">
+    <div card-header class="post-card__header">
+        @if (authorAvatarUrl) {
+        <div mat-card-avatar class="post-card__avatar">
+            <img [src]="authorAvatarUrl" alt="Author avatar" />
+        </div>
+        }
+        <mat-card-title>{{ authorName }}</mat-card-title>
+    </div>
+    <div class="post-card__content">
+        @if (postImageUrl) {
+        <div class="post-card__img">
+            <img mat-card-image [src]="postImageUrl" alt="Post image" />
+        </div>
+        }
+        <p>
+            {{ postContent }}
+        </p>
+    </div>
+
+</app-base-card>

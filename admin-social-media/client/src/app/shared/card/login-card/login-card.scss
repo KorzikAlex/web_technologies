@@ -1,0 +1,5 @@
+@use 'mixins' as mixins;
+
+.login-card {
+    @include mixins.auth-card-base();
+}

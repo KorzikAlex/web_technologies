@@ -1,0 +1,31 @@
+<div class="layout">
+    <app-navbar class="layout__navbar">
+        <button matIconButton (click)="sidenav.toggle()" class="layout__navbar-menu-button">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span class="layout__navbar-header">Новости</span>
+    </app-navbar>
+
+    <app-sidenav #sidenav="appSidenav">
+        <div sidenav class="layout__sidenav">
+            <mat-nav-list class="layout__sidenav-list">
+                @for (option of listOptions; track option) {
+                <a mat-list-item [routerLink]="option.route" class="layout__sidenav-item">
+                    <mat-icon matListItemIcon aria-hidden="false" aria-label="{{option.name}}">
+                        {{option.icon}}
+                    </mat-icon>
+                    {{option.name}}
+                </a>
+                }
+            </mat-nav-list>
+            <div class="layout__sidenav-spacer"></div>
+            <app-profile-card [username]="userProfile.username" [avatarUrl]="userProfile.avatarUrl"
+                [fullName]="userProfile.fullName" [birthDate]="userProfile.birthDate" [email]="userProfile.email">
+            </app-profile-card>
+        </div>
+
+        <div class="layout__content">
+            <router-outlet />
+        </div>
+    </app-sidenav>
+</div>
