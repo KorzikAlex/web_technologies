@@ -1,0 +1,27 @@
+<app-base-card class="post-card">
+    <div card-header class="post-card__header">
+        <div mat-card-avatar class="post-card__avatar">
+            <img [src]="authorAvatarUrl" [alt]="authorName + ' avatar'" />
+        </div>
+        <div>
+            <mat-card-title class="post-card__author-name">
+                {{ authorName }}
+                @if (isOwnPost) {
+                    <span class="post-card__own-badge">Вы</span>
+                }
+            </mat-card-title>
+            <div class="post-card__date">{{ createdAt | date:'dd.MM.yyyy HH:mm' }}</div>
+        </div>
+    </div>
+    <div class="post-card__content">
+        @if (postImageUrl) {
+        <div class="post-card__img">
+            <img mat-card-image [src]="postImageUrl" alt="Post image" />
+        </div>
+        }
+        <p>
+            {{ postContent }}
+        </p>
+    </div>
+
+</app-base-card>

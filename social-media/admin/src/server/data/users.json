@@ -1,0 +1,56 @@
+[
+    {
+        "id": 1,
+        "createdAt": "2025-12-07T10:12:46.236Z",
+        "status": "unconfirmed",
+        "friends": [
+            2
+        ],
+        "avatarPath": "https://i.pinimg.com/236x/c7/76/6d/c7766dfec0f55e20c1753e924dc8bb11.jpg",
+        "surname": "Коршков",
+        "name": "Александр",
+        "patronymic": "Александрович",
+        "email": "lumic.alex@gmail.com",
+        "username": "Korzik",
+        "passwordHash": "$2b$10$GxVdamMMu0DNWDbmq/PabuM5ELU8eSMPCsRay.srXIone5kd3qrNK",
+        "birthday": "2006-02-19T00:00:00.000Z",
+        "role": "admin",
+        "updatedAt": "2025-12-08T11:15:26.999Z"
+    },
+    {
+        "id": 2,
+        "createdAt": "2025-12-07T10:29:58.974Z",
+        "status": "unconfirmed",
+        "friends": [
+            1
+        ],
+        "username": "Hello",
+        "email": "alek.korshkov@yandex.ru",
+        "passwordHash": "$2b$10$d4L8cpXDH/8W5wKCDrdFOulnbWrEpK0axj64hAOH/H2TxV95b94TO",
+        "name": "Александр",
+        "surname": "Атоян",
+        "patronymic": "Евгеньевич",
+        "birthday": "2000-06-13T20:00:00.000Z",
+        "avatarPath": "",
+        "role": "user",
+        "updatedAt": "2025-12-08T09:40:30.755Z"
+    },
+    {
+        "id": 3,
+        "createdAt": "2025-12-08T13:35:23.482Z",
+        "status": "unconfirmed",
+        "friends": [
+            1
+        ],
+        "username": "DSFS",
+        "email": "abcdef@sd.dss",
+        "passwordHash": "$2b$10$WdN7tP9hv7563ie9VNsavO6SQqXSpDk.vettP.pYz7EQvl1VRmxiW",
+        "name": "вамва",
+        "surname": "ваваы",
+        "patronymic": "выфвыфваы",
+        "birthday": "1929-06-11T22:00:00.000Z",
+        "avatarPath": "",
+        "role": "user",
+        "updatedAt": "2025-12-08T13:36:17.561Z"
+    }
+]

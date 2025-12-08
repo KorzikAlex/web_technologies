@@ -1,0 +1,13 @@
+<div class="feed-page">
+    <app-create-post-card (postCreated)="onPostCreated($event)" />
+
+    @for (post of posts; track post.id) {
+        <app-post-card
+            [authorAvatarUrl]="getAuthorAvatar(post.authorId)"
+            [authorName]="getAuthorName(post.authorId)"
+            [postImageUrl]="post.imagePath || undefined"
+            [postContent]="post.content"
+            [createdAt]="post.createdAt"
+            [isOwnPost]="isOwnPost(post.authorId)" />
+    }
+</div>
