@@ -3,7 +3,7 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         // Путь вывода скомпилированных файлов
-        "outDir": "./dist/client/webpack",
+        "outDir": "./dist/client/",
         "rootDir": "./src/",
         // Модульная система и целевая версия JavaScript
         "module": "ESNext",

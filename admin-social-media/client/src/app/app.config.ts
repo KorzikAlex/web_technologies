@@ -16,7 +16,10 @@ export const appConfig: ApplicationConfig = {
         provideZonelessChangeDetection(),
         provideRouter(routes),
         provideHttpClient(),
-        { provide: LOCALE_ID, useValue: 'ru-RU' },
+        {
+            provide: LOCALE_ID,
+            useValue: 'ru-RU'
+        },
         provideNativeDateAdapter(),
         provideStore()
     ]

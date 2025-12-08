@@ -3,9 +3,9 @@
  * @fileoverview Роуты для работы с постами: создание, получение, обновление и удаление постов
  * @module postsRoutes
  */
-import express, {type Router} from "express";
-import {type Post} from "../../shared/models/Post.js";
-import {postsManager} from "../managers/PostsManager.js";
+import express, { type Router } from "express";
+import { type Post } from "../../shared/models/Post.js";
+import { postsManager } from "../managers/PostsManager.js";
 
 export const router: Router = express.Router(); // Создание роутера для постов
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
         }
 
         res.json(posts);
-    } catch (err) {
+    } catch {
         res.status(500).json({ message: 'Failed to get posts' });
     }
 });
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
             imagePath: body.imagePath,
         });
         res.status(201).json(created);
-    } catch (err) {
+    } catch {
         res.status(500).json({ message: 'Failed to create post' });
     }
 });
@@ -47,10 +47,10 @@ router.put('/:id', async (req, res) => {
     const success: boolean = await postsManager.updatePost(postId, updates);
 
     if (!success) {
-        return res.status(404).json({message: 'Post not found'});
+        return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json({message: 'Post updated successfully'});
+    res.json({ message: 'Post updated successfully' });
 });
 
 router.delete('/:id', async (req, res) => {
@@ -58,8 +58,23 @@ router.delete('/:id', async (req, res) => {
     const success: boolean = await postsManager.deletePost(postId);
 
     if (!success) {
-        return res.status(404).json({message: 'Post not found'});
+        return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json({message: 'Post deleted successfully'});
+    res.json({ message: 'Post deleted successfully' });
+});
+
+// Server-Sent Events endpoint для реал-тайм обновлений
+router.get('/stream', (req, res) => {
+    // Устанавливаем заголовки для SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Добавляем клиента в список подписчиков
+    postsManager.addSubscriber(res);
+
+    // Отправляем начальное сообщение для подтверждения соединения
+    res.write('data: {"type":"connected"}\n\n');
 });

@@ -7,12 +7,14 @@ import path from "node:path";
 import type {Post} from "../../shared/models/Post.js";
 import fs from "fs/promises";
 import {fileURLToPath} from "node:url";
+import {Response} from "express";
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
 
 export class PostsManager {
     private readonly dataPath: string = path.resolve(__dirname, '../data/', 'posts.json');
+    private subscribers: Set<Response> = new Set();
 
     private async getPosts(): Promise<Post[]> {
         try {
@@ -53,6 +55,10 @@ export class PostsManager {
         } as Post;
         posts.push(newPost);
         await this.savePosts(posts);
+
+        // Уведомляем всех подписчиков о новом посте
+        this.notifySubscribers(newPost);
+
         return newPost;
     }
 
@@ -103,6 +109,29 @@ export class PostsManager {
             await this.savePosts(filteredPosts);
         }
         return deletedCount;
+    }
+
+    // Добавить подписчика на обновления постов
+    addSubscriber(res: Response): void {
+        this.subscribers.add(res);
+
+        // Удаляем подписчика при закрытии соединения
+        res.on('close', () => {
+            this.subscribers.delete(res);
+        });
+    }
+
+    // Уведомить всех подписчиков о новом посте
+    private notifySubscribers(post: Post): void {
+        const data = JSON.stringify(post);
+        this.subscribers.forEach(res => {
+            try {
+                res.write(`data: ${data}\n\n`);
+            } catch (error) {
+                // Удаляем подписчика при ошибке отправки
+                this.subscribers.delete(res);
+            }
+        });
     }
 }
 

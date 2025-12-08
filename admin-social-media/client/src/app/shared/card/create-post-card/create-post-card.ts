@@ -4,46 +4,45 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { MatCardHeader, MatCardTitle } from "@angular/material/card";
+import { MatCardTitle } from "@angular/material/card";
 
 export interface NewPost {
-  imageUrl: string;
-  text: string;
+    imageUrl: string;
+    text: string;
 }
 
 @Component({
-  selector: 'app-create-post-card',
-  imports: [
-    BaseCard,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    FormsModule,
-    MatButton,
-    MatCardHeader,
-    MatCardTitle
-],
-  templateUrl: './create-post-card.html',
-  styleUrl: './create-post-card.scss',
+    selector: 'app-create-post-card',
+    imports: [
+        BaseCard,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        FormsModule,
+        MatButton,
+        MatCardTitle
+    ],
+    templateUrl: './create-post-card.html',
+    styleUrl: './create-post-card.scss',
 })
 export class CreatePostCard {
-  protected imageUrl: string = '';
-  protected postText: string = '';
+    protected imageUrl: string = '';
+    protected postText: string = '';
 
-  @Output() postCreated = new EventEmitter<NewPost>();
+    @Output() postCreated = new EventEmitter<NewPost>();
 
-  onPublish(): void {
-    if (this.postText.trim()) {
-      this.postCreated.emit({
-        imageUrl: this.imageUrl,
-        text: this.postText,
-      });
-      this.onClear();
+    onPublish(): void {
+        if (this.postText.trim()) {
+            this.postCreated.emit({
+                imageUrl: this.imageUrl,
+                text: this.postText,
+            });
+            this.onClear();
+        }
     }
-  }
 
-  onClear(): void {
-    this.imageUrl = '';
-    this.postText = '';
-  }
+    onClear(): void {
+        this.imageUrl = '';
+        this.postText = '';
+    }
 }

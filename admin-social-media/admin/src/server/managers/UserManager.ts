@@ -145,6 +145,16 @@ export class UserManager {
         if (filteredUsers.length === users.length) {
             return false;
         } // Если длина массива не изменилась, пользователь не найден
+
+        // Удаляем этого пользователя из списка друзей у всех остальных пользователей
+        filteredUsers.forEach(
+            (user: User) => {
+                if (user.friends.includes(id)) {
+                    user.friends = user.friends.filter(friendId => friendId !== id);
+                }
+            }
+        );
+
         await this.saveUsers(filteredUsers); // Сохранение обновленного массива пользователей
         return true;
     }

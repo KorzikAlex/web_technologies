@@ -5,15 +5,16 @@
  * а также кнопку для отправки формы.
  * @module LoginCard
  */
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BaseCard } from "../base-card/base-card";
 import { MatButton } from "@angular/material/button";
 import { MatError, MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardTitle } from "@angular/material/card";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { AuthService } from "../../../data/services/auth.service";
 
 /**
  * Элемент интерфейса для входа пользователя в систему.
@@ -43,6 +44,8 @@ export class LoginCard {
      * @private
      */
     private fb: FormBuilder = new FormBuilder();
+    private authService = inject(AuthService);
+    private router = inject(Router);
 
     /**
      * Реактивная форма для входа пользователя.
@@ -66,13 +69,25 @@ export class LoginCard {
         },
     ];
 
+    protected errorMessage: string = '';
+
     /**
      * Обработчик события отправки формы входа.
      * @protected
      */
     protected onSubmit(): void {
         if (this.loginForm.valid) {
-            console.log('Login form submitted:', this.loginForm.value);
+            this.errorMessage = '';
+            this.authService.login(this.loginForm.value).subscribe({
+                next: (response) => {
+                    console.log('Успешная авторизация:', response);
+                    this.router.navigate(['/feed']);
+                },
+                error: (error) => {
+                    console.error('Ошибка авторизации:', error);
+                    this.errorMessage = error.error?.message || 'Ошибка авторизации';
+                }
+            });
         }
     }
 }

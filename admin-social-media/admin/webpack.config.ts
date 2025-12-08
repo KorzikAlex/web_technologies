@@ -24,9 +24,8 @@ interface EnvVariables {
  * @returns {webpack.Configuration} - Конфигурация Webpack
  */
 export default (env: EnvVariables): webpack.Configuration => {
-    // Пути для сборки
     const paths: BuildPaths = {
-        output: path.join(__dirname, 'dist', 'client', 'webpack'),
+        output: path.join(__dirname, 'dist', 'client'),
         views: path.join(__dirname, 'src', 'client', 'ui', 'views'),
         tsConfig: path.join('tsconfig.client.webpack.json'),
     }

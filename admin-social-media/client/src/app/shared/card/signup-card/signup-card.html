@@ -5,6 +5,11 @@
 
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
         <div class="signup-card__content">
+            @if (errorMessage) {
+            <div class="error-message" style="color: red; margin-bottom: 16px; text-align: center;">
+                {{ errorMessage }}
+            </div>
+            }
             @for (field of formFields; track field) {
             <mat-form-field appearance="outline">
                 <mat-label>{{ field.label }}</mat-label>

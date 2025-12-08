@@ -1,9 +1,9 @@
-import './App.scss'
-import LoginPage from './pages/LoginPage/LoginPage'
+import { RouterProvider } from "react-router/dom";
+import { router } from './routes';
 
 function App() {
     return (
-        <LoginPage />
+        <RouterProvider router={router} />
     )
 }
 

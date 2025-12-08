@@ -4,12 +4,24 @@
             <mat-icon>menu</mat-icon>
         </button>
         <span class="layout__navbar-header">Новости</span>
+        <span class="layout__navbar-spacer" style="flex:1 1 auto"></span>
+        <button mat-icon-button aria-label="Выйти" (click)="logout()" title="Выйти">
+            <mat-icon>logout</mat-icon>
+        </button>
     </app-navbar>
 
     <app-sidenav #sidenav="appSidenav">
         <div sidenav class="layout__sidenav">
             <mat-nav-list class="layout__sidenav-list">
                 @for (option of listOptions; track option) {
+                @if (option.route === 'admin') {
+                <a mat-list-item href="https://localhost:3000/" target="_blank" class="layout__sidenav-item">
+                    <mat-icon matListItemIcon aria-hidden="false" aria-label="{{option.name}}">
+                        {{option.icon}}
+                    </mat-icon>
+                    {{option.name}}
+                </a>
+                } @else {
                 <a mat-list-item [routerLink]="option.route" class="layout__sidenav-item">
                     <mat-icon matListItemIcon aria-hidden="false" aria-label="{{option.name}}">
                         {{option.icon}}
@@ -17,11 +29,13 @@
                     {{option.name}}
                 </a>
                 }
+                }
             </mat-nav-list>
             <div class="layout__sidenav-spacer"></div>
-            <app-profile-card [username]="userProfile.username" [avatarUrl]="userProfile.avatarUrl"
-                [fullName]="userProfile.fullName" [birthDate]="userProfile.birthDate" [email]="userProfile.email">
-            </app-profile-card>
+            <div class="layout__sidenav-bottom">
+                <app-profile-card [userProfile]="userProfile">
+                </app-profile-card>
+            </div>
         </div>
 
         <div class="layout__content">

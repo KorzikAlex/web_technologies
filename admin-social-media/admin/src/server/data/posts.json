@@ -1,1 +1,50 @@
-[]
+[
+    {
+        "id": 1,
+        "authorId": "2",
+        "content": "Привет",
+        "createdAt": "2025-12-08T10:24:42.184Z",
+        "updatedAt": "2025-12-08T10:24:42.184Z",
+        "status": "active"
+    },
+    {
+        "id": 2,
+        "authorId": "2",
+        "content": "Как дела",
+        "createdAt": "2025-12-08T10:24:48.845Z",
+        "updatedAt": "2025-12-08T10:24:48.845Z",
+        "status": "active"
+    },
+    {
+        "id": 3,
+        "authorId": "1",
+        "content": "Что делаешь",
+        "createdAt": "2025-12-08T10:24:55.091Z",
+        "updatedAt": "2025-12-08T10:24:55.091Z",
+        "status": "active"
+    },
+    {
+        "id": 4,
+        "authorId": "2",
+        "content": "мсчиапав",
+        "createdAt": "2025-12-08T10:27:29.794Z",
+        "updatedAt": "2025-12-08T10:27:29.794Z",
+        "status": "active"
+    },
+    {
+        "id": 5,
+        "authorId": "2",
+        "content": "прпро",
+        "createdAt": "2025-12-08T10:28:47.675Z",
+        "updatedAt": "2025-12-08T10:28:47.675Z",
+        "status": "active"
+    },
+    {
+        "id": 6,
+        "authorId": "1",
+        "content": "рпаврапв",
+        "createdAt": "2025-12-08T10:28:49.963Z",
+        "updatedAt": "2025-12-08T10:28:49.963Z",
+        "status": "active"
+    }
+]
