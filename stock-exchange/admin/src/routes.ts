@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
-import LayoutPage from "./pages/LayoutPage/LayoutPage";
-import BrokersPage from "./pages/BrokersPage/BrokersPage";
+import LayoutPage from "./pages/LayoutPage";
+import BrokersPage from "./pages/BrokersPage";
 import StocksPage from "./pages/StocksPage/StocksPage";
 
 export const router = createBrowserRouter([

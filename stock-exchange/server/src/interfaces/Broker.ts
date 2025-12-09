@@ -1,5 +1,6 @@
 export interface Broker {
-    id: number;
+    id?: number;
     name: string;
     balance: number;
+    stocks?: Record<string, number>;
 }

@@ -1,6 +1,4 @@
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import PeopleIcon from '@mui/icons-material/People';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 import { NavLink } from "react-router";
 
@@ -17,6 +15,27 @@ type SideNavProps = {
 }
 
 export default function SideNav({ navLinks }: SideNavProps) {
+
+    const NavLinksList = (
+        <List>
+            {
+                navLinks?.map(
+                    (link) => (
+                        <ListItem key={link.text}>
+                            <ListItemButton
+                                component={NavLink}
+                                to={link.href}
+                            >
+                                <ListItemIcon>{link.icon}</ListItemIcon>
+                                <ListItemText primary={link.text} />
+                            </ListItemButton>
+                        </ListItem>
+                    )
+                )
+            }
+        </List>
+    );
+
     return (
         <>
             <Drawer
@@ -33,23 +52,7 @@ export default function SideNav({ navLinks }: SideNavProps) {
                     }
                 }
             >
-                <List>
-                    {
-                        navLinks?.map(
-                            (link) => (
-                                <ListItem key={link.text}>
-                                    <ListItemButton
-                                        component={NavLink}
-                                        to={link.href}
-                                    >
-                                        <ListItemIcon>{link.icon}</ListItemIcon>
-                                        <ListItemText primary={link.text} />
-                                    </ListItemButton>
-                                </ListItem>
-                            )
-                        )
-                    }
-                </List>
+                {NavLinksList}
             </Drawer>
         </>
     );
