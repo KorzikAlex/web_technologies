@@ -2,6 +2,8 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { type Broker } from "@/interfaces/Broker";
+import { useState } from "react";
+import EditBrokerDialog from "./EditBrokerDialog";
 
 type BrokersTableProps = {
     brokers?: Broker[]
@@ -10,28 +12,42 @@ type BrokersTableProps = {
 type ButtonColor = "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning";
 
 export default function BrokersTable({ brokers }: BrokersTableProps) {
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+
     const tableHeadArray: string[] = [
         "Имя брокера",
         "Баланс",
         "Действия",
     ];
 
+    const handleEditBroker = (broker: Broker) => {
+        setSelectedBroker(broker);
+        setEditDialogOpen(true);
+    };
+
+    const handleDeleteBroker = (broker: Broker) => {
+        console.log("Удалить брокера:", broker);
+        // TODO: Реализовать удаление
+    };
+
+    const handleSaveBroker = (updatedBroker: Broker) => {
+        console.log("Сохранить брокера:", updatedBroker);
+        // TODO: Реализовать сохранение
+    };
+
     const actionsArray = [
         {
             label: "Редактировать",
             icon: <EditIcon />,
             color: "primary" as ButtonColor,
-            onClick: (broker: Broker) => {
-                console.log("Редактировать брокера:", broker);
-            }
+            onClick: handleEditBroker
         },
         {
             label: "Удалить",
             icon: <DeleteIcon />,
             color: "error" as ButtonColor,
-            onClick: (broker: Broker) => {
-                console.log("Удалить брокера:", broker);
-            }
+            onClick: handleDeleteBroker
         }
     ];
 
@@ -47,7 +63,7 @@ export default function BrokersTable({ brokers }: BrokersTableProps) {
         </TableRow>
     )
 
-    const BrokerActions = (
+    const BrokerActions = (broker: Broker) => (
         <Box sx={
             {
                 display: 'flex',
@@ -63,7 +79,7 @@ export default function BrokersTable({ brokers }: BrokersTableProps) {
                             variant="outlined"
                             color={action.color}
                             startIcon={action.icon}
-                            onClick={() => action.onClick}
+                            onClick={() => action.onClick(broker)}
                         >
                             {action.label}
                         </Button>
@@ -82,7 +98,7 @@ export default function BrokersTable({ brokers }: BrokersTableProps) {
                             <TableCell>{broker.name}</TableCell>
                             <TableCell>{broker.balance}</TableCell>
                             <TableCell>
-                                {BrokerActions}
+                                {BrokerActions(broker)}
                             </TableCell>
                         </TableRow>
                     )
@@ -92,15 +108,24 @@ export default function BrokersTable({ brokers }: BrokersTableProps) {
     )
 
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    {TableHeadRow}
-                </TableHead>
-                <TableBody>
-                    {BrokersList}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        {TableHeadRow}
+                    </TableHead>
+                    <TableBody>
+                        {BrokersList}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <EditBrokerDialog
+                open={editDialogOpen}
+                broker={selectedBroker}
+                onClose={() => setEditDialogOpen(false)}
+                onSave={handleSaveBroker}
+            />
+        </>
     );
 }
