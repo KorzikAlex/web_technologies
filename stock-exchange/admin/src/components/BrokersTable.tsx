@@ -14,6 +14,7 @@ type ButtonColor = "inherit" | "primary" | "secondary" | "success" | "error" | "
 export default function BrokersTable({ brokers }: BrokersTableProps) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [selectedBroker, setSelectedBroker] = useState<Broker | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const tableHeadArray: string[] = [
         "Имя брокера",

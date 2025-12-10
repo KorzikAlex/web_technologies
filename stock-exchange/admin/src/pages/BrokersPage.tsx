@@ -5,7 +5,7 @@ import { useState } from 'react';
 import AddBrokerDialog from '@/components/AddBrokerDialog';
 export default function BrokersPage() {
     const [addDialogOpen, setAddDialogOpen] = useState(false);
-
+    
     const handleAddBroker = () => {
         setAddDialogOpen(true);
         console.log('Добавить брокера');
@@ -36,10 +36,11 @@ export default function BrokersPage() {
                     bottom: 16,
                     right: 16,
                 }}
-                onClick={() => handleAddBroker}
+                onClick={handleAddBroker}
             >
                 <AddIcon />
             </Fab>
+
             <AddBrokerDialog
                 open={addDialogOpen}
                 onClose={() => setAddDialogOpen(false)}
