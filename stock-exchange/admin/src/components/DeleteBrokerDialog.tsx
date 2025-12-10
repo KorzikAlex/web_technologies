@@ -12,11 +12,12 @@ type DeleteBrokerDialogProps = {
     open: boolean;
     broker: Broker | null;
     onClose: () => void;
-    onDelete: () => void;
+    onDelete: (broker: Broker) => void;
 };
 
 export default function DeleteBrokerDialog({
     open,
+    broker,
     onClose,
     onDelete,
 }: DeleteBrokerDialogProps) {
@@ -31,7 +32,7 @@ export default function DeleteBrokerDialog({
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Отмена</Button>
-                <Button onClick={onDelete} variant="contained" color="error">
+                <Button onClick={onDelete(broker)} color="error" variant="contained">
                     Удалить
                 </Button>
             </DialogActions>
