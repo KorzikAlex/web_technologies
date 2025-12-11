@@ -19,7 +19,16 @@ export default function AddBrokerDialog({
     onCreate,
 }: AddBrokerDialogProps) {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+                variant: 'outlined',
+                elevation: 0,
+            }}
+        >
             <DialogTitle>Новый брокер</DialogTitle>
             <DialogContent>
                 <TextField

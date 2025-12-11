@@ -1,13 +1,14 @@
 import { Fab } from '@mui/material';
-import BrokersTable from '../components/BrokersTable';
+import BrokersTable from '@/components/tables/BrokersTable';
+import AddBrokerDialog from '@/components/dialogs/BrokersPage/AddBrokerDialog';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
-import AddBrokerDialog from '@/components/AddBrokerDialog';
+
 export default function BrokersPage() {
     const [addDialogOpen, setAddDialogOpen] = useState(false);
-    
+
     const handleAddBroker = () => {
-        setAddDialogOpen(true);
+        setAddDialogOpen((prev) => !prev);
         console.log('Добавить брокера');
         // TODO: Реализовать добавление
     };
@@ -43,7 +44,7 @@ export default function BrokersPage() {
 
             <AddBrokerDialog
                 open={addDialogOpen}
-                onClose={() => setAddDialogOpen(false)}
+                onClose={() => setAddDialogOpen((prev) => !prev)}
                 onCreate={(name: string, balance: number) => {
                     console.log('Создать брокера:', { name, balance });
                 }}

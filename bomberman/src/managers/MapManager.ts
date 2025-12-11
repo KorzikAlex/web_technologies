@@ -1,234 +1,242 @@
-type TileSet = {
-    firstgid: number;
-    image: HTMLImageElement;
-    name: string;
-    xCount: number;
-    yCount: number;
-};
-
-type Tile = {
-    img: HTMLImageElement | null;
-    px: number;
-    py: number;
-};
-
-
-// export const MapManager = {
-//     mapData: null as any,
-//     tLayer: null as any,
-//     xCount: 0,
-//     yCount: 0,
-//     tSize: { x: 64, y: 64 },
-//     mapSize: { x: 64, y: 64 },
-//     tilesets: [] as TileSet[],
-//     imgLoadCount: 0,
-//     imgLoaded: false,
-//     jsonLoaded: false,
-//     view: { x: 0, y: 0, w: 800, h: 600 },
-
-//     parseMap(tilesJSON: string): void {
-//         MapManager.mapData = JSON.parse(tilesJSON);
-
-//         MapManager.xCount = MapManager.mapData.width;
-//         MapManager.yCount = MapManager.mapData.height;
-//         MapManager.tSize.x = MapManager.mapData.tilewidth;
-//         MapManager.tSize.y = MapManager.mapData.tileheight;
-//         MapManager.mapSize.x = MapManager.xCount * MapManager.tSize.x;
-//         MapManager.mapSize.y = MapManager.yCount * MapManager.tSize.y;
-
-//         for (let i = 0; i < MapManager.mapData.tilesets.length; i++) {
-
-//             const img = new Image();
-
-//             img.onload = () => {
-//                 MapManager.imgLoadCount++;
-//                 if (MapManager.imgLoadCount === MapManager.mapData.tilesets.length) {
-//                     MapManager.imgLoaded = true;
-//                 }
-//             };
-
-//             const t = MapManager.mapData.tilesets[i];
-//             img.src = t.image;
-
-
-//             const ts: TileSet = {
-//                 firstgid: t.firstgid,
-//                 image: img,
-//                 name: t.name,
-//                 xCount: Math.floor((t.imagewidth ?? img.width) / MapManager.tSize.x),
-//                 yCount: Math.floor((t.imageheight ?? img.height) / MapManager.tSize.y),
-//             };
-//             MapManager.tilesets.push(ts);
-//         }
-
-//         MapManager.jsonLoaded = true;
-//     },
-
-//     loadMap(path: string): void {
-//         const request = new XMLHttpRequest();
-//         request.onreadystatechange = () => {
-//             if (request.readyState === 4 && request.status === 200) {
-//                 MapManager.parseMap(request.responseText);
-//             }
-//         };
-//         request.open('GET', path, true);
-//         request.send();
-//     },
-
-//     getTileset(tileIndex: number): TileSet | null {
-//         for (let i = MapManager.tilesets.length - 1; i >= 0; i--) {
-//             if (MapManager.tilesets[i].firstgid <= tileIndex) {
-//                 return MapManager.tilesets[i];
-//             }
-//         }
-//         return null;
-//     },
-
-//     getTile(tileIndex: number): Tile {
-//         const tileSet = this.getTileset(tileIndex);
-//         if (!tileSet) {
-//             throw new Error(`Tileset not found for tile index: ${tileIndex}`);
-//         }
-//         const id = tileIndex - tileSet.firstgid; // индекс внутри tileset
-//         const x = id % tileSet.xCount;
-//         const y = Math.floor(id / tileSet.xCount);
-//         return {
-//             img: tileSet.image,
-//             px: x * MapManager.tSize.x,
-//             py: y * MapManager.tSize.y,
-//         };
-//     },
-
-//     draw(ctx: CanvasRenderingContext2D): void {
-//         if (!MapManager.jsonLoaded || !MapManager.imgLoaded) {
-//             setTimeout(() => MapManager.draw(ctx), 100);
-//             return;
-//         }
-
-//         if (!MapManager.tLayer) {
-//             for (let id = 0; id < MapManager.mapData.layers.length; id++) {
-//                 const layer = MapManager.mapData.layers[id];
-//                 if (layer.type === 'tilelayer') {
-//                     MapManager.tLayer = layer;
-//                     break;
-//                 }
-//             }
-//         }
-
-//         const data: number[] = MapManager.tLayer.data;
-//         for (let i = 0; i < data.length; i++) {
-//             const gid = data[i];
-//             if (gid !== 0) {
-//                 const tile = MapManager.getTile(gid);
-//                 if (!tile.img) {
-//                     continue;
-//                 }
-//                 let pX = (i % MapManager.xCount) * MapManager.tSize.x;
-//                 let pY = Math.floor(i / MapManager.xCount) * MapManager.tSize.y;
-
-//                 // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-//                 if (!this.isVisible(pX, pY, MapManager.tSize.x, MapManager.tSize.y)) {
-//                     continue;
-//                 }
-//                 pX -= this.view.x;
-//                 pY -= this.view.y;
-//                 ctx.drawImage(tile.img, tile.px, tile.py, MapManager.tSize.x, MapManager.tSize.y, pX, pY, MapManager.tSize.x, MapManager.tSize.y);
-//             }
-//         }
-//     },
-
-//     isVisible(x: number, y: number, width: number, height: number): boolean {
-//         return !(
-//             x + width < this.view.x ||
-//             y + height < this.view.y ||
-//             x > this.view.x + this.view.w ||
-//             y > this.view.y + this.view.h
-//         );
-//     },
-
-//     parseEntities() {
-//         if (!MapManager.imgLoaded || !MapManager.jsonLoaded) {
-//             setTimeout(() => {
-//                 MapManager.parseEntities();
-//             }, 100);
-//         }
-//         for (let j = 0; j < this.mapData.layers.length; j++) {
-//             if (this.mapData.layers[j].type === 'objectgroup') {
-//                 const entities = this.mapData.layers[j];
-//                 for (let i = 0; i < entities.objects.length; i++) {
-//                     const e = entities.objects[i];
-//                     try {
-//                         const obj = Object.create(gameManager.factory[e.type]);
-//                         obj.name = e.name;
-//                         obj.pos_x = e.x;
-//                         obj.pos_y = e.y;
-//                         obj.size_x = e.width;
-//                         obj.size_y = e.height;
-//                         gameManager.entities.push(obj);
-//                         if (obj.name === "player")
-//                             gameManager.initPlayer(obj);
-//                     } catch (ex) {
-//                         console.log("Error while creating: [" + e.gid + "] " + e.type +
-//                             ", " + ex);
-//                     }
-//                 }
-//             }
-//         }
-//     },
-
-//     getTilesetldx(x: number, y: number): number {
-//         const wX: number = x;
-//         const wY: number = y;
-//         const idx: number = Math.floor(wY / this.tSize.y) * this.xCount + Math.floor(wX / this.tSize.x);
-//         return this.tLayer.data[idx];
-//     },
-
-//     centerAt(x: number, y: number): void {
-//         if (x < this.view.w / 2) {
-//             this.view.x = 0;
-//         }
-//         else {
-//             if (x > this.mapSize.x - this.view.w / 2) {
-//                 this.view.x = this.mapSize.x - this.view.w;
-//             }
-//             else {
-//                 this.view.x = x - (this.view.w / 2);
-//             }
-//         }
-
-//         if (y < this.view.h / 2) {
-//             this.view.y = 0;
-//         }
-//         else {
-//             if (y > this.mapSize.y - this.view.h / 2) {
-//                 this.view.y = this.mapSize.y - this.view.h;
-//             }
-//             else {
-//                 this.view.y = y - (this.view.h / 2);
-//             }
-//         }
-
-//     }
-// };
-
+import type { Layer, MapData, Tile, Tileset, MapTileset } from './types';
 
 export class MapManager {
-    mapData: any = null;
-    tLayer: any = null;
+    mapData: MapData | null;
+    tLayer: Layer | null;
+    xCount: number;
+    yCount: number;
+    tSize: Record<string, number>;
+    mapSize: Record<string, number>;
+    tilesets: MapTileset[];
+    imgLoadCount: number;
+    imgLoaded: boolean;
+    jsonLoaded: boolean;
+    view: Record<string, number>;
 
-    xCount: number = 0;
-    yCount: number = 0;
+    constructor(jsonPath: string) {
+        this.mapData = null;
+        this.tLayer = null;
+        this.tilesets = [];
 
-    tSize = { x: 64, y: 64 };
-    mapSize = { x: 64, y: 64 };
-    tilesets: TileSet[] = [];
+        this.imgLoadCount = 0;
+        this.imgLoaded = false;
+        this.jsonLoaded = false;
 
-    imgLoadCount: number = 0
-    imgLoaded: boolean = false;
-    jsonLoaded: boolean = false;
-    view = { x: 0, y: 0, w: 800, h: 600 };
+        this.xCount = 0;
+        this.yCount = 0;
 
-    pasreMap(tilesJSON: string): void {
-        MapManagerInstance.mapData = JSON.parse(tilesJSON);
+        this.tSize = { x: 0, y: 0 };
+        this.mapSize = { x: 0, y: 0 };
+
+        this.view = { x: 0, y: 0, w: 800, h: 600 };
+
+        if (jsonPath) {
+            this.loadMap(jsonPath);
+        }
+    }
+
+    loadMap(path: string): void {
+        const request: XMLHttpRequest = new XMLHttpRequest();
+        request.onreadystatechange = (): void => {
+            if (request.readyState === 4 && request.status === 200) {
+                this.parseMap(request.responseText);
+            }
+        };
+        request.open('GET', path, true);
+        request.send();
+    }
+
+    parseMap(tilesJSON: string): void {
+        const data = JSON.parse(tilesJSON) as MapData;
+
+        this.mapData = data;
+
+        this.xCount = data.width;
+        this.yCount = data.height;
+
+        this.tSize.x = data.tilewidth;
+        this.tSize.y = data.tileheight;
+
+        this.mapSize.x = this.xCount * this.tSize.x;
+        this.mapSize.y = this.yCount * this.tSize.y;
+
+        for (let i = 0; i < this.mapData.tilesets.length; ++i) {
+            const img: HTMLImageElement = new Image();
+
+            img.onload = (): void => {
+                this.imgLoadCount++;
+            };
+
+            if (this.imgLoadCount === this.mapData.tilesets.length) {
+                this.imgLoaded = true;
+            }
+            img.src = this.mapData.tilesets[i].image;
+
+            const t: Tileset = this.mapData.tilesets[i];
+            this.tilesets.push({
+                firstgid: t.firstgid,
+                image: img,
+                name: t.name,
+                xCount: Math.floor(t.imagewidth / this.tSize.x),
+                yCount: Math.floor(t.imageheight / this.tSize.y),
+            });
+        }
+        this.jsonLoaded = true;
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        if (!this.imgLoaded || !this.jsonLoaded || this.mapData === null) {
+            setTimeout((): void => {
+                this.draw(ctx);
+            }, 100);
+            return;
+        }
+
+        if (this.tLayer === null) {
+            for (let id = 0; id < this.mapData.layers.length; ++id) {
+                const layer: Layer = this.mapData.layers[id];
+                if (layer.type === 'tilelayer') {
+                    this.tLayer = layer;
+                    break;
+                }
+            }
+        }
+
+        if (this.tLayer === null) {
+            return;
+        }
+
+        for (let i = 0; i < this.tLayer.data.length; ++i) {
+            if (this.tLayer.data[i] !== 0) {
+                const tile = this.getTile(this.tLayer.data[i]);
+                let pX = (i % this.xCount) * this.tSize.x;
+                let pY = Math.floor(i / this.xCount) * this.tSize.y;
+
+                if (!this.isVisible(pX, pY, this.tSize.x, this.tSize.y)) {
+                    continue;
+                }
+
+                pX -= this.view.x;
+                pY -= this.view.y;
+
+                if (!tile.img) {
+                    continue;
+                }
+
+                ctx.drawImage(
+                    tile.img,
+                    tile.px,
+                    tile.py,
+                    this.tSize.x,
+                    this.tSize.y,
+                    pX,
+                    pY,
+                    this.tSize.x,
+                    this.tSize.y,
+                );
+            }
+        }
+    }
+    isVisible(x: number, y: number, width: number, height: number): boolean {
+        return !(
+            x + width < this.view.x ||
+            x > this.view.x + this.view.w ||
+            y + height < this.view.y ||
+            y > this.view.y + this.view.h
+        );
+    }
+
+    getTile(tileIndex: number): Tile {
+        const tile: Tile = {
+            img: null,
+            px: 0,
+            py: 0,
+        };
+
+        const tileset: MapTileset | null = this.getTileset(tileIndex);
+
+        if (tileset === null) {
+            return tile;
+        }
+
+        tile.img = tileset.image;
+        const id = tileIndex - tileset.firstgid;
+
+        const x = id % tileset.xCount;
+        const y = Math.floor(id / tileset.xCount);
+
+        tile.px = x * this.tSize.x;
+        tile.py = y * this.tSize.y;
+        return tile;
+    }
+
+    getTileset(tileIndex: number): MapTileset | null {
+        for (let i = this.tilesets.length - 1; i >= 0; --i) {
+            if (this.tilesets[i].firstgid <= tileIndex) {
+                return this.tilesets[i];
+            }
+        }
+        return null;
+    }
+
+    parseEntities(): void {
+        if (!this.imgLoaded || !this.jsonLoaded || this.mapData === null) {
+            setTimeout((): void => {
+                this.parseEntities();
+            }, 100);
+            return;
+        }
+        for (let j = 0; j < this.mapData.layers.length; ++j) {
+            const entities = this.mapData.layers[j];
+            if (this.mapData.layers[j].type === 'objectgroup') {
+                if (!entities.objects) {
+                    continue;
+                }
+                const e = entities.objects[i];
+                try {
+                    const obj = Object.create(gameManager.factory[e.type]);
+                    // в соответствии с типом создаем экземпляр объекта
+                    obj.name = e.name;
+                    obj.pos_x = e.x;
+                    obj.pos_y = e.y;
+                    obj.size_x = e.width;
+                    obj.size_y = e.height;
+                    // помещаем в массив объектов
+                    gameManager.entities.push(obj);
+                    if (obj.name === 'player')
+                        // инициализируем параметры игрока
+                        gameManager.initPlayer(obj);
+                } catch (error) {
+                    console.error(`Error while creating: ["${e.gid}"]${e.type}, ${error}`); //
+                }
+            }
+        }
+    }
+
+    getTilesetIdx(x: number, y: number): number {
+        const wX = x;
+        const wY = y;
+        const idx = Math.floor(wY / this.tSize.y) * this.xCount + Math.floor(wX / this.tSize.x);
+        if (this.tLayer === null) {
+            return -1;
+        }
+        return this.tLayer.data[idx];
+    }
+
+    centerAt(x: number, y: number): void {
+        if (x < this.view.w / 2) {
+            this.view.x = 0;
+        } else if (x > this.mapSize.x - this.view.w / 2) {
+            this.view.x = this.mapSize.x - this.view.w;
+        } else {
+            this.view.x = x - this.view.w / 2;
+        }
+        if (y < this.view.h / 2) {
+            this.view.y = 0;
+        } else if (y > this.mapSize.y - this.view.h / 2) {
+            this.view.y = this.mapSize.y - this.view.h;
+        } else {
+            this.view.y = y - this.view.h / 2;
+        }
     }
 }

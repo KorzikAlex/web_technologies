@@ -43,6 +43,10 @@ export default function EditBrokerDialog({
             maxWidth="sm"
             fullWidth
             key={broker?.id}
+            PaperProps={{
+                variant: 'outlined',
+                elevation: 0,
+            }}
         >
             <DialogTitle>Редактировать брокера</DialogTitle>
             <DialogContent>

@@ -10,7 +10,7 @@ import {
 
 type DeleteBrokerDialogProps = {
     open: boolean;
-    broker: Broker | null;
+    broker: Broker;
     onClose: () => void;
     onDelete: (broker: Broker) => void;
 };
@@ -22,7 +22,16 @@ export default function DeleteBrokerDialog({
     onDelete,
 }: DeleteBrokerDialogProps) {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+                variant: 'outlined',
+                elevation: 0,
+            }}
+        >
             <DialogTitle>Удалить брокера</DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -32,7 +41,11 @@ export default function DeleteBrokerDialog({
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Отмена</Button>
-                <Button onClick={onDelete(broker)} color="error" variant="contained">
+                <Button
+                    onClick={() => onDelete(broker)}
+                    color="error"
+                    variant="contained"
+                >
                     Удалить
                 </Button>
             </DialogActions>
