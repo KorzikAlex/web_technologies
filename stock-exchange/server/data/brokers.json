@@ -1,0 +1,11 @@
+[
+    {
+        "name": "Гоблин",
+        "balance": 9274.52,
+        "id": 1,
+        "stocks": {},
+        "stocksPurchasePrice": {
+            "QCOM": 181.37
+        }
+    }
+]

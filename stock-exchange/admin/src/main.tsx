@@ -6,6 +6,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -24,11 +26,13 @@ export function ThemeWrapper({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <ThemeWrapper>
-            <CssBaseline />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <App />
-            </LocalizationProvider>
-        </ThemeWrapper>
+        <Provider store={store}>
+            <ThemeWrapper>
+                <CssBaseline />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <App />
+                </LocalizationProvider>
+            </ThemeWrapper>
+        </Provider>
     </StrictMode>,
 );

@@ -1,6 +1,7 @@
 export interface Broker {
-    id: number,
-    name: string,
-    balance: number,
-    stocks?: Record<string, number>,
+    id: number;
+    name: string;
+    balance: number;
+    stocks?: Record<string, number>;
+    stocksPurchasePrice?: Record<string, number>; // Цена покупки каждой акции
 }

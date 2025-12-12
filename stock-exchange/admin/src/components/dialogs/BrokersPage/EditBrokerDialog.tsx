@@ -6,7 +6,7 @@ import {
     DialogActions,
     Button,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type Broker } from '@/interfaces/Broker';
 
 type EditBrokerDialogProps = {
@@ -24,6 +24,11 @@ export default function EditBrokerDialog({
 }: EditBrokerDialogProps) {
     const [name, setName] = useState(broker?.name || '');
     const [balance, setBalance] = useState(broker?.balance.toString() || '');
+
+    useEffect(() => {
+        setName(broker?.name || '');
+        setBalance(broker?.balance.toString() || '');
+    }, [broker]);
 
     const handleSave = () => {
         if (broker && name && balance) {

@@ -2,6 +2,7 @@ import type { Company } from '@/interfaces/Company';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import BaseTable from './BaseTable';
 import SelectDateDialog from '@/components/dialogs/StocksPage/SelectDateDialog';
 import { useState } from 'react';
@@ -15,11 +16,13 @@ type CompaniesTableProps = {
         endDate: Dayjs | null,
         viewType: 'table' | 'chart',
     ) => void;
+    onToggleEnabled?: (company: Company, enabled: boolean) => void;
 };
 
 export default function CompaniesTable({
     companies,
     onDateRangeSelected,
+    onToggleEnabled,
 }: CompaniesTableProps) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(
@@ -75,10 +78,14 @@ export default function CompaniesTable({
             onClick: (company: Company) => handleOpenDialog(company, 'chart'),
         },
         {
-            label: 'Принять участие в торгах',
-            color: 'success' as const,
-            icon: <CheckIcon />,
-            onClick: () => {},
+            label: (company: Company) => company.enabled ? 'Убрать из торгов' : 'Добавить в торги',
+            color: (company: Company) => company.enabled ? 'warning' as const : 'success' as const,
+            icon: (company: Company) => company.enabled ? <CloseIcon /> : <CheckIcon />,
+            onClick: (company: Company) => {
+                if (onToggleEnabled) {
+                    onToggleEnabled(company, !company.enabled);
+                }
+            },
         },
     ];
 

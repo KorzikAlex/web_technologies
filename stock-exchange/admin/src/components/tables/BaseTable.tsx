@@ -8,18 +8,23 @@ import {
     TableRow,
     Paper,
     Button,
+    TableSortLabel,
 } from '@mui/material';
 
 type Column<T> = {
     key: string;
     label: string;
     render: (item: T) => React.ReactNode;
+    sortable?: boolean;
+    onSort?: () => void;
+    sortActive?: boolean;
+    sortOrder?: 'asc' | 'desc';
 };
 
 type Action<T> = {
-    label: string;
-    icon?: React.ReactNode;
-    color?: ButtonColor;
+    label: string | ((item: T) => string);
+    icon?: React.ReactNode | ((item: T) => React.ReactNode);
+    color?: ButtonColor | ((item: T) => ButtonColor);
     onClick: (item: T) => void;
 };
 
@@ -66,7 +71,17 @@ export default function BaseTable<T extends { id: string | number }>({
                         backgroundColor: 'action.hover',
                     }}
                 >
-                    {column.label}
+                    {column.sortable ? (
+                        <TableSortLabel
+                            active={column.sortActive}
+                            direction={column.sortOrder || 'asc'}
+                            onClick={column.onSort}
+                        >
+                            {column.label}
+                        </TableSortLabel>
+                    ) : (
+                        column.label
+                    )}
                 </TableCell>
             ))}
             {actions && actions.length > 0 && (
@@ -93,31 +108,36 @@ export default function BaseTable<T extends { id: string | number }>({
                     flexWrap: 'wrap',
                 }}
             >
-                {actions.map((action) => (
-                    <Button
-                        key={action.label}
-                        size="small"
-                        variant="outlined"
-                        color={action.color ?? 'inherit'}
-                        startIcon={action.icon}
-                        onClick={() => action.onClick(item)}
-                        sx={{
-                            minWidth: { xs: 'auto', sm: 'auto' },
-                            '& .MuiButton-startIcon': {
-                                margin: { xs: 0, sm: '0 8px 0 -4px' },
-                            },
-                        }}
-                    >
-                        <Box
-                            component="span"
+                {actions.map((action, idx) => {
+                    const label = typeof action.label === 'function' ? action.label(item) : action.label;
+                    const color = typeof action.color === 'function' ? action.color(item) : (action.color ?? 'inherit');
+                    const icon = typeof action.icon === 'function' ? action.icon(item) : action.icon;
+                    return (
+                        <Button
+                            key={idx}
+                            size="small"
+                            variant="outlined"
+                            color={color}
+                            startIcon={icon}
+                            onClick={() => action.onClick(item)}
                             sx={{
-                                display: { xs: 'none', lg: 'inline' },
+                                minWidth: { xs: 'auto', sm: 'auto' },
+                                '& .MuiButton-startIcon': {
+                                    margin: { xs: 0, sm: '0 8px 0 -4px' },
+                                },
                             }}
                         >
-                            {action.label}
-                        </Box>
-                    </Button>
-                ))}
+                            <Box
+                                component="span"
+                                sx={{
+                                    display: { xs: 'none', lg: 'inline' },
+                                }}
+                            >
+                                {label}
+                            </Box>
+                        </Button>
+                    );
+                })}
             </Box>
         );
     };

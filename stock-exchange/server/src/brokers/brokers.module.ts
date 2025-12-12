@@ -6,5 +6,6 @@ import { BrokersService } from './brokers.service';
     imports: [],
     controllers: [BrokersController],
     providers: [BrokersService],
+    exports: [BrokersService],
 })
 export class BrokersModule {}

@@ -6,6 +6,7 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
+import { useState } from 'react';
 
 type AddBrokerDialogProps = {
     open: boolean;
@@ -18,6 +19,18 @@ export default function AddBrokerDialog({
     onClose,
     onCreate,
 }: AddBrokerDialogProps) {
+    const [name, setName] = useState('');
+    const [balance, setBalance] = useState('');
+
+    const handleCreate = () => {
+        const parsed = parseFloat(balance || '0');
+        if (!name) return;
+        onCreate(name, parsed);
+        setName('');
+        setBalance('');
+        onClose();
+    };
+
     return (
         <Dialog
             open={open}
@@ -39,6 +52,8 @@ export default function AddBrokerDialog({
                     fullWidth
                     variant="outlined"
                     sx={{ mt: 2 }}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                 />
                 <TextField
                     margin="dense"
@@ -47,15 +62,13 @@ export default function AddBrokerDialog({
                     fullWidth
                     variant="outlined"
                     sx={{ mt: 2 }}
+                    value={balance}
+                    onChange={(e) => setBalance(e.target.value)}
                 />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Отмена</Button>
-                <Button
-                    onClick={() => onCreate}
-                    variant="contained"
-                    color="primary"
-                >
+                <Button onClick={handleCreate} variant="contained" color="primary">
                     Создать
                 </Button>
             </DialogActions>

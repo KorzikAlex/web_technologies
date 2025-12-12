@@ -1,4 +1,4 @@
-import { Get, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { StocksController } from './stocks.controller';
 import { StocksService } from './stocks.service';
 
@@ -6,12 +6,6 @@ import { StocksService } from './stocks.service';
     imports: [],
     controllers: [StocksController],
     providers: [StocksService],
+    exports: [StocksService],
 })
-export class StocksModule {
-    constructor(private readonly stocksService: StocksService) {}
-
-    @Get()
-    getStocks(): string {
-        return this.stocksService.getStocks();
-    }
-}
+export class StocksModule {}

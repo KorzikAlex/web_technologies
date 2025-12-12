@@ -3,4 +3,5 @@ export interface Broker {
     name: string;
     balance: number;
     stocks?: Record<string, number>;
+    stocksPurchasePrice?: Record<string, number>;
 }

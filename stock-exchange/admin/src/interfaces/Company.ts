@@ -1,5 +1,6 @@
 export interface Company {
-    id: number,
-    name: string,
-    symbol?: string,
+    id: number;
+    name: string;
+    symbol: string;
+    enabled: boolean;
 }

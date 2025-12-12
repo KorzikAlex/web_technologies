@@ -1,6 +1,12 @@
+export interface StockHistoryEntry {
+    date: string;
+    open: number;
+}
+
 export interface Stock {
+    id: number;
     symbol: string;
     name: string;
-    price: number;
-    quantity: number;
+    enabled: boolean;
+    history: StockHistoryEntry[];
 }
