@@ -2,7 +2,7 @@
 
 import { type Broker } from '@/interfaces/Broker';
 import { ref } from 'vue';
-import FinanceChartCard from './cards/FinanceChartCard.vue';
+import FinanceChartCard from '@/shared/components/cards/FinanceChartCard.vue';
 
 interface Props {
     brokers?: Broker[];

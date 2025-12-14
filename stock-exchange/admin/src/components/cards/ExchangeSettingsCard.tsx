@@ -27,6 +27,13 @@ type TimeUnit = 'seconds' | 'milliseconds';
 export default function ExchangeSettingsCard() {
     const dispatch = useAppDispatch();
     const { settings, loading } = useAppSelector((state) => state.exchange);
+    const stocks = useAppSelector((state) => state.stocks.stocks);
+
+    // Проверяем, есть ли включенные акции
+    const hasEnabledStocks = useMemo(() =>
+        stocks.some((stock) => stock.enabled),
+        [stocks]
+    );
 
     // Вычисляем начальные значения из settings
     const derivedStartDate = useMemo(() =>
@@ -121,6 +128,7 @@ export default function ExchangeSettingsCard() {
                             label="Дата начала торгов"
                             value={startDate}
                             onChange={(newValue) => setStartDate(newValue)}
+                            format="DD/MM/YYYY"
                             slotProps={{ textField: { fullWidth: true } }}
                             disabled={settings.running}
                         />
@@ -188,7 +196,7 @@ export default function ExchangeSettingsCard() {
                             variant="contained"
                             color="success"
                             onClick={handleStartTrading}
-                            disabled={loading || !startDate}
+                            disabled={loading || !startDate || !hasEnabledStocks}
                             fullWidth
                             sx={{ flexGrow: { xs: 1, sm: 0 } }}
                         >

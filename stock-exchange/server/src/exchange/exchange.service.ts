@@ -8,8 +8,9 @@ import { StocksService } from 'src/stocks/stocks.service';
 export class ExchangeService {
     private readonly SETTINGS_PATH = path.join('data', 'settings.json');
     private settings: ExchangeSettings;
-    private intervalId: NodeJS.Timeout | null = null;
+    private timeoutId: NodeJS.Timeout | null = null;
     private currentDateIndex = 0;
+    private isRunning = false;
     private tradingUpdateCallback?: (
         settings: ExchangeSettings,
         prices: Record<string, number>,
@@ -54,31 +55,70 @@ export class ExchangeService {
     }
 
     startTrading(): { success: boolean; message?: string } {
-        if (this.settings.running) {
+        if (this.settings.running || this.isRunning) {
             return { success: false, message: 'Trading is already running' };
         }
 
+        // Находим начальный индекс в истории по startDate
+        this.currentDateIndex = this.findStartDateIndex();
+
+        if (this.currentDateIndex === -1) {
+            return { success: false, message: 'Start date not found in history' };
+        }
+
         this.settings.running = true;
-        this.currentDateIndex = 0;
+        this.isRunning = true;
         this.saveSettings();
 
-        // Start the interval for date/price updates
-        this.intervalId = setInterval(() => {
-            this.updateTradingTick();
-        }, this.settings.tickSeconds * 1000);
+        // Start the first tick
+        this.scheduleTick();
 
-        console.log('Trading started');
+        console.log(`Trading started from ${this.settings.startDate} (index: ${this.currentDateIndex})`);
         return { success: true };
     }
 
+    private findStartDateIndex(): number {
+        // Получаем первую акцию для поиска индекса даты
+        const stocks = this.stocksService.getStocks();
+        const firstStock = stocks.find(s => s.enabled);
+
+        if (!firstStock) {
+            return -1;
+        }
+
+        const fullStock = this.stocksService.getStock(firstStock.symbol);
+        if (!fullStock || !fullStock.history || fullStock.history.length === 0) {
+            return -1;
+        }
+
+        // Ищем индекс даты начала торгов
+        const startDateIndex = fullStock.history.findIndex(
+            entry => entry.date === this.settings.startDate
+        );
+
+        // Если точная дата не найдена, ищем ближайшую более позднюю
+        if (startDateIndex === -1) {
+            for (let i = 0; i < fullStock.history.length; i++) {
+                if (fullStock.history[i].date >= this.settings.startDate) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        return startDateIndex;
+    }
+
     stopTrading(): { success: boolean; message?: string } {
-        if (!this.settings.running) {
+        if (!this.settings.running && !this.isRunning) {
             return { success: false, message: 'Trading is not running' };
         }
 
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
+        this.isRunning = false;
+
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
         }
 
         this.settings.running = false;
@@ -86,6 +126,19 @@ export class ExchangeService {
 
         console.log('Trading stopped');
         return { success: true };
+    }
+
+    private scheduleTick(): void {
+        if (!this.isRunning) {
+            return;
+        }
+
+        this.updateTradingTick();
+
+        // Планируем следующий тик
+        this.timeoutId = setTimeout(() => {
+            this.scheduleTick();
+        }, this.settings.tickSeconds * 1000);
     }
 
     private updateTradingTick(): void {
@@ -97,35 +150,30 @@ export class ExchangeService {
             return;
         }
 
-        // Calculate current simulated date
-        const startDate = new Date(this.settings.startDate);
-        const currentDate = new Date(startDate);
-        currentDate.setDate(currentDate.getDate() + this.currentDateIndex);
+        // Get prices for all enabled stocks using current index
+        const prices: Record<string, number> = {};
+        let currentDateStr = '';
 
-        const currentDateStr = currentDate.toISOString().split('T')[0];
+        enabledStocks.forEach((stock) => {
+            const fullStock = this.stocksService.getStock(stock.symbol);
+            if (fullStock && fullStock.history && fullStock.history.length > 0) {
+                // Берем цену по индексу из отсортированной истории
+                const index = Math.min(this.currentDateIndex, fullStock.history.length - 1);
+                const historyEntry = fullStock.history[index];
+                prices[stock.symbol] = historyEntry.open;
+
+                // Используем дату из первой акции
+                if (!currentDateStr) {
+                    currentDateStr = historyEntry.date;
+                }
+            }
+        });
 
         // Update current date in settings (but don't persist to file every tick)
         const updatedSettings = {
             ...this.settings,
             currentDate: currentDateStr,
         };
-
-        // Get prices for all enabled stocks for the current date
-        const prices: Record<string, number> = {};
-
-        enabledStocks.forEach((stock) => {
-            const fullStock = this.stocksService.getStock(stock.symbol);
-            if (fullStock && fullStock.history) {
-                // Find price for current date or use closest available
-                const historyEntry = fullStock.history.find((h) => h.date === currentDateStr);
-                if (historyEntry) {
-                    prices[stock.symbol] = historyEntry.open;
-                } else if (fullStock.history.length > 0) {
-                    // If exact date not found, use the first available price
-                    prices[stock.symbol] = fullStock.history[0].open;
-                }
-            }
-        });
 
         // Notify subscribers (WebSocket)
         if (this.tradingUpdateCallback) {
@@ -134,8 +182,11 @@ export class ExchangeService {
 
         this.currentDateIndex++;
 
-        // Check if we've exhausted all history dates (optional: loop or stop)
-        // For now, we'll just keep incrementing
+        // Если достигли конца истории, можно остановиться или зациклить
+        if (this.currentDateIndex >= 2514) {
+            console.log('Reached end of trading history');
+            this.stopTrading();
+        }
     }
 
     getCurrentTradingState(): {
@@ -147,21 +198,18 @@ export class ExchangeService {
         const enabledStocks = stocks.filter((s) => s.enabled);
 
         const prices: Record<string, number> = {};
+        let currentDateStr = '';
 
         if (this.settings.running) {
-            const startDate = new Date(this.settings.startDate);
-            const currentDate = new Date(startDate);
-            currentDate.setDate(currentDate.getDate() + this.currentDateIndex);
-            const currentDateStr = currentDate.toISOString().split('T')[0];
-
             enabledStocks.forEach((stock) => {
                 const fullStock = this.stocksService.getStock(stock.symbol);
-                if (fullStock && fullStock.history) {
-                    const historyEntry = fullStock.history.find((h) => h.date === currentDateStr);
-                    if (historyEntry) {
-                        prices[stock.symbol] = historyEntry.open;
-                    } else if (fullStock.history.length > 0) {
-                        prices[stock.symbol] = fullStock.history[0].open;
+                if (fullStock && fullStock.history && fullStock.history.length > 0) {
+                    const index = Math.min(this.currentDateIndex, fullStock.history.length - 1);
+                    const historyEntry = fullStock.history[index];
+                    prices[stock.symbol] = historyEntry.open;
+
+                    if (!currentDateStr) {
+                        currentDateStr = historyEntry.date;
                     }
                 }
             });

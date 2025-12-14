@@ -18,18 +18,23 @@ function parseCSV(filePath) {
 
     for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
-        const date = values[0];
+        const dateStr = values[0]; // MM/DD/YYYY
         const open = parseFloat(values[3].replace('$', ''));
 
-        if (date && !isNaN(open)) {
+        if (dateStr && !isNaN(open)) {
+            // Конвертируем MM/DD/YYYY в YYYY-MM-DD
+            const [month, day, year] = dateStr.split('/');
+            const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
             history.push({
-                date,
+                date: isoDate,
                 open
             });
         }
     }
 
-    return history;
+    // Разворачиваем массив, чтобы старые даты были в начале
+    return history.reverse();
 }
 
 // Маппинг символов акций к их названиям

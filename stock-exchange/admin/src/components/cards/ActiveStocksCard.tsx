@@ -21,6 +21,12 @@ export default function ActiveStocksCard({
 }: ActiveStocksCardProps) {
     const enabledStocks = stocks?.filter((stock) => stock.enabled) || [];
 
+    // Форматируем дату из YYYY-MM-DD в DD/MM/YYYY
+    const formatDate = (date: string) => {
+        const [year, month, day] = date.split('-');
+        return `${day}/${month}/${year}`;
+    };
+
     return (
         <Card
             variant="outlined"
@@ -36,7 +42,7 @@ export default function ActiveStocksCard({
                 title="Активные акции в торгах"
                 subheader={
                     currentDate
-                        ? `Текущая дата торгов: ${currentDate}`
+                        ? `Текущая дата торгов: ${formatDate(currentDate)}`
                         : 'Торги не начаты'
                 }
             />

@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import type { Broker } from '../interfaces/Broker';
-import type { Stock, PortfolioStock } from '../interfaces/Stock';
-import StockChartDialog from '../shared/components/StockChartDialog.vue';
-import { socketService } from '../shared/services/socketService';
+import type { Broker } from '@/interfaces/Broker';
+import type { Stock, PortfolioStock } from '@/interfaces/Stock';
+import StockChartDialog from '@/shared/components/StockChartDialog.vue';
+import BrokerHeader from '@/shared/components/BrokerHeader.vue';
+import StocksTable from '@/shared/components/tables/StocksTable.vue';
+import PortfolioTable from '@/shared/components/tables/PortfolioTable.vue';
+import { socketService } from '@/shared/services/socketService';
 
 const router = useRouter();
 const brokerId = ref<number>(Number(localStorage.getItem('brokerId')) || 1);
@@ -12,6 +15,9 @@ const broker = ref<Broker | null>(null);
 const stocks = ref<Stock[]>([]);
 const stockPrices = ref<Record<string, number>>({});
 const currentDate = ref<string>(new Date().toLocaleDateString('ru-RU'));
+
+// История цен для графиков (с момента начала торгов)
+const priceHistory = ref<Record<string, { date: string; price: number }[]>>({});
 const loading = ref(false);
 const error = ref<string>('');
 const wsConnected = ref(false);
@@ -55,6 +61,11 @@ const loadStocks = async () => {
         console.error(err);
     }
 };
+
+// Фильтруем только активные акции (участвующие в торгах)
+const activeStocks = computed(() => {
+    return stocks.value.filter((stock) => stock.enabled);
+});
 
 // Портфель брокера с расчетами
 const portfolio = computed<PortfolioStock[]>(() => {
@@ -100,10 +111,33 @@ const totalProfitLoss = computed(() => {
 
 // Открытие графика
 const openChart = async (stock: Stock) => {
+    selectedStock.value = stock;
+
     try {
-        selectedStock.value = stock;
-        const response = await fetch(`${API_BASE}/stocks/${stock.symbol}/history`);
-        stockHistory.value = await response.json();
+        // Загружаем историю от даты начала торгов до текущего момента
+        const response = await fetch(`${API_BASE}/exchange/state`);
+        const tradingState = await response.json();
+
+        if (tradingState.settings?.startDate) {
+            // Запрашиваем всю историю от начала торгов (без endDate, чтобы получить все данные)
+            const historyResponse = await fetch(
+                `${API_BASE}/stocks/${stock.symbol}/history?startDate=${tradingState.settings.startDate}`
+            );
+            const history = await historyResponse.json();
+
+            stockHistory.value = history.map((h: { date: string; open: number }) => ({
+                timestamp: h.date,
+                price: h.open,
+            }));
+        } else {
+            // Если торги не запущены, используем накопленную историю
+            const history = priceHistory.value[stock.symbol] || [];
+            stockHistory.value = history.map(h => ({
+                timestamp: h.date,
+                price: h.price,
+            }));
+        }
+
         showChartDialog.value = true;
     } catch (err) {
         error.value = 'Ошибка загрузки истории акции';
@@ -229,14 +263,21 @@ const formatCurrency = (value: number): string => {
 
 // Получение текущей цены акции
 const getStockPrice = (stock: Stock): number => {
-    return stockPrices.value[stock.symbol] ?? stock.currentPrice ?? 0;
-};
-
-// Цвет для прибыли/убытка
-const getProfitColor = (value: number): string => {
-    if (value > 0) return 'success';
-    if (value < 0) return 'error';
-    return '';
+    // Если есть цена из WebSocket - используем её
+    const wsPrice = stockPrices.value[stock.symbol];
+    if (wsPrice !== undefined) {
+        return wsPrice;
+    }
+    // Если есть currentPrice в самой акции - используем его
+    if (stock.currentPrice !== undefined) {
+        return stock.currentPrice;
+    }
+    // Иначе используем цену покупки из портфеля (чтобы не было убытков при остановке)
+    const purchasePrice = broker.value?.stocksPurchasePrice?.[stock.symbol];
+    if (purchasePrice !== undefined) {
+        return purchasePrice;
+    }
+    return 0;
 };
 
 // Выход из системы
@@ -251,11 +292,37 @@ const logout = () => {
 const handleTradingUpdate = (...args: unknown[]) => {
     const data = args[0] as { settings: { currentDate: string }; prices: Record<string, number> };
     if (data.settings?.currentDate) {
-        currentDate.value = new Date(data.settings.currentDate).toLocaleDateString('ru-RU');
+        const formattedDate = new Date(data.settings.currentDate).toLocaleDateString('ru-RU');
+        currentDate.value = formattedDate;
+
+        // Добавляем новые данные в историю цен для графиков
+        if (data.prices) {
+            Object.entries(data.prices).forEach(([symbol, price]) => {
+                if (!priceHistory.value[symbol]) {
+                    priceHistory.value[symbol] = [];
+                }
+
+                // Проверяем, есть ли уже запись с этой датой
+                const existingEntry = priceHistory.value[symbol].find(
+                    entry => entry.date === data.settings.currentDate
+                );
+
+                if (!existingEntry) {
+                    // Добавляем новую точку только если её ещё нет
+                    priceHistory.value[symbol].push({
+                        date: data.settings.currentDate,
+                        price: price,
+                    });
+                } else {
+                    // Обновляем цену существующей записи
+                    existingEntry.price = price;
+                }
+            });
+        }
     }
     if (data.prices) {
         stockPrices.value = { ...stockPrices.value, ...data.prices };
-        // Обновляем цены в списке акций для отображения
+        // Обновляем текущие цены в списке акций
         Object.entries(data.prices).forEach(([symbol, price]) => {
             const stock = stocks.value.find(s => s.symbol === symbol);
             if (stock) {
@@ -266,12 +333,53 @@ const handleTradingUpdate = (...args: unknown[]) => {
 };
 
 // Обработчик приветственного сообщения
-const handleWelcome = (...args: unknown[]) => {
+const handleWelcome = async (...args: unknown[]) => {
     const data = args[0] as { id: string; stocks?: Stock[] };
     console.log('Connected to WebSocket:', data.id);
     wsConnected.value = true;
     if (data.stocks) {
         stocks.value = data.stocks;
+    }
+
+    // Загружаем начальную историю от даты начала торгов
+    try {
+        const response = await fetch(`${API_BASE}/exchange/state`);
+        const tradingState = await response.json();
+
+        console.log('Trading state:', tradingState);
+
+        if (tradingState.settings?.startDate && tradingState.running) {
+            // Очищаем текущую историю
+            priceHistory.value = {};
+
+            console.log(`Загрузка всей истории с ${tradingState.settings.startDate}`);
+
+            // Загружаем историю для каждой включенной акции
+            const enabledStocks = stocks.value.filter(s => s.enabled);
+            for (const stock of enabledStocks) {
+                const historyResponse = await fetch(
+                    `${API_BASE}/stocks/${stock.symbol}/history?startDate=${tradingState.settings.startDate}`
+                );
+                const history = await historyResponse.json();
+
+                console.log(`История для ${stock.symbol}: ${history.length} точек данных`);
+
+                // Заполняем priceHistory данными
+                priceHistory.value[stock.symbol] = history.map((h: { date: string; open: number }) => ({
+                    date: h.date,
+                    price: h.open,
+                }));
+            }
+
+            console.log('Начальная история загружена:', Object.keys(priceHistory.value).length, 'акций');
+        } else {
+            // Если торги не запущены, просто очищаем историю
+            console.log('Торги не запущены, история очищена');
+            priceHistory.value = {};
+        }
+    } catch (err) {
+        console.error('Ошибка загрузки начальной истории:', err);
+        priceHistory.value = {};
     }
 };
 
@@ -307,95 +415,13 @@ onMounted(() => {
     <v-app>
         <v-main>
             <v-container fluid>
-                <v-row>
-                    <v-col cols="12">
-                        <v-card>
-                            <v-card-title class="d-flex align-center justify-space-between">
-                                <div class="d-flex align-center">
-                                    <v-icon class="mr-2">mdi-account-tie</v-icon>
-                                    <span>{{ broker?.name || 'Загрузка...' }}</span>
-                                </div>
-                                <v-btn
-                                    color="error"
-                                    variant="text"
-                                    prepend-icon="mdi-logout"
-                                    @click="logout"
-                                >
-                                    Выход
-                                </v-btn>
-                            </v-card-title>
-                            <v-card-subtitle class="d-flex align-center">
-                                <span>Дата торгов: {{ currentDate }}</span>
-                                <v-spacer></v-spacer>
-                                <v-chip
-                                    :color="wsConnected ? 'success' : 'error'"
-                                    size="small"
-                                >
-                                    <v-icon
-                                        start
-                                        :icon="
-                                            wsConnected
-                                                ? 'mdi-cloud-check'
-                                                : 'mdi-cloud-off-outline'
-                                        "
-                                    ></v-icon>
-                                    {{
-                                        wsConnected
-                                            ? 'Подключено'
-                                            : 'Отключено'
-                                    }}
-                                </v-chip>
-                            </v-card-subtitle>
-                        </v-card>
-                    </v-col>
-                </v-row>
-
-                <!-- Информационная панель -->
-                <v-row>
-                    <v-col cols="12" md="3">
-                        <v-card color="primary">
-                            <v-card-text>
-                                <div class="text-h6">Текущая дата</div>
-                                <div class="text-h5">{{ currentDate }}</div>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                        <v-card color="success">
-                            <v-card-text>
-                                <div class="text-h6">Доступные средства</div>
-                                <div class="text-h5">
-                                    {{
-                                        formatCurrency(broker?.balance || 0)
-                                    }}
-                                </div>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                        <v-card color="info">
-                            <v-card-text>
-                                <div class="text-h6">Стоимость портфеля</div>
-                                <div class="text-h5">
-                                    {{ formatCurrency(totalPortfolioValue) }}
-                                </div>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                        <v-card :color="getProfitColor(totalProfitLoss)">
-                            <v-card-text>
-                                <div class="text-h6">Прибыль/Убыток</div>
-                                <div class="text-h5">
-                                    {{ formatCurrency(totalProfitLoss) }}
-                                </div>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
+                <!-- Заголовок с информацией о брокере -->
+                <BrokerHeader :broker="broker" :current-date="currentDate" :ws-connected="wsConnected"
+                    :total-balance="broker?.balance || 0" :total-portfolio-value="totalPortfolioValue"
+                    :total-profit-loss="totalProfitLoss" @logout="logout" />
 
                 <!-- Сообщение об ошибке -->
-                <v-row v-if="error">
+                <v-row v-if="error" class="mt-3">
                     <v-col cols="12">
                         <v-alert type="error" closable @click:close="error = ''">
                             {{ error }}
@@ -403,172 +429,18 @@ onMounted(() => {
                     </v-col>
                 </v-row>
 
-                <!-- Текущие акции на бирже -->
-                <v-row>
-                    <v-col cols="12">
-                        <v-card>
-                            <v-card-title>Акции на бирже</v-card-title>
-                            <v-card-text>
-                                <v-table>
-                                    <thead>
-                                        <tr>
-                                            <th>Символ</th>
-                                            <th>Название</th>
-                                            <th>Текущая цена</th>
-                                            <th>У вас</th>
-                                            <th>Действия</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            v-for="stock in stocks"
-                                            :key="stock.symbol"
-                                        >
-                                            <td>{{ stock.symbol }}</td>
-                                            <td>{{ stock.name }}</td>
-                                            <td>
-                                                {{ formatCurrency(getStockPrice(stock)) }}
-                                            </td>
-                                            <td>
-                                                {{
-                                                    getOwnedQuantity(
-                                                        stock.symbol,
-                                                    )
-                                                }}
-                                            </td>
-                                            <td>
-                                                <v-btn
-                                                    size="small"
-                                                    color="primary"
-                                                    class="mr-2"
-                                                    @click="openChart(stock)"
-                                                >
-                                                    График
-                                                </v-btn>
-                                                <v-btn
-                                                    size="small"
-                                                    color="success"
-                                                    class="mr-2"
-                                                    @click="
-                                                        openTradeDialog(
-                                                            stock,
-                                                            'buy',
-                                                        )
-                                                    "
-                                                >
-                                                    Купить
-                                                </v-btn>
-                                                <v-btn
-                                                    size="small"
-                                                    color="error"
-                                                    :disabled="
-                                                        getOwnedQuantity(
-                                                            stock.symbol,
-                                                        ) === 0
-                                                    "
-                                                    @click="
-                                                        openTradeDialog(
-                                                            stock,
-                                                            'sell',
-                                                        )
-                                                    "
-                                                >
-                                                    Продать
-                                                </v-btn>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </v-table>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
+                <!-- Таблица акций на бирже -->
+                <StocksTable :stocks="activeStocks" :get-stock-price="getStockPrice"
+                    :get-owned-quantity="getOwnedQuantity" @open-chart="openChart"
+                    @open-trade-dialog="openTradeDialog" />
 
                 <!-- Портфель -->
-                <v-row v-if="portfolio.length > 0">
-                    <v-col cols="12">
-                        <v-card>
-                            <v-card-title>Мой портфель</v-card-title>
-                            <v-card-text>
-                                <v-table>
-                                    <thead>
-                                        <tr>
-                                            <th>Символ</th>
-                                            <th>Название</th>
-                                            <th>Количество</th>
-                                            <th>Текущая цена</th>
-                                            <th>Общая стоимость</th>
-                                            <th>Прибыль/Убыток</th>
-                                            <th>%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            v-for="item in portfolio"
-                                            :key="item.symbol"
-                                        >
-                                            <td>{{ item.symbol }}</td>
-                                            <td>{{ item.name }}</td>
-                                            <td>{{ item.quantity }}</td>
-                                            <td>
-                                                {{
-                                                    formatCurrency(
-                                                        item.currentPrice,
-                                                    )
-                                                }}
-                                            </td>
-                                            <td>
-                                                {{
-                                                    formatCurrency(
-                                                        item.totalValue,
-                                                    )
-                                                }}
-                                            </td>
-                                            <td
-                                                :class="
-                                                    'text-' +
-                                                    getProfitColor(
-                                                        item.profitLoss,
-                                                    )
-                                                "
-                                            >
-                                                {{
-                                                    formatCurrency(
-                                                        item.profitLoss,
-                                                    )
-                                                }}
-                                            </td>
-                                            <td
-                                                :class="
-                                                    'text-' +
-                                                    getProfitColor(
-                                                        item.profitLoss,
-                                                    )
-                                                "
-                                            >
-                                                {{
-                                                    item.profitLossPercent.toFixed(
-                                                        2,
-                                                    )
-                                                }}%
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </v-table>
-                            </v-card-text>
-                        </v-card>
-                    </v-col>
-                </v-row>
+                <PortfolioTable :portfolio="portfolio" />
             </v-container>
 
             <!-- Диалог графика -->
-            <StockChartDialog
-                v-if="showChartDialog && selectedStock"
-                :symbol="selectedStock.symbol"
-                :name="selectedStock.name"
-                :history="stockHistory"
-                @close="showChartDialog = false"
-            />
+            <StockChartDialog v-if="showChartDialog && selectedStock" :symbol="selectedStock.symbol"
+                :name="selectedStock.name" :history="stockHistory" @close="showChartDialog = false" />
 
             <!-- Диалог торговли -->
             <v-dialog v-model="tradeDialog" max-width="500px">
@@ -578,19 +450,12 @@ onMounted(() => {
                         {{ tradeStock?.symbol }}
                     </v-card-title>
                     <v-card-text>
-                        <v-text-field
-                            v-model.number="tradeQuantity"
-                            label="Количество"
-                            type="number"
-                            min="1"
-                            :max="
-                                tradeType === 'sell'
-                                    ? getOwnedQuantity(
-                                          tradeStock?.symbol || '',
-                                      )
-                                    : undefined
-                            "
-                        ></v-text-field>
+                        <v-text-field v-model.number="tradeQuantity" label="Количество" type="number" min="1" :max="tradeType === 'sell'
+                                ? getOwnedQuantity(
+                                    tradeStock?.symbol || '',
+                                )
+                                : undefined
+                            "></v-text-field>
                         <div class="text-body-1 mt-2">
                             Цена за акцию:
                             {{ formatCurrency(tradeStock ? getStockPrice(tradeStock) : 0) }}
@@ -607,11 +472,8 @@ onMounted(() => {
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn @click="tradeDialog = false">Отмена</v-btn>
-                        <v-btn
-                            :color="tradeType === 'buy' ? 'success' : 'error'"
-                            :loading="loading"
-                            @click="executeTrade"
-                        >
+                        <v-btn :color="tradeType === 'buy' ? 'success' : 'error'" :loading="loading"
+                            @click="executeTrade">
                             {{ tradeType === 'buy' ? 'Купить' : 'Продать' }}
                         </v-btn>
                     </v-card-actions>

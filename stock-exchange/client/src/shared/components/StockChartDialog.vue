@@ -44,9 +44,10 @@ const dialog = ref(true);
 const chartData = computed(() => {
     return {
         labels: props.history.map((h) =>
-            new Date(h.timestamp).toLocaleTimeString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit',
+            new Date(h.timestamp).toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
             }),
         ),
         datasets: [

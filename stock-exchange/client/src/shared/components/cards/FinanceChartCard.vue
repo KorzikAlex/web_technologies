@@ -147,17 +147,6 @@ const getProfitLossColor = (value: number) => {
             <v-alert v-else type="info" variant="tonal" class="mt-4">
                 У брокера {{ broker.name }} нет акций в портфеле
             </v-alert>
-
-            <!-- Пояснение -->
-            <v-card variant="tonal" color="grey-lighten-4" class="mt-4">
-                <v-card-text>
-                    <div class="text-caption">
-                        <v-icon size="small" class="mr-1">mdi-information</v-icon>
-                        <strong>Прибыль/Убыток</strong> рассчитывается как: (Текущая цена - Цена покупки) × Количество
-                        акций
-                    </div>
-                </v-card-text>
-            </v-card>
         </v-card-text>
     </v-card>
 </template>

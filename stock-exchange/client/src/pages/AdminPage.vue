@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { Broker } from '@/interfaces/Broker';
 import type { Stock } from '@/interfaces/Stock';
-import BrokersTable from '@/shared/components/BrokersTable.vue';
+import BrokersTable from '@/shared/components/tables/BrokersTable.vue';
 import { socketService } from '@/shared/services/socketService';
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
 
 const API_BASE = 'http://localhost:3000';
 
@@ -65,6 +69,19 @@ const brokersWithPrices = computed(() => {
     }));
 });
 
+// Проверяем, был ли переход с брокерской страницы
+const fromBroker = computed(() => route.query.from === 'broker');
+
+// Возврат к брокеру
+const goBackToBroker = () => {
+    const brokerId = localStorage.getItem('brokerId');
+    if (brokerId) {
+        router.push({ name: 'broker', params: { brokerId } });
+    } else {
+        router.push({ name: 'login' });
+    }
+};
+
 onMounted(() => {
     fetchData();
 
@@ -80,6 +97,16 @@ onUnmounted(() => {
 
 <template>
     <v-main class="pa-4">
+        <v-btn
+            v-if="fromBroker"
+            color="primary"
+            prepend-icon="mdi-arrow-left"
+            class="mb-4"
+            @click="goBackToBroker"
+        >
+            Назад к брокеру
+        </v-btn>
+
         <v-alert v-if="error" type="error" class="mb-4">
             {{ error }}
         </v-alert>
