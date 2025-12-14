@@ -1,18 +1,33 @@
-export class PhysicsManager {
-    update(obj: any): string {
+import type { Entity, Player } from '@/entities';
+import type { GameManager } from './GameManager';
+import type { MapManager } from './MapManager';
+import type { IHaveName, IInteractEntity, IInteractMap } from '@/entities/interfaces';
+
+export class PhysicsManager<
+    T extends Entity & Player & IInteractEntity & IInteractMap & IHaveName,
+> {
+    mapManager: MapManager<T>;
+    gameManager: GameManager<T>;
+
+    constructor(mapManager: MapManager<T>, gameManager: GameManager<T>) {
+        this.mapManager = mapManager;
+        this.gameManager = gameManager;
+    }
+
+    update(obj: T): string {
         if (obj.move_x === 0 && obj.move_y === 0) {
             return 'stop';
         }
 
-        const newX = obj.pos_x + Math.floor(obj.move_x * obj.speed);
-        const newY = obj.pos_y + Math.floor(obj.move_y * obj.speed);
+        const newX: number = obj.pos_x + Math.floor(obj.move_x * obj.speed);
+        const newY: number = obj.pos_y + Math.floor(obj.move_y * obj.speed);
 
-        const ts = mapManager.getTilesetldx(newX + obj.size_x / 2, newY + obj.size_y / 2);
+        const ts = this.mapManager.getTilesetIdx(newX + obj.size_x / 2, newY + obj.size_y / 2);
         const e = this.entityAtXY(obj, newX, newY); // объект на пути
         if (e !== null && obj.onTouchEntity) {
             obj.onTouchEntity(e);
         }
-        if (ts !== 7 && obj.onTouchМаp) {
+        if (ts !== 7 && obj.onTouchMap) {
             obj.onTouchMap(ts);
         }
         if (ts === 7 && e === null) {
@@ -22,9 +37,10 @@ export class PhysicsManager {
         }
         return 'break';
     }
-    entityAtXY(obj: any, newX: any, newY: any) {
-        for (var i = 0; i < gameManager.entities.length; i++) {
-            var e = gameManager.entities[i]; // Bce o6beKTb Kapты
+
+    entityAtXY(obj: T, x: number, y: number) {
+        for (let i: number = 0; i < this.gameManager.entities.length; ++i) {
+            const e = this.gameManager.entities[i];
             if (e.name !== obj.name) {
                 if (
                     x + obj.size_x < e.pos_x || // не пересекаются

@@ -1,19 +1,34 @@
-import type { Layer, MapData, Tile, Tileset, MapTileset } from './types';
+import type { Entity } from '@/entities';
+import type { IDrawable} from '@/entities/interfaces';
+import type { GameManager } from './GameManager';
+import type {
+    TiledMapData,
+    Tile,
+    Tileset,
+    MapTileset,
+    TilesLayer,
+    ObjectsLayer,
+    ObjectProperty,
+} from './types';
 
-export class MapManager {
-    mapData: MapData | null;
-    tLayer: Layer | null;
+export class MapManager<T extends Entity & IDrawable> {
+    mapData: TiledMapData | null;
+    tLayer: TilesLayer | ObjectsLayer | null;
     xCount: number;
     yCount: number;
     tSize: Record<string, number>;
     mapSize: Record<string, number>;
     tilesets: MapTileset[];
+
     imgLoadCount: number;
     imgLoaded: boolean;
     jsonLoaded: boolean;
+
     view: Record<string, number>;
 
-    constructor(jsonPath: string) {
+    gameManager: GameManager<T>;
+
+    constructor(jsonPath: string, gameManager: GameManager<T>) {
         this.mapData = null;
         this.tLayer = null;
         this.tilesets = [];
@@ -30,12 +45,12 @@ export class MapManager {
 
         this.view = { x: 0, y: 0, w: 800, h: 600 };
 
-        if (jsonPath) {
-            this.loadMap(jsonPath);
-        }
+        this.gameManager = gameManager;
+
+        this.loadMap(jsonPath);
     }
 
-    loadMap(path: string): void {
+    private loadMap(path: string): void {
         const request: XMLHttpRequest = new XMLHttpRequest();
         request.onreadystatechange = (): void => {
             if (request.readyState === 4 && request.status === 200) {
@@ -46,16 +61,14 @@ export class MapManager {
         request.send();
     }
 
-    parseMap(tilesJSON: string): void {
-        const data = JSON.parse(tilesJSON) as MapData;
+    private parseMap(tilesJSON: string): void {
+        this.mapData = JSON.parse(tilesJSON) as TiledMapData;
 
-        this.mapData = data;
+        this.xCount = this.mapData.width;
+        this.yCount = this.mapData.height;
 
-        this.xCount = data.width;
-        this.yCount = data.height;
-
-        this.tSize.x = data.tilewidth;
-        this.tSize.y = data.tileheight;
+        this.tSize.x = this.mapData.tilewidth;
+        this.tSize.y = this.mapData.tileheight;
 
         this.mapSize.x = this.xCount * this.tSize.x;
         this.mapSize.y = this.yCount * this.tSize.y;
@@ -65,11 +78,16 @@ export class MapManager {
 
             img.onload = (): void => {
                 this.imgLoadCount++;
+
+                if (this.mapData === null) {
+                    return;
+                }
+
+                if (this.imgLoadCount === this.mapData.tilesets.length) {
+                    this.imgLoaded = true;
+                }
             };
 
-            if (this.imgLoadCount === this.mapData.tilesets.length) {
-                this.imgLoaded = true;
-            }
             img.src = this.mapData.tilesets[i].image;
 
             const t: Tileset = this.mapData.tilesets[i];
@@ -81,6 +99,7 @@ export class MapManager {
                 yCount: Math.floor(t.imageheight / this.tSize.y),
             });
         }
+
         this.jsonLoaded = true;
     }
 
@@ -93,10 +112,9 @@ export class MapManager {
         }
 
         if (this.tLayer === null) {
-            for (let id = 0; id < this.mapData.layers.length; ++id) {
-                const layer: Layer = this.mapData.layers[id];
-                if (layer.type === 'tilelayer') {
-                    this.tLayer = layer;
+            for (let id: number = 0; id < this.mapData.layers.length; ++id) {
+                if (this.mapData.layers[id].type === 'tilelayer') {
+                    this.tLayer = this.mapData.layers[id];
                     break;
                 }
             }
@@ -106,11 +124,13 @@ export class MapManager {
             return;
         }
 
-        for (let i = 0; i < this.tLayer.data.length; ++i) {
-            if (this.tLayer.data[i] !== 0) {
-                const tile = this.getTile(this.tLayer.data[i]);
-                let pX = (i % this.xCount) * this.tSize.x;
-                let pY = Math.floor(i / this.xCount) * this.tSize.y;
+        const tilesLayer: TilesLayer = this.tLayer as TilesLayer;
+
+        for (let i: number = 0; i < tilesLayer.data.length; ++i) {
+            if (tilesLayer.data[i] !== 0) {
+                const tile: Tile = this.getTile(tilesLayer.data[i]);
+                let pX: number = (i % this.xCount) * this.tSize.x;
+                let pY: number = Math.floor(i / this.xCount) * this.tSize.y;
 
                 if (!this.isVisible(pX, pY, this.tSize.x, this.tSize.y)) {
                     continue;
@@ -160,10 +180,10 @@ export class MapManager {
         }
 
         tile.img = tileset.image;
-        const id = tileIndex - tileset.firstgid;
+        const id: number = tileIndex - tileset.firstgid;
 
-        const x = id % tileset.xCount;
-        const y = Math.floor(id / tileset.xCount);
+        const x: number = id % tileset.xCount;
+        const y: number = Math.floor(id / tileset.xCount);
 
         tile.px = x * this.tSize.x;
         tile.py = y * this.tSize.y;
@@ -171,7 +191,7 @@ export class MapManager {
     }
 
     getTileset(tileIndex: number): MapTileset | null {
-        for (let i = this.tilesets.length - 1; i >= 0; --i) {
+        for (let i: number = this.tilesets.length - 1; i >= 0; --i) {
             if (this.tilesets[i].firstgid <= tileIndex) {
                 return this.tilesets[i];
             }
@@ -186,41 +206,46 @@ export class MapManager {
             }, 100);
             return;
         }
-        for (let j = 0; j < this.mapData.layers.length; ++j) {
-            const entities = this.mapData.layers[j];
+        for (let j: number = 0; j < this.mapData.layers.length; ++j) {
+            const entities: ObjectsLayer = this.mapData.layers[j] as ObjectsLayer;
             if (this.mapData.layers[j].type === 'objectgroup') {
                 if (!entities.objects) {
                     continue;
                 }
-                const e = entities.objects[i];
-                try {
-                    const obj = Object.create(gameManager.factory[e.type]);
-                    // в соответствии с типом создаем экземпляр объекта
-                    obj.name = e.name;
-                    obj.pos_x = e.x;
-                    obj.pos_y = e.y;
-                    obj.size_x = e.width;
-                    obj.size_y = e.height;
-                    // помещаем в массив объектов
-                    gameManager.entities.push(obj);
-                    if (obj.name === 'player')
-                        // инициализируем параметры игрока
-                        gameManager.initPlayer(obj);
-                } catch (error) {
-                    console.error(`Error while creating: ["${e.gid}"]${e.type}, ${error}`); //
+                for (let i: number = 0; i < entities.objects.length; ++i) {
+                    const e: ObjectProperty = entities.objects[i];
+                    try {
+                        const obj = Object.create(this.gameManager.factory[e.type]); // FIXME: Типизация и метод factory
+                        // в соответствии с типом создаем экземпляр объекта
+                        obj.name = e.name;
+                        obj.pos_x = e.x;
+                        obj.pos_y = e.y;
+                        obj.size_x = e.width;
+                        obj.size_y = e.height;
+                        // помещаем в массив объектов
+                        this.gameManager.entities.push(obj);
+                        if (obj.name === 'player') {
+                            // инициализируем параметры игрока
+                            this.gameManager.initPlayer(obj);
+                        }
+                    } catch (error) {
+                        console.error(`Error while creating: ["${e.gid}"]${e.type}, ${error}`);
+                    }
                 }
             }
         }
     }
 
     getTilesetIdx(x: number, y: number): number {
+        const tLayer: TilesLayer | null = this.tLayer as TilesLayer;
+
         const wX = x;
         const wY = y;
         const idx = Math.floor(wY / this.tSize.y) * this.xCount + Math.floor(wX / this.tSize.x);
-        if (this.tLayer === null) {
+        if (tLayer === null) {
             return -1;
         }
-        return this.tLayer.data[idx];
+        return tLayer.data[idx];
     }
 
     centerAt(x: number, y: number): void {

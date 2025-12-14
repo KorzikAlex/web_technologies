@@ -1,13 +1,13 @@
 export type Tileset = {
     firstgid: number;
     image: string;
-    imagewidth: number;
     imageheight: number;
+    imagewidth: number;
     margin: number;
     name: string;
+    properties: unknown[];
     spacing: number;
-    tilewidth: number;
     tileheight: number;
-    properties: Array<unknown>;
+    tilewidth: number;
 };
 

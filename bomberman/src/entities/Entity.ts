@@ -11,6 +11,4 @@ export class Entity {
         this.size_x = size_x;
         this.size_y = size_y;
     }
-
-    draw(ctx: CanvasRenderingContext2D): void {}
 }
