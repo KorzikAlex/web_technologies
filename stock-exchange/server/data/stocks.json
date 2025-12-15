@@ -3,7 +3,7 @@
         "id": 1,
         "symbol": "AAPL",
         "name": "Apple, Inc.",
-        "enabled": true,
+        "enabled": false,
         "history": [
             {
                 "date": "2015-12-14",
@@ -10067,7 +10067,7 @@
         "id": 2,
         "symbol": "SBUX",
         "name": "Starbucks, Inc.",
-        "enabled": false,
+        "enabled": true,
         "history": [
             {
                 "date": "2015-12-14",
@@ -50323,7 +50323,7 @@
         "id": 6,
         "symbol": "AMZN",
         "name": "Amazon.com, Inc.",
-        "enabled": false,
+        "enabled": true,
         "history": [
             {
                 "date": "2015-12-14",
@@ -80515,7 +80515,7 @@
         "id": 9,
         "symbol": "META",
         "name": "Meta Platforms, Inc.",
-        "enabled": true,
+        "enabled": false,
         "history": [
             {
                 "date": "2015-12-14",
@@ -90579,7 +90579,7 @@
         "id": 10,
         "symbol": "NFLX",
         "name": "Netflix, Inc.",
-        "enabled": true,
+        "enabled": false,
         "history": [
             {
                 "date": "2015-12-14",
