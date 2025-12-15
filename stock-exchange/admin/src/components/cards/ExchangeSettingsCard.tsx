@@ -141,9 +141,12 @@ export default function ExchangeSettingsCard() {
                             variant="outlined"
                             fullWidth
                             value={tickValue}
-                            onChange={(e) =>
-                                setTickValue(Number(e.target.value))
-                            }
+                            onChange={(e) => {
+                                const value = Number(e.target.value);
+                                if (value >= 0) {
+                                    setTickValue(value);
+                                }
+                            }}
                             inputProps={{ min: timeUnit === 'seconds' ? 1 : 100 }}
                             disabled={settings.running}
                         />

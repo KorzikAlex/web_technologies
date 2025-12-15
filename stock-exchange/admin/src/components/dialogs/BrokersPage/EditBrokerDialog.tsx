@@ -75,6 +75,7 @@ export default function EditBrokerDialog({
                     value={balance}
                     onChange={(e) => setBalance(e.target.value)}
                     sx={{ mt: 2 }}
+                    inputProps={{ min: 0 }}
                 />
             </DialogContent>
             <DialogActions>
@@ -83,6 +84,7 @@ export default function EditBrokerDialog({
                     onClick={handleSave}
                     variant="contained"
                     color="primary"
+                    disabled={!name || !balance || parseFloat(balance) < 0}
                 >
                     Сохранить
                 </Button>

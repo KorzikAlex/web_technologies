@@ -1,19 +1,20 @@
 [
     {
-        "name": "Гоблин",
-        "balance": 73691.88550000002,
+        "name": "aaa",
+        "balance": 61036.810000000005,
         "id": 1,
         "stocks": {
-            "META": 90,
-            "AMD": 138,
-            "NFLX": 142,
-            "AAPL": 135
+            "MSFT": 1
         },
         "stocksPurchasePrice": {
-            "AAPL": 44.66712962962963,
-            "META": 177.5,
-            "AMD": 13.82666666666667,
-            "NFLX": 19.891
+            "SBUX": 57.125,
+            "MSFT": 300.99
         }
+    },
+    {
+        "name": "cxvds",
+        "balance": 32325,
+        "id": 2,
+        "stocks": {}
     }
 ]
