@@ -31,7 +31,7 @@ export default defineConfig({
 
     use: {
         // Базовый URL для тестов
-        baseURL: 'http://localhost:5173',
+        baseURL: 'http://localhost:5174',
 
         // Скриншоты только при падении
         screenshot: 'only-on-failure',
@@ -70,7 +70,7 @@ export default defineConfig({
     // Web-сервер для запуска перед тестами
     webServer: {
         command: 'npm run dev',
-        url: 'http://localhost:5173',
+        url: 'http://localhost:5174',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
         stdout: 'ignore',

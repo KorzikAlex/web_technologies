@@ -40259,7 +40259,7 @@
         "id": 5,
         "symbol": "QCOM",
         "name": "QUALCOMM Incorporated",
-        "enabled": false,
+        "enabled": true,
         "history": [
             {
                 "date": "2015-12-14",
