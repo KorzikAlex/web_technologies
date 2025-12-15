@@ -80,7 +80,7 @@ export class GameManager<T extends Entity & IDrawable> {
         });
 
         // удаление всех объектов, попавших в laterKill
-        for (let i = 0; i < this.laterKill.length; i++) {
+        for (let i: number = 0; i < this.laterKill.length; ++i) {
             const idx = this.entities.indexOf(this.laterKill[i]);
             if (idx > -1) {
                 this.entities.splice(idx, 1); // удаление из массива 1 объекта
@@ -100,7 +100,7 @@ export class GameManager<T extends Entity & IDrawable> {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        for (let i = 0; i < this.entities.length; i++) {
+        for (let i: number = 0; i < this.entities.length; ++i) {
             this.entities[i].draw(ctx);
         }
     }

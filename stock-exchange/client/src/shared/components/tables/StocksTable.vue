@@ -27,7 +27,7 @@ const formatCurrency = (value: number): string => {
             <v-card>
                 <v-card-title>Акции на бирже</v-card-title>
                 <v-card-text>
-                    <v-table>
+                    <v-table class="stocks-table">
                         <thead>
                             <tr>
                                 <th>Символ</th>

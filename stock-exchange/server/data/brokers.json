@@ -1,18 +1,18 @@
 [
     {
         "name": "Гоблин",
-        "balance": 73667.79800000001,
+        "balance": 73295.58550000002,
         "id": 1,
         "stocks": {
-            "META": 100,
-            "AMD": 123,
+            "META": 95,
+            "AMD": 138,
             "NFLX": 142,
-            "AAPL": 100
+            "AAPL": 125
         },
         "stocksPurchasePrice": {
             "AAPL": 43.5425,
             "META": 177.5,
-            "AMD": 11.41,
+            "AMD": 11.410000000000002,
             "NFLX": 19.891
         }
     }

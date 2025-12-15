@@ -31,13 +31,13 @@ const getProfitColor = (value: number): string => {
 </script>
 
 <template>
-    <div>
+    <div class="broker-header">
         <!-- Заголовок с информацией о брокере -->
         <v-row>
             <v-col cols="12">
                 <v-card>
                     <v-card-title class="d-flex align-center justify-space-between">
-                        <div class="d-flex align-center">
+                        <div class="d-flex align-center broker-name">
                             <v-icon class="mr-2">mdi-account-tie</v-icon>
                             <span>{{ broker?.name || 'Загрузка...' }}</span>
                         </div>
@@ -56,12 +56,12 @@ const getProfitColor = (value: number): string => {
                                 prepend-icon="mdi-logout"
                                 @click="emit('logout')"
                             >
-                                Выход
+                                Выйти
                             </v-btn>
                         </div>
                     </v-card-title>
                     <v-card-subtitle class="d-flex align-center pa-2">
-                        <span>Дата торгов: {{ currentDate }}</span>
+                        <span class="current-date">Дата торгов: {{ currentDate }}</span>
                         <v-spacer></v-spacer>
                         <v-chip
                             :color="wsConnected ? 'success' : 'error'"
@@ -96,7 +96,7 @@ const getProfitColor = (value: number): string => {
                 <v-card color="success">
                     <v-card-text>
                         <div class="text-h6">Доступные средства</div>
-                        <div class="text-h5">
+                        <div class="text-h5 broker-balance">
                             {{ formatCurrency(totalBalance) }}
                         </div>
                     </v-card-text>

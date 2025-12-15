@@ -27,7 +27,7 @@ const getProfitColor = (value: number): string => {
             <v-card>
                 <v-card-title>Мой портфель</v-card-title>
                 <v-card-text>
-                    <v-table>
+                    <v-table class="portfolio-table">
                         <thead>
                             <tr>
                                 <th>Символ</th>
