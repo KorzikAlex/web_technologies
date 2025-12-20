@@ -1,12 +1,14 @@
 import type { ObjectProperty } from './';
 
 export type ObjectsLayer = {
-    height: number;
+    id: number;
+    height?: number;
+    width?: number;
     name: string;
     type: string;
     opacity: number;
     visible: boolean;
-    objects: ObjectProperty[];
+    objects?: ObjectProperty[];
     x: number;
     y: number;
 };

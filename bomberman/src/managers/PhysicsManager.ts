@@ -1,15 +1,13 @@
-import type { Entity, Player } from '@/entities';
+import type { Entity } from '@/entities';
 import type { GameManager } from './GameManager';
 import type { MapManager } from './MapManager';
-import type { IHaveName, IInteractEntity, IInteractMap } from '@/entities/interfaces';
+import type { IHaveName, IInteractEntity, IInteractMap, IDrawable, IMovable } from '@/entities/interfaces';
 
-export class PhysicsManager<
-    T extends Entity & Player & IInteractEntity & IInteractMap & IHaveName,
-> {
-    mapManager: MapManager<T>;
+export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IInteractMap & IHaveName & IMovable> {
+    mapManager: MapManager;
     gameManager: GameManager<T>;
 
-    constructor(mapManager: MapManager<T>, gameManager: GameManager<T>) {
+    constructor(mapManager: MapManager, gameManager: GameManager<T>) {
         this.mapManager = mapManager;
         this.gameManager = gameManager;
     }

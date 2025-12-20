@@ -18,6 +18,8 @@ const currentDate = ref<string>(new Date().toLocaleDateString('ru-RU'));
 
 // История цен для графиков (с момента начала торгов)
 const priceHistory = ref<Record<string, { date: string; price: number }[]>>({});
+// Предыдущая стоимость портфеля для отслеживания изменений
+const previousPortfolioValue = ref<number>(0);
 const loading = ref(false);
 const error = ref<string>('');
 const wsConnected = ref(false);
@@ -107,6 +109,17 @@ const totalPortfolioValue = computed(() => {
 // Общая прибыль/убыток
 const totalProfitLoss = computed(() => {
     return portfolio.value.reduce((sum, item) => sum + item.profitLoss, 0);
+});
+
+// Направление изменения стоимости портфеля
+const portfolioValueTrend = computed(() => {
+    const current = totalPortfolioValue.value;
+    const previous = previousPortfolioValue.value;
+    
+    if (previous === 0) return 'neutral';
+    if (current > previous) return 'up';
+    if (current < previous) return 'down';
+    return 'neutral';
 });
 
 // Открытие графика
@@ -321,6 +334,9 @@ const handleTradingUpdate = (...args: unknown[]) => {
         }
     }
     if (data.prices) {
+        // Сохраняем предыдущую стоимость перед обновлением
+        previousPortfolioValue.value = totalPortfolioValue.value;
+        
         stockPrices.value = { ...stockPrices.value, ...data.prices };
         // Обновляем текущие цены в списке акций
         Object.entries(data.prices).forEach(([symbol, price]) => {
@@ -416,9 +432,16 @@ onMounted(() => {
         <v-main>
             <v-container fluid>
                 <!-- Заголовок с информацией о брокере -->
-                <BrokerHeader :broker="broker" :current-date="currentDate" :ws-connected="wsConnected"
-                    :total-balance="broker?.balance || 0" :total-portfolio-value="totalPortfolioValue"
-                    :total-profit-loss="totalProfitLoss" @logout="logout" />
+                <BrokerHeader 
+                    :broker="broker" 
+                    :current-date="currentDate" 
+                    :ws-connected="wsConnected"
+                    :total-balance="broker?.balance || 0" 
+                    :total-portfolio-value="totalPortfolioValue"
+                    :total-profit-loss="totalProfitLoss" 
+                    :portfolio-value-trend="portfolioValueTrend"
+                    @logout="logout" 
+                />
 
                 <!-- Сообщение об ошибке -->
                 <v-row v-if="error" class="mt-3">
@@ -450,12 +473,18 @@ onMounted(() => {
                         {{ tradeStock?.symbol }}
                     </v-card-title>
                     <v-card-text>
-                        <v-text-field v-model.number="tradeQuantity" label="Количество" type="number" min="1" :max="tradeType === 'sell'
+                        <v-text-field
+                            v-model.number="tradeQuantity"
+                            label="Количество"
+                            type="number"
+                            min="1"
+                            :max="tradeType === 'sell'
                                 ? getOwnedQuantity(
                                     tradeStock?.symbol || '',
                                 )
                                 : undefined
-                            "></v-text-field>
+                            "
+                        ></v-text-field>
                         <div class="text-body-1 mt-2">
                             Цена за акцию:
                             {{ formatCurrency(tradeStock ? getStockPrice(tradeStock) : 0) }}
@@ -472,8 +501,12 @@ onMounted(() => {
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn @click="tradeDialog = false">Отмена</v-btn>
-                        <v-btn :color="tradeType === 'buy' ? 'success' : 'error'" :loading="loading"
-                            @click="executeTrade">
+                        <v-btn
+                            :color="tradeType === 'buy' ? 'success' : 'error'"
+                            :loading="loading"
+                            :disabled="!tradeQuantity || tradeQuantity < 1"
+                            @click="executeTrade"
+                        >
                             {{ tradeType === 'buy' ? 'Купить' : 'Продать' }}
                         </v-btn>
                     </v-card-actions>

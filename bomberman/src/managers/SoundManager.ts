@@ -9,7 +9,7 @@ export type SoundClip = {
     play: (volume: number, loop: boolean) => void;
 };
 
-export class SoundManager<T extends Entity & IDrawable> {
+export class SoundManager {
     clips: {
         [key: string]: SoundClip;
     };
@@ -17,10 +17,10 @@ export class SoundManager<T extends Entity & IDrawable> {
     gainNode: GainNode;
     loaded: boolean;
 
-    gameManager: GameManager<T>;
-    mapManager: MapManager<T>;
+    gameManager: GameManager<Entity & IDrawable>;
+    mapManager: MapManager;
 
-    constructor(gameManager: GameManager<T>, mapManager: MapManager<T>) {
+    constructor(gameManager: GameManager<Entity & IDrawable>, mapManager: MapManager) {
         this.context = new AudioContext();
         this.clips = {};
         this.gainNode = this.context.createGain();

@@ -17,7 +17,7 @@ export class GameManager<T extends Entity & IDrawable> {
     laterKill: T[];
 
     eventsManager: EventsManager;
-    mapManager: MapManager<T> | null;
+    mapManager: MapManager | null;
 
     constructor(eventsManager: EventsManager) {
         this.factory = {};
@@ -30,7 +30,7 @@ export class GameManager<T extends Entity & IDrawable> {
         this.mapManager = null;
     }
 
-    setMapManager(mapManager: MapManager<T>): void {
+    setMapManager(mapManager: MapManager): void {
         this.mapManager = mapManager;
     }
 

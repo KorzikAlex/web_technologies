@@ -1,4 +1,4 @@
-import type { MetaInfo, Frame } from './';
+import type { MetaInfo, Frame } from '.';
 
 export type Atlas = {
     frames: Record<string, Frame>;

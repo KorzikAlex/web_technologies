@@ -161,7 +161,11 @@ export default function BaseTable<T extends { id: string | number }>({
     );
 
     return (
-        <TableContainer component={Paper} variant="outlined">
+        <TableContainer
+            component={Paper}
+            variant="outlined"
+            sx={{ maxHeight: 600, overflow: 'auto' }}
+        >
             <Table sx={{ tableLayout: 'fixed' }} stickyHeader>
                 <TableHead>{TableHeadRow}</TableHead>
                 <TableBody>{DataRows}</TableBody>

@@ -6,15 +6,84 @@
 
         <title>Bomberman</title>
 
-        <link rel="icon" type="image/png" href="./assets/icons/favicon.png" />
+        <link rel="icon" type="image/png" href="/assets/icons/favicon.png" />
         <script type="module" src="./index.ts" defer></script>
-        <link rel="stylesheet" href="./style.scss" />
     </head>
 
     <body class="body">
-        <header class="header">
-            <h1 class="title">Bomberman</h1>
+        <aside class="sidebar" id="sidebar">
+            <div class="info-panel">
+                <h2 class="info-panel__title">Таблица рекордов</h2>
+                <ol class="info-panel__content leaderboard" id="infoPanelContent">
+                    <!-- Dynamic leaderboard goes here -->
+                </ol>
+            </div>
+            <div class="theme-selector">
+                <h3 class="theme-selector__title">Тема оформления</h3>
+                <div class="theme-selector__options">
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="system" id="themeSystem" checked />
+                        <span>Системная</span>
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="light" id="themeLight" />
+                        <span>Светлая</span>
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="dark" id="themeDark" />
+                        <span>Тёмная</span>
+                    </label>
+                </div>
+            </div>
+            <div class="player-info" id="playerInfo">
+                <div class="player-info__row">
+                    <label for="playerSelect">Игрок:</label>
+                    <select id="playerSelect" class="player-select">
+                        <!-- Dynamic player list -->
+                    </select>
+                </div>
+                <button id="changePlayerBtn" class="change-player-btn">Сменить игрока</button>
+            </div>
+        </aside>
+
+        <header class="toolbar">
+            <button
+                id="toggleSidebarBtn"
+                class="toolbar__toggle-btn"
+                aria-label="Скрыть/показать боковую панель"
+            >
+                ☰
+            </button>
+            <h1 class="toolbar__title">Bomberman</h1>
+            <div class="toolbar__player">
+                <span class="toolbar__player-label">Игрок:</span>
+                <span class="toolbar__player-nick" id="headerPlayerNick">-</span>
+                <span class="toolbar__player-separator">|</span>
+                <span class="toolbar__player-label">Очки:</span>
+                <strong class="toolbar__player-score" id="headerPlayerScore">0</strong>
+            </div>
         </header>
+
+        <div
+            class="modal modal--visible"
+            id="nickModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nickModalTitle"
+        >
+            <div class="modal__content">
+                <h2 id="nickModalTitle">Выберите или создайте игрока</h2>
+                <input
+                    id="playerNickInput"
+                    type="text"
+                    placeholder="Введите ник (новый или существующий)"
+                    aria-label="Ник игрока"
+                />
+                <div class="modal__actions">
+                    <button id="startGameBtn" disabled>Продолжить</button>
+                </div>
+            </div>
+        </div>
 
         <main class="main">
             <canvas id="gameCanvas" width="800" height="600" class="canvas"></canvas>

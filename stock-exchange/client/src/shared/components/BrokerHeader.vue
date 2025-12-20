@@ -8,6 +8,7 @@ defineProps<{
     totalBalance: number;
     totalPortfolioValue: number;
     totalProfitLoss: number;
+    portfolioValueTrend: 'up' | 'down' | 'neutral';
 }>();
 
 const emit = defineEmits<{
@@ -27,6 +28,13 @@ const getProfitColor = (value: number): string => {
     if (value > 0) return 'success';
     if (value < 0) return 'error';
     return '';
+};
+
+// Цвет для стоимости портфеля на основе тренда
+const getPortfolioColor = (trend: 'up' | 'down' | 'neutral'): string => {
+    if (trend === 'up') return 'success';
+    if (trend === 'down') return 'error';
+    return 'info';
 };
 </script>
 
@@ -103,7 +111,7 @@ const getProfitColor = (value: number): string => {
                 </v-card>
             </v-col>
             <v-col cols="12" md="3">
-                <v-card color="info">
+                <v-card :color="getPortfolioColor(portfolioValueTrend)">
                     <v-card-text>
                         <div class="text-h6">Стоимость портфеля</div>
                         <div class="text-h5">

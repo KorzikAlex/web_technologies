@@ -1,13 +1,13 @@
 import type { SpriteManager } from '@/managers';
 import { Entity } from './Entity';
-import type { IDrawable, IInteractEntity } from './interfaces/';
+import type { IDrawable, IInteractEntity, IMovable } from './interfaces/';
 
-export class Player<T extends Entity & IDrawable> extends Entity implements IDrawable, IInteractEntity {
+export class Player extends Entity implements IDrawable, IInteractEntity, IMovable {
     lifetime: number;
     move_x: number;
     move_y: number;
     speed: number;
-    spriteManager: SpriteManager<T>;
+    spriteManager: SpriteManager;
 
     constructor(
         x: number = 0,
@@ -18,7 +18,7 @@ export class Player<T extends Entity & IDrawable> extends Entity implements IDra
         move_x: number = 0,
         move_y: number = 0,
         speed: number = 1,
-        spriteManager: SpriteManager<T>,
+        spriteManager: SpriteManager,
     ) {
         super(x, y, size_x, size_y);
 
@@ -37,7 +37,7 @@ export class Player<T extends Entity & IDrawable> extends Entity implements IDra
         // TODO: реализовать обновление состояния игрока
     }
 
-    onTouchEntity<T extends Entity>(obj: T): void {
+    onTouchEntity<T extends Entity>(_obj: T): void {
         // TODO: реализовать взаимодействие с объектами
     }
 

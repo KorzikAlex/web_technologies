@@ -1,7 +1,5 @@
-import type { Entity } from '@/entities';
 import type { MapManager } from './';
 import type { Atlas } from './types';
-import type { IDrawable } from '@/entities/interfaces';
 
 type Sprite = {
     name: string;
@@ -11,16 +9,16 @@ type Sprite = {
     h: number;
 };
 
-export class SpriteManager<T extends Entity & IDrawable> {
+export class SpriteManager {
     image: HTMLImageElement;
     sprites: Sprite[];
 
     imgLoaded: boolean;
     jsonLoaded: boolean;
 
-    mapManager: MapManager<T>;
+    mapManager: MapManager;
 
-    constructor(mapManager: MapManager<T>) {
+    constructor(mapManager: MapManager) {
         this.image = new Image();
         this.sprites = [];
 

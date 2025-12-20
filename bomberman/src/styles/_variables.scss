@@ -1,0 +1,40 @@
+:root {
+    /* Light theme (default) */
+    --bg-body: #ffffff;
+    --bg-toolbar: #f8f8f8;
+    --bg-sidebar: #f4f4f4;
+    --bg-modal: #ffffff;
+    --border-color: #ddd;
+    --border-color-dark: #000000;
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-tertiary: #555555;
+    --btn-primary: #4a90e2;
+    --btn-primary-hover: #357abd;
+    --btn-primary-text: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #ccc;
+    --separator-color: #ccc;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --score-color: #2d7a3e;
+}
+
+.body[data-theme="dark"] {
+    --bg-body: #1a1a1a;
+    --bg-toolbar: #2d2d2d;
+    --bg-sidebar: #252525;
+    --bg-modal: #2d2d2d;
+    --border-color: #404040;
+    --border-color-dark: #555555;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #999999;
+    --btn-primary: #5a9de8;
+    --btn-primary-hover: #4a8dd8;
+    --btn-primary-text: #ffffff;
+    --input-bg: #333333;
+    --input-border: #555555;
+    --separator-color: #555555;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --score-color: #4ade80;
+}

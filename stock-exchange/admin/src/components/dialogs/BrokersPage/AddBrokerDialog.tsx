@@ -64,11 +64,17 @@ export default function AddBrokerDialog({
                     sx={{ mt: 2 }}
                     value={balance}
                     onChange={(e) => setBalance(e.target.value)}
+                    inputProps={{ min: 0 }}
                 />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose}>Отмена</Button>
-                <Button onClick={handleCreate} variant="contained" color="primary">
+                <Button
+                    onClick={handleCreate}
+                    variant="contained"
+                    color="primary"
+                    disabled={!name || !balance || parseFloat(balance) < 0}
+                >
                     Создать
                 </Button>
             </DialogActions>

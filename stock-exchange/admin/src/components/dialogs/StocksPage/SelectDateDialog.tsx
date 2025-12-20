@@ -73,6 +73,7 @@ export default function SelectDateDialog({
                         label="Дата начала периода"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
+                        format="DD/MM/YYYY"
                         slotProps={{
                             textField: {
                                 fullWidth: true,
@@ -84,6 +85,7 @@ export default function SelectDateDialog({
                         label="Дата окончания периода"
                         value={endDate}
                         onChange={(newValue) => setEndDate(newValue)}
+                        format="DD/MM/YYYY"
                         slotProps={{
                             textField: {
                                 fullWidth: true,
