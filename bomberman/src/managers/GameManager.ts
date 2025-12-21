@@ -1,5 +1,5 @@
 import type { Entity, Player } from '@/entities';
-import { Bomb } from '@/entities';
+import { Bomb, Explosion } from '@/entities';
 import type { IDrawable } from '@/entities/interfaces';
 import type { EventsManager } from './EventsManager';
 import type { MapManager } from './MapManager';
@@ -22,6 +22,7 @@ export class GameManager<T extends Entity & IDrawable> {
     mapManager: MapManager | null;
     physicsManager: PhysicsManager<Player> | null;
     bombGameManager: GameManager<Bomb> | null;
+    explosionGameManager: GameManager<Explosion> | null;
 
     constructor(eventsManager: EventsManager) {
         this.factory = {};
@@ -34,6 +35,7 @@ export class GameManager<T extends Entity & IDrawable> {
         this.mapManager = null;
         this.physicsManager = null;
         this.bombGameManager = null;
+        this.explosionGameManager = null;
     }
 
     setMapManager(mapManager: MapManager): void {
@@ -46,6 +48,12 @@ export class GameManager<T extends Entity & IDrawable> {
         if (!this.bombGameManager) {
             this.bombGameManager = new GameManager<Bomb>(this.eventsManager);
             this.bombGameManager.mapManager = mapManager;
+        }
+
+        // Создаем отдельный GameManager для взрывов
+        if (!this.explosionGameManager) {
+            this.explosionGameManager = new GameManager<Explosion>(this.eventsManager);
+            this.explosionGameManager.mapManager = mapManager;
         }
     }
 
@@ -63,10 +71,21 @@ export class GameManager<T extends Entity & IDrawable> {
         if (this.bombGameManager) {
             obj.gameManager = this.bombGameManager;
         }
+        // Устанавливаем ссылку на explosionGameManager
+        if (this.explosionGameManager) {
+            obj.explosionGameManager = this.explosionGameManager;
+        }
+        // Устанавливаем ссылку на главный GameManager для доступа к препятствиям
+        obj.mainGameManager = this;
     }
 
     kill(obj: T): void {
         this.laterKill.push(obj);
+    }
+
+    killEntity(obj: Entity & IDrawable): void {
+        // Универсальный метод для удаления любых сущностей
+        this.laterKill.push(obj as T);
     }
 
     update(ctx: CanvasRenderingContext2D): void {
@@ -105,6 +124,13 @@ export class GameManager<T extends Entity & IDrawable> {
             });
         }
 
+        // Обновляем взрывы
+        if (this.explosionGameManager) {
+            this.explosionGameManager.entities.forEach((explosion: Explosion): void => {
+                explosion.update();
+            });
+        }
+
         // обновление информации по всем объектам на карте
         this.entities.forEach((e: T): void => {
             try {
@@ -139,6 +165,17 @@ export class GameManager<T extends Entity & IDrawable> {
             this.bombGameManager.laterKill.length = 0;
         }
 
+        // Удаление взрывов, попавших в laterKill
+        if (this.explosionGameManager && this.explosionGameManager.laterKill.length > 0) {
+            for (let i: number = 0; i < this.explosionGameManager.laterKill.length; ++i) {
+                const idx = this.explosionGameManager.entities.indexOf(this.explosionGameManager.laterKill[i]);
+                if (idx > -1) {
+                    this.explosionGameManager.entities.splice(idx, 1);
+                }
+            }
+            this.explosionGameManager.laterKill.length = 0;
+        }
+
         // очистка массива laterKill
         if (this.mapManager) {
             // Используем новый метод для отрисовки карты вместе с сущностями
@@ -151,16 +188,34 @@ export class GameManager<T extends Entity & IDrawable> {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        // Отрисовка бомб
+        // Отрисовка бомб (они на земле, рисуем первыми)
         if (this.bombGameManager) {
             for (let i: number = 0; i < this.bombGameManager.entities.length; ++i) {
                 this.bombGameManager.entities[i].draw(ctx);
             }
         }
 
-        // Отрисовка других сущностей
-        for (let i: number = 0; i < this.entities.length; ++i) {
-            this.entities[i].draw(ctx);
+        // Отрисовка взрывов (они на земле, после бомб)
+        if (this.explosionGameManager) {
+            for (let i: number = 0; i < this.explosionGameManager.entities.length; ++i) {
+                this.explosionGameManager.entities[i].draw(ctx);
+            }
+        }
+
+        // Собираем все сущности (препятствия и игрока) для сортировки по Y
+        const drawableEntities: (Entity & IDrawable)[] = [...this.entities];
+
+        // Добавляем игрока в список для отрисовки
+        if (this.player) {
+            drawableEntities.push(this.player as unknown as Entity & IDrawable);
+        }
+
+        // Сортируем по Y-координате (объекты выше рисуются первыми)
+        drawableEntities.sort((a, b) => a.pos_y - b.pos_y);
+
+        // Отрисовка в правильном порядке
+        for (let i: number = 0; i < drawableEntities.length; ++i) {
+            drawableEntities[i].draw(ctx);
         }
     }
 

@@ -98,14 +98,19 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
     }
 
     entityAtXY(obj: T, x: number, y: number) {
+        // Используем больший отступ для более комфортного прохода между объектами
+        const margin = 3;
+
         for (let i: number = 0; i < this.gameManager.entities.length; ++i) {
             const e = this.gameManager.entities[i];
             if (e.name !== obj.name) {
+                // Проверяем отсутствие пересечения с учетом отступа
+                // Если любое из условий истинно - объекты НЕ пересекаются
                 if (
-                    x + obj.size_x < e.pos_x || // не пересекаются
-                    y + obj.size_y < e.pos_y ||
-                    x > e.pos_x + e.size_x ||
-                    y > e.pos_y + e.size_y
+                    x + obj.size_x - margin <= e.pos_x || // obj полностью слева от e
+                    y + obj.size_y - margin <= e.pos_y || // obj полностью выше e
+                    x + margin >= e.pos_x + e.size_x ||   // obj полностью справа от e
+                    y + margin >= e.pos_y + e.size_y      // obj полностью ниже e
                 ) {
                     continue; // проверка следующего объекта
                 }

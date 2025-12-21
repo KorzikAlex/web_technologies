@@ -1,0 +1,12 @@
+{
+  "frames": {
+    "obstacle": {
+      "frame": { "x": 96, "y": 0, "w": 16, "h": 16 }
+    }
+  },
+  "meta": {
+    "image": "../images/PeaceTown.png",
+    "size": { "w": 128, "h": 64 },
+    "scale": "1"
+  }
+}

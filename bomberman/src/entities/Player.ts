@@ -1,6 +1,7 @@
 import type { SpriteManager, PhysicsManager, GameManager } from '@/managers';
 import { Entity } from './Entity';
 import { Bomb } from './Bomb';
+import type { Explosion } from './Explosion';
 import type { IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap } from './interfaces/';
 
 export class Player extends Entity implements IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap {
@@ -12,6 +13,8 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
     spriteManager: SpriteManager;
     physicsManager: PhysicsManager<Player> | null;
     gameManager: GameManager<Bomb> | null;
+    explosionGameManager: GameManager<Explosion> | null;
+    mainGameManager: GameManager<Entity & IDrawable> | null;
     lastBombTime: number;
     bombCooldown: number;
     maxBombs: number;
@@ -38,6 +41,8 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
         this.spriteManager = spriteManager;
         this.physicsManager = null;
         this.gameManager = null;
+        this.explosionGameManager = null;
+        this.mainGameManager = null;
         this.lastBombTime = 0;
         this.bombCooldown = 300; // Задержка 300мс между установками бомб
         this.maxBombs = 1; // По умолчанию можно ставить только 1 бомбу

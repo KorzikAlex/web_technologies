@@ -1,5 +1,5 @@
 import type { Entity } from '@/entities';
-import { Player } from '@/entities/Player';
+import { Player, Obstacle } from '@/entities';
 import type { IDrawable} from '@/entities/interfaces';
 import type { GameManager } from './GameManager';
 import { SpriteManager } from './SpriteManager';
@@ -144,6 +144,28 @@ export class MapManager {
         this.mapSize.x = this.xCount * this.tSize.x;
         this.mapSize.y = this.yCount * this.tSize.y;
 
+        // Инициализируем tileLayers сразу после загрузки карты
+        console.log(`Total layers: ${this.mapData.layers.length}`);
+        const tempLayers: TilesLayer[] = [];
+
+        for (let id: number = 0; id < this.mapData.layers.length; ++id) {
+            const layer = this.mapData.layers[id];
+            console.log(`Layer ${id}: type="${layer.type}", name="${layer.name}"`);
+            if (layer.type === 'tilelayer') {
+                tempLayers.push(layer as TilesLayer);
+            }
+        }
+
+        // Сортируем слои по имени: field, walls, obstacles
+        const layerOrder = ['field', 'walls', 'obstacles'];
+        this.tileLayers = tempLayers.sort((a, b) => {
+            const indexA = layerOrder.indexOf(a.name);
+            const indexB = layerOrder.indexOf(b.name);
+            return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+        });
+
+        console.log('Layer render order:', this.tileLayers.map(l => l.name).join(' → '));
+
         for (let i = 0; i < this.mapData.tilesets.length; ++i) {
             const tileset = this.mapData.tilesets[i];
 
@@ -237,30 +259,9 @@ export class MapManager {
             return;
         }
 
-        // Собираем все слои типа 'tilelayer' при первой отрисовке
-        if (this.tileLayers.length === 0) {
-            console.log(`Total layers: ${this.mapData.layers.length}`);
-            const tempLayers: TilesLayer[] = [];
-
-            for (let id: number = 0; id < this.mapData.layers.length; ++id) {
-                const layer = this.mapData.layers[id];
-                console.log(`Layer ${id}: type="${layer.type}", name="${layer.name}"`);
-                if (layer.type === 'tilelayer') {
-                    tempLayers.push(layer as TilesLayer);
-                }
-            }
-
-            // Сортируем слои по имени: field, walls, obstacles
-            const layerOrder = ['field', 'walls', 'obstacles'];
-            this.tileLayers = tempLayers.sort((a, b) => {
-                const indexA = layerOrder.indexOf(a.name);
-                const indexB = layerOrder.indexOf(b.name);
-                return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
-            });
-
-            console.log('Layer render order:', this.tileLayers.map(l => l.name).join(' → '));
-
-            // Вычисляем масштаб после загрузки слоёв
+        // Вычисляем масштаб и настраиваем canvas при первой отрисовке
+        if (this.scale === 1) {
+            // Вычисляем масштаб
             this.scale = this.calculateScale(ctx.canvas.width, ctx.canvas.height);
 
             // Адаптируем canvas под размер карты
@@ -480,6 +481,8 @@ export class MapManager {
                             spriteManager.loadAtlas('/assets/atlas/player.json', '/assets/images/Player.png');
                             // Загружаем атлас спрайтов для бомб
                             spriteManager.loadAtlas('/assets/atlas/bomb.json', '/assets/images/bomb.png');
+                            // Загружаем атлас спрайтов для препятствий
+                            spriteManager.loadAtlas('/assets/atlas/obstacle.json', '/assets/images/PeaceTown.png');
 
                             const player = new Player(
                                 e.x,
@@ -510,6 +513,85 @@ export class MapManager {
                 }
             }
         }
+
+        // Генерируем разрушаемые препятствия после создания игрока
+        this.generateObstacles();
+    }
+
+    /**
+     * Генерирует разрушаемые препятствия на карте
+     */
+    private generateObstacles(): void {
+        if (!this.gameManager.player) {
+            return; // Игрок еще не создан
+        }
+
+        const tileSize = 16;
+        const player = this.gameManager.player;
+        const playerTileX = Math.floor(player.pos_x / tileSize);
+        const playerTileY = Math.floor(player.pos_y / tileSize);
+        const safeZoneRadius = 2; // Радиус безопасной зоны вокруг игрока (в тайлах)
+
+        // Флаги из Tiled для очистки GID
+        const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+        const FLIPPED_VERTICALLY_FLAG = 0x40000000;
+        const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+        const FLAGS_MASK = FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG;
+
+        // Создаем SpriteManager для препятствий (можно использовать тот же, что у игрока)
+        const spriteManager = player.spriteManager;
+
+        // Собираем все свободные позиции на карте
+        const freeTiles: { x: number; y: number }[] = [];
+
+        for (let tileY = 0; tileY < this.yCount; tileY++) {
+            for (let tileX = 0; tileX < this.xCount; tileX++) {
+                const worldX = tileX * tileSize;
+                const worldY = tileY * tileSize;
+
+                // Проверка 1: Не слишком близко к игроку
+                const distX = Math.abs(tileX - playerTileX);
+                const distY = Math.abs(tileY - playerTileY);
+                if (distX <= safeZoneRadius && distY <= safeZoneRadius) {
+                    continue;
+                }
+
+                // Проверка 2: Нет стены на этой позиции
+                const wallTileIdxRaw = this.getTilesetIdx(worldX, worldY, 'walls');
+                const wallTileIdx = wallTileIdxRaw & ~FLAGS_MASK;
+                if (wallTileIdx !== 0) {
+                    continue; // Есть стена - пропускаем
+                }
+
+                // Не размещаем на границах карты (первые 2 и последние 2 колонки/строки)
+                if (tileX < 2 || tileX >= this.xCount - 2 || tileY < 1 || tileY >= this.yCount - 1) {
+                    continue;
+                }
+
+                freeTiles.push({ x: tileX, y: tileY });
+            }
+        }
+
+        // Перемешиваем массив свободных тайлов (алгоритм Фишера-Йетса)
+        for (let i = freeTiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [freeTiles[i], freeTiles[j]] = [freeTiles[j], freeTiles[i]];
+        }
+
+        // Количество препятствий - 40-50% свободного поля
+        const obstacleCount = Math.floor(freeTiles.length * 0.45);
+
+        // Создаем препятствия
+        for (let i = 0; i < obstacleCount && i < freeTiles.length; i++) {
+            const tile = freeTiles[i];
+            const worldX = tile.x * tileSize;
+            const worldY = tile.y * tileSize;
+
+            const obstacle = new Obstacle(worldX, worldY, spriteManager);
+            this.gameManager.entities.push(obstacle);
+        }
+
+        console.log(`Generated ${Math.min(obstacleCount, freeTiles.length)} obstacles out of ${freeTiles.length} free tiles`);
     }
 
     getTilesetIdx(x: number, y: number, layerName?: string): number {
