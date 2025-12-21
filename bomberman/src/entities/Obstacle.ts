@@ -36,13 +36,19 @@ export class Obstacle extends Entity implements IDrawable, IHaveName {
         // Препятствия статичны, не требуют обновления
     }
 
-    destroy(): number {
+    destroy(forceDropType?: number): number {
         // Возвращает тип выпавшего бонуса:
         // 0 - ничего
         // 1 - скорость
         // 2 - больше бомб
         // 3 - мощнее взрыв
         // 4 - портал
+
+        // Если передан принудительный тип - возвращаем его
+        if (forceDropType !== undefined) {
+            return forceDropType;
+        }
+
         const random = Math.random();
 
         if (random < 0.05) {

@@ -193,7 +193,9 @@ export class Bomb extends Entity implements IDrawable {
 
             // Если есть препятствие - уничтожаем его и останавливаем взрыв
             if (obstacle) {
-                const bonusType = obstacle.destroy();
+                // Проверяем, нужно ли гарантированно выдать телепорт
+                const shouldForceTeleport = this.shouldForceTeleportDrop(obstacle);
+                const bonusType = obstacle.destroy(shouldForceTeleport ? 4 : undefined);
 
                 // Начисляем очки за уничтожение препятствия
                 if (this.player.mainGameManager) {
@@ -226,6 +228,39 @@ export class Bomb extends Entity implements IDrawable {
                 break; // Взрыв останавливается на препятствии
             }
         }
+    }
+
+    /**
+     * Проверяет, нужно ли гарантированно выдать телепорт при уничтожении препятствия
+     * @returns true если это последнее препятствие и телепорт ещё не появился
+     */
+    private shouldForceTeleportDrop(currentObstacle: Obstacle): boolean {
+        // Если телепорт уже есть - не нужно
+        if (this.player.teleportGameManager && this.player.teleportGameManager.entities.length > 0) {
+            return false;
+        }
+
+        // Считаем количество оставшихся препятствий (включая текущее)
+        if (!this.player.mainGameManager) {
+            return false;
+        }
+
+        let obstacleCount = 0;
+        for (const entity of this.player.mainGameManager.entities) {
+            if (entity instanceof Obstacle) {
+                obstacleCount++;
+            }
+        }
+
+        // Также проверяем laterKill (препятствия, которые уже помечены на удаление)
+        for (const entity of this.player.mainGameManager.laterKill) {
+            if (entity instanceof Obstacle && entity !== currentObstacle) {
+                obstacleCount--;
+            }
+        }
+
+        // Если это последнее препятствие - гарантированно выдаём телепорт
+        return obstacleCount <= 1;
     }
 
     /**

@@ -3,12 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "assets/tilesets/Player.json",
+    "activeFile": "maps/map2.json",
     "expandedProjectPaths": [
-        "assets",
-        "assets/tilesets",
         "maps",
-        "."
+        "assets/tilesets",
+        ".",
+        "assets"
     ],
     "fileStates": {
         "C:/assets/tilesets/PeaceTown.json": {
@@ -118,14 +118,15 @@
     "map.tileWidth": 16,
     "map.width": 17,
     "openFiles": [
-        "assets/tilesets/Player.json"
+        "assets/tilesets/Player.json",
+        "maps/map2.json"
     ],
     "project": "tiledbomberman.tiled-project",
     "property.type": "file",
     "recentFiles": [
         "assets/tilesets/Player.json",
-        "maps/map1.json",
         "maps/map2.json",
+        "maps/map1.json",
         "assets/tilesets/Bonus.json",
         "assets/tilesets/Bomb.json",
         "assets/tilesets/PeaceTown.json",

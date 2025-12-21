@@ -406,6 +406,72 @@ function initGame(): void {
 
     // Запускаем игровой цикл
     gameLoop();
+
+    // Настраиваем кнопки управления в toolbar
+    setupToolbarControls(gameManager);
+}
+
+/**
+ * Обновляет иконку кнопки паузы
+ */
+function updatePauseButton(isPaused: boolean): void {
+    const pauseBtn = document.getElementById('pauseBtn') as HTMLButtonElement | null;
+    if (pauseBtn) {
+        pauseBtn.textContent = isPaused ? '▶' : '⏸';
+        pauseBtn.title = isPaused ? 'Продолжить (P)' : 'Пауза (P)';
+        pauseBtn.classList.toggle('toolbar__control-btn--paused', isPaused);
+    }
+}
+
+/**
+ * Настраивает обработчики для кнопок паузы и перезапуска в toolbar
+ */
+function setupToolbarControls(gameManager: GameManager<Entity & IDrawable>): void {
+    const pauseBtn = document.getElementById('pauseBtn') as HTMLButtonElement | null;
+    const restartBtn = document.getElementById('restartBtn') as HTMLButtonElement | null;
+
+    // Кнопка паузы
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', () => {
+            if (gameManager.isGameOver) return;
+
+            gameManager.isPaused = !gameManager.isPaused;
+            updatePauseButton(gameManager.isPaused);
+        });
+    }
+
+    // Кнопка перезапуска
+    if (restartBtn) {
+        restartBtn.addEventListener('click', () => {
+            gameManager.restart();
+            updateLives(5);
+            updateScoreDisplay(0);
+            updatePauseButton(false);
+
+            // Переустанавливаем callback для игрока после перезагрузки
+            setTimeout(() => {
+                if (gameManager.player) {
+                    gameManager.player.onDeathCallback = (lives: number): void => {
+                        updateLives(lives);
+                    };
+                }
+            }, 500);
+        });
+    }
+
+    // Горячая клавиша P для паузы
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key.toLowerCase() === 'p' && !gameManager.isGameOver) {
+            // Проверяем, что не в модальном окне
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+                return;
+            }
+
+            gameManager.isPaused = !gameManager.isPaused;
+            updatePauseButton(gameManager.isPaused);
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', (): void => {

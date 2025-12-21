@@ -137,13 +137,16 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
 
     /**
      * Находит новое направление при столкновении с препятствием.
-     * Выбирает случайное из доступных направлений.
+     * Если есть альтернативные пути - может выбрать их случайно.
+     * Если путь только назад - сразу разворачивается.
      */
     private findNewDirection(): void {
         const testDistance = this.speed * 2; // Проверяем на небольшом расстоянии
-        const availableDirections: { x: number; y: number }[] = [];
 
-        // Все возможные направления
+        // Противоположное направление
+        const oppositeDir = { x: -this.move_x, y: -this.move_y };
+
+        // Все возможные направления (кроме текущего, в него упёрлись)
         const directions = [
             { x: 1, y: 0 },   // вправо
             { x: -1, y: 0 },  // влево
@@ -151,7 +154,11 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
             { x: 0, y: -1 },  // вверх
         ];
 
-        // Проверяем каждое направление
+        // Собираем все доступные направления
+        const availableDirections: { x: number; y: number }[] = [];
+        const alternativeDirections: { x: number; y: number }[] = []; // боковые (не назад)
+        let canGoBack = false;
+
         for (const dir of directions) {
             // Пропускаем текущее направление (в него мы уже упёрлись)
             if (dir.x === this.move_x && dir.y === this.move_y) {
@@ -163,19 +170,35 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
 
             if (this.canMoveTo(testX, testY)) {
                 availableDirections.push(dir);
+
+                // Проверяем, это противоположное направление или альтернативное
+                if (dir.x === oppositeDir.x && dir.y === oppositeDir.y) {
+                    canGoBack = true;
+                } else {
+                    alternativeDirections.push(dir);
+                }
             }
         }
 
-        // Если есть доступные направления - выбираем случайное
-        if (availableDirections.length > 0) {
-            const newDir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
-            this.move_x = newDir.x;
-            this.move_y = newDir.y;
-        } else {
-            // Если некуда идти - останавливаемся
+        // Если некуда идти - останавливаемся
+        if (availableDirections.length === 0) {
             this.move_x = 0;
             this.move_y = 0;
+            return;
         }
+
+        // Если есть только путь назад - сразу идём назад
+        if (availableDirections.length === 1 && canGoBack) {
+            this.move_x = oppositeDir.x;
+            this.move_y = oppositeDir.y;
+            return;
+        }
+
+        // Если есть альтернативные пути - выбираем случайно из ВСЕХ доступных
+        // (включая противоположное направление, если оно доступно)
+        const newDir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+        this.move_x = newDir.x;
+        this.move_y = newDir.y;
     }
 
     /**
