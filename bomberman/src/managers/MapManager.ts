@@ -489,7 +489,7 @@ export class MapManager {
                                 100,
                                 0,
                                 0,
-                                1.2, // Оптимальная скорость для комфортного управления
+                                0.25, // Оптимальная скорость для комфортного управления
                                 spriteManager,
                             );
                             this.gameManager.entities.push(player);

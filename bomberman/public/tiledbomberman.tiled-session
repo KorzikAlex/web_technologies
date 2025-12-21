@@ -5,10 +5,10 @@
     },
     "activeFile": "maps/map1.json",
     "expandedProjectPaths": [
-        "assets",
+        "maps",
         ".",
-        "assets/tilesets",
-        "maps"
+        "assets",
+        "assets/tilesets"
     ],
     "fileStates": {
         "C:/assets/tilesets/PeaceTown.json": {
@@ -82,11 +82,11 @@
             "scaleInDock": 1
         },
         "maps/map1.json": {
-            "scale": 2,
+            "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 264,
-                "y": 38.5
+                "x": 124.5,
+                "y": 14.5
             }
         },
         "maps/map2.json": {
@@ -110,17 +110,18 @@
     "map.tileWidth": 16,
     "map.width": 17,
     "openFiles": [
-        "maps/map1.json"
+        "maps/map1.json",
+        "assets/tilesets/Player.json"
     ],
     "project": "tiledbomberman.tiled-project",
     "property.type": "file",
     "recentFiles": [
+        "assets/tilesets/Player.json",
         "maps/map1.json",
         "assets/tilesets/Bonus.json",
         "assets/tilesets/Bomb.json",
         "assets/tilesets/PeaceTown.json",
         "assets/tilesets/Enemies.json",
-        "assets/tilesets/Player.json",
         "maps/map2.json",
         "PeaceTown.json",
         "map1.json",
