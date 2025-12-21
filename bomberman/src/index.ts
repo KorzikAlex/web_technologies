@@ -117,6 +117,13 @@ function updateLeaderboard(): void {
     leaderboard.forEach((player) => {
         const item = document.createElement('li');
         item.className = 'leaderboard__item';
+
+        // Выделяем текущего игрока
+        const currentPlayer = RecordsManager.getCurrentPlayer();
+        if (currentPlayer && player.nick === currentPlayer.nick) {
+            item.classList.add('leaderboard__item--current');
+        }
+
         item.innerHTML = `
             <span class="leaderboard__nick">${player.nick}</span>
             <span class="leaderboard__score">${player.score}</span>
@@ -137,7 +144,7 @@ function updatePlayerSelect(): void {
     players.forEach((player) => {
         const option = document.createElement('option');
         option.value = player.nick;
-        option.textContent = `${player.nick} (${player.score})`;
+        option.textContent = player.nick;
         if (currentPlayer && player.nick === currentPlayer.nick) {
             option.selected = true;
         }
@@ -155,6 +162,27 @@ function setupPlayerSelectHandler(): void {
             RecordsManager.setCurrentPlayer(selectedNick);
             setPlayerInfo();
             updateLeaderboard();
+
+            // Сбрасываем счёт в тулбаре
+            updateScoreDisplay(0);
+
+            // Перезапускаем игру
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restartGame();
+                updateLives(5);
+
+                // Переустанавливаем callback для игрока после перезагрузки
+                setTimeout(() => {
+                    if (gm.player) {
+                        gm.player.onDeathCallback = (lives: number): void => {
+                            updateLives(lives);
+                        };
+                        // Устанавливаем имя игрока
+                        gm.player.name = selectedNick;
+                    }
+                }, 500);
+            }
         }
     });
 }
@@ -490,6 +518,14 @@ document.addEventListener('DOMContentLoaded', (): void => {
     if (changePlayerBtn) {
         changePlayerBtn.addEventListener('click', () => {
             openPlayerModal();
+            // Сбрасываем счёт в тулбаре
+            updateScoreDisplay(0);
+            // Перезапускаем игру
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restartGame();
+                updateLives(5);
+            }
         });
     }
 

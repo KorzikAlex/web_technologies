@@ -102,7 +102,7 @@
          "name":"bomb",
          "objects":[
                 {
-                 "gid":104,
+                 "gid":57,
                  "height":16,
                  "id":17,
                  "name":"Bomb",
@@ -125,7 +125,7 @@
          "name":"bonus",
          "objects":[
                 {
-                 "gid":148,
+                 "gid":87,
                  "height":16,
                  "id":18,
                  "name":"FastBomb",
@@ -137,7 +137,7 @@
                  "y":224
                 }, 
                 {
-                 "gid":149,
+                 "gid":88,
                  "height":16,
                  "id":19,
                  "name":"BigBomb",
@@ -149,7 +149,7 @@
                  "y":224
                 }, 
                 {
-                 "gid":150,
+                 "gid":89,
                  "height":16,
                  "id":20,
                  "name":"Speed",
@@ -172,7 +172,7 @@
          "name":"entities",
          "objects":[
                 {
-                 "gid":96,
+                 "gid":49,
                  "height":16,
                  "id":11,
                  "name":"Fierfly",
@@ -184,7 +184,7 @@
                  "y":0
                 }, 
                 {
-                 "gid":102,
+                 "gid":55,
                  "height":16,
                  "id":13,
                  "name":"Slime",
@@ -229,15 +229,15 @@
          "source":"..\/assets\/tilesets\/Player.json"
         }, 
         {
-         "firstgid":92,
+         "firstgid":45,
          "source":"..\/assets\/tilesets\/Enemies.json"
         }, 
         {
-         "firstgid":104,
+         "firstgid":57,
          "source":"..\/assets\/tilesets\/Bomb.json"
         }, 
         {
-         "firstgid":148,
+         "firstgid":87,
          "source":"..\/assets\/tilesets\/Bonus.json"
         }],
  "tilewidth":16,

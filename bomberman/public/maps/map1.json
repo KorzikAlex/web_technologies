@@ -125,7 +125,7 @@
          "name":"bonus",
          "objects":[
                 {
-                 "gid":101,
+                 "gid":87,
                  "height":16,
                  "id":18,
                  "name":"FastBomb",
@@ -137,7 +137,7 @@
                  "y":224
                 }, 
                 {
-                 "gid":102,
+                 "gid":88,
                  "height":16,
                  "id":19,
                  "name":"BigBomb",
@@ -149,7 +149,7 @@
                  "y":224
                 }, 
                 {
-                 "gid":103,
+                 "gid":89,
                  "height":16,
                  "id":20,
                  "name":"Speed",
@@ -237,7 +237,7 @@
          "source":"..\/assets\/tilesets\/Bomb.json"
         }, 
         {
-         "firstgid":101,
+         "firstgid":87,
          "source":"..\/assets\/tilesets\/Bonus.json"
         }],
  "tilewidth":16,

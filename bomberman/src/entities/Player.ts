@@ -53,6 +53,11 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
     private currentDirection: 'left' | 'right' | 'up' | 'down'; // текущее направление
     private isMoving: boolean;
 
+    // Звук ходьбы
+    private walkingSoundTimer: number;
+    private readonly walkingSoundInterval: number = 1000; // мс между звуками шагов
+    private currentWalkingSound: number; // чередование между Walking1 и Walking2
+
     constructor(
         x: number = 0,
         y: number = 0,
@@ -105,6 +110,10 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
         this.animationTimer = 0;
         this.currentDirection = 'down';
         this.isMoving = false;
+
+        // Звук ходьбы
+        this.walkingSoundTimer = 0;
+        this.currentWalkingSound = 1;
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -177,10 +186,23 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
                 this.animationTimer = 0;
                 this.animationFrame = (this.animationFrame + 1) % this.maxFrames;
             }
+
+            // Звук ходьбы
+            this.walkingSoundTimer += deltaTime;
+            if (this.walkingSoundTimer >= this.walkingSoundInterval) {
+                this.walkingSoundTimer = 0;
+                if (this.mainGameManager?.soundManager) {
+                    const soundPath = `/assets/sounds/Walking${this.currentWalkingSound}.wav`;
+                    this.mainGameManager.soundManager.play(soundPath, { looping: false, volume: 0.3 });
+                    // Чередуем звуки
+                    this.currentWalkingSound = this.currentWalkingSound === 1 ? 2 : 1;
+                }
+            }
         } else {
             // Сбрасываем анимацию на первый кадр при остановке
             this.animationFrame = 0;
             this.animationTimer = 0;
+            this.walkingSoundTimer = 0;
         }
 
         // Обновляем таймер неуязвимости

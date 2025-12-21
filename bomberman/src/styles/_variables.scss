@@ -17,6 +17,8 @@
     --separator-color: #ccc;
     --shadow-color: rgba(0, 0, 0, 0.2);
     --score-color: #2d7a3e;
+    --accent-primary: #e85d04;
+    --accent-light: rgba(232, 93, 4, 0.15);
 }
 
 .body[data-theme='dark'] {
@@ -37,4 +39,6 @@
     --separator-color: #555555;
     --shadow-color: rgba(0, 0, 0, 0.5);
     --score-color: #4ade80;
+    --accent-primary: #ff7b00;
+    --accent-light: rgba(255, 123, 0, 0.2);
 }
