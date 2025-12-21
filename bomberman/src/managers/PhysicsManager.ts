@@ -17,18 +17,40 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
             return 'stop';
         }
 
-        const newX: number = obj.pos_x + Math.floor(obj.move_x * obj.speed);
-        const newY: number = obj.pos_y + Math.floor(obj.move_y * obj.speed);
+        const newX: number = obj.pos_x + obj.move_x * obj.speed;
+        const newY: number = obj.pos_y + obj.move_y * obj.speed;
 
-        const ts = this.mapManager.getTilesetIdx(newX + obj.size_x / 2, newY + obj.size_y / 2);
+        // Проверяем столкновения с учетом всех углов игрока
+        const margin = 2; // Отступ от краев для более плавного столкновения
+
+        // Проверяем 4 угла игрока
+        const checkPoints = [
+            { x: newX + margin, y: newY + margin }, // верхний левый
+            { x: newX + obj.size_x - margin, y: newY + margin }, // верхний правый
+            { x: newX + margin, y: newY + obj.size_y - margin }, // нижний левый
+            { x: newX + obj.size_x - margin, y: newY + obj.size_y - margin }, // нижний правый
+        ];
+
+        // Проверяем, есть ли стена в любой из точек
+        let hasWall = false;
+        for (const point of checkPoints) {
+            const ts = this.mapManager.getTilesetIdx(point.x, point.y, 'walls');
+            if (ts !== 0) {
+                hasWall = true;
+                if (obj.onTouchMap) {
+                    obj.onTouchMap(ts);
+                }
+                break;
+            }
+        }
+
         const e = this.entityAtXY(obj, newX, newY); // объект на пути
         if (e !== null && obj.onTouchEntity) {
             obj.onTouchEntity(e);
         }
-        if (ts !== 7 && obj.onTouchMap) {
-            obj.onTouchMap(ts);
-        }
-        if (ts === 7 && e === null) {
+
+        // Разрешаем движение, если нет стены и нет объекта на пути
+        if (!hasWall && e === null) {
             obj.pos_x = newX;
             obj.pos_y = newY;
             return 'move';

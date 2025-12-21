@@ -1,6 +1,8 @@
 import type { Entity } from '@/entities';
+import { Player } from '@/entities/Player';
 import type { IDrawable} from '@/entities/interfaces';
 import type { GameManager } from './GameManager';
+import { SpriteManager } from './SpriteManager';
 import type {
     TiledMapData,
     Tile,
@@ -159,6 +161,9 @@ export class MapManager {
         }
 
         this.jsonLoaded = true;
+
+        // Запускаем парсинг сущностей после загрузки карты
+        this.parseEntities();
     }
 
     private loadExternalTileset(absolutePath: string, firstgid: number, originalPath: string): void {
@@ -291,7 +296,19 @@ export class MapManager {
             this.drawLayer(ctx, tilesLayer);
         }
 
-        // Восстанавливаем состояние контекста
+        // НЕ восстанавливаем контекст здесь - он будет восстановлен в drawWithEntities
+    }
+
+    /**
+     * Отрисовывает карту вместе с сущностями в правильном порядке
+     */
+    drawWithEntities(ctx: CanvasRenderingContext2D, drawEntitiesCallback: () => void): void {
+        this.draw(ctx);
+
+        // Рисуем сущности в том же масштабированном контексте
+        drawEntitiesCallback();
+
+        // Восстанавливаем контекст после всего
         ctx.restore();
     }
 
@@ -455,21 +472,40 @@ export class MapManager {
                 for (let i: number = 0; i < entities.objects.length; ++i) {
                     const e: ObjectProperty = entities.objects[i];
                     try {
-                        const obj = Object.create(this.gameManager.factory[e.type]); // FIXME: Типизация и метод factory
-                        // в соответствии с типом создаем экземпляр объекта
-                        obj.name = e.name;
-                        obj.pos_x = e.x;
-                        obj.pos_y = e.y;
-                        obj.size_x = e.width;
-                        obj.size_y = e.height;
-                        // помещаем в массив объектов
-                        this.gameManager.entities.push(obj);
-                        if (obj.name === 'player') {
-                            // инициализируем параметры игрока
-                            this.gameManager.initPlayer(obj);
+                        // Создаем объекты по имени (name), а не по type
+                        if (e.name === 'Player') {
+                            // Создаем игрока
+                            const spriteManager = new SpriteManager(this);
+                            // Загружаем атлас спрайтов для игрока
+                            spriteManager.loadAtlas('/assets/atlas/player.json', '/assets/images/Player.png');
+                            // Загружаем атлас спрайтов для бомб
+                            spriteManager.loadAtlas('/assets/atlas/bomb.json', '/assets/images/bomb.png');
+
+                            const player = new Player(
+                                e.x,
+                                e.y - e.height, // Tiled использует нижний левый угол, а мы верхний левый
+                                e.width,
+                                e.height,
+                                100,
+                                0,
+                                0,
+                                1.2, // Оптимальная скорость для комфортного управления
+                                spriteManager,
+                            );
+                            this.gameManager.entities.push(player);
+                            this.gameManager.initPlayer(player);
+                        } else if (this.gameManager.factory[e.type]) {
+                            // Создаем другие объекты через фабрику
+                            const obj = Object.create(this.gameManager.factory[e.type]);
+                            obj.name = e.name;
+                            obj.pos_x = e.x;
+                            obj.pos_y = e.y;
+                            obj.size_x = e.width;
+                            obj.size_y = e.height;
+                            this.gameManager.entities.push(obj);
                         }
                     } catch (error) {
-                        console.error(`Error while creating: ["${e.gid}"]${e.type}, ${error}`);
+                        console.error(`Error while creating: ["${e.gid}"]${e.name}, ${error}`);
                     }
                 }
             }

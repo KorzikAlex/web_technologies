@@ -5,13 +5,13 @@
     },
     "activeFile": "maps/map1.json",
     "expandedProjectPaths": [
-        ".",
-        "maps",
         "assets",
-        "assets/tilesets"
+        ".",
+        "assets/tilesets",
+        "maps"
     ],
     "fileStates": {
-        "/assets/tilesets/PeaceTown.json": {
+        "C:/assets/tilesets/PeaceTown.json": {
             "scaleInDock": 1
         },
         "PeaceTown.json": {
@@ -26,8 +26,24 @@
             "scaleInDock": 1,
             "scaleInEditor": 1.5
         },
+        "assets/tilesets/Bomb.json": {
+            "scaleInDock": 3,
+            "scaleInEditor": 8
+        },
+        "assets/tilesets/Bonus.json": {
+            "scaleInDock": 8,
+            "scaleInEditor": 5.5
+        },
+        "assets/tilesets/Enemies.json": {
+            "scaleInDock": 4,
+            "scaleInEditor": 5.5
+        },
         "assets/tilesets/PeaceTown.json": {
             "scaleInDock": 2,
+            "scaleInEditor": 5.5
+        },
+        "assets/tilesets/Player.json": {
+            "scaleInDock": 4,
             "scaleInEditor": 5.5
         },
         "map1.json": {
@@ -69,8 +85,8 @@
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 102,
-                "y": 183.5
+                "x": 264,
+                "y": 38.5
             }
         },
         "maps/map2.json": {
@@ -82,6 +98,7 @@
             }
         }
     },
+    "frame.defaultDuration": 1000,
     "last.exportedFilePath": "C:/Users/Lumic/Programming/WebProjects/web_technologies/bomberman/public/assets",
     "last.externalTilesetPath": "C:/Users/Lumic/Programming/WebProjects/web_technologies/bomberman/public/assets/tilesets",
     "last.imagePath": "C:/Users/Lumic/Programming/WebProjects/web_technologies/bomberman/public/assets/images",
@@ -93,20 +110,23 @@
     "map.tileWidth": 16,
     "map.width": 17,
     "openFiles": [
-        "maps/map1.json",
-        "assets/tilesets/PeaceTown.json"
+        "maps/map1.json"
     ],
     "project": "tiledbomberman.tiled-project",
+    "property.type": "file",
     "recentFiles": [
-        "assets/tilesets/PeaceTown.json",
         "maps/map1.json",
+        "assets/tilesets/Bonus.json",
+        "assets/tilesets/Bomb.json",
+        "assets/tilesets/PeaceTown.json",
+        "assets/tilesets/Enemies.json",
+        "assets/tilesets/Player.json",
         "maps/map2.json",
         "PeaceTown.json",
         "map1.json",
         "map2.json",
         "PeaceTown.tsx",
-        "map1.tmx",
-        "Super Bomberman.tsx"
+        "map1.tmx"
     ],
     "tileset.lastUsedFormat": "json",
     "tileset.margin": 0,

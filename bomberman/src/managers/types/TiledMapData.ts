@@ -4,7 +4,7 @@ export type TiledMapData = {
     height: number;
     layers: (TilesLayer | ObjectsLayer)[];
     orientation: string;
-    properties: unknown[];
+    properties: { name: string; value: string | number | boolean; type: string }[];
     tileheight: number;
     tilesets: Tileset[];
     tilewidth: number;

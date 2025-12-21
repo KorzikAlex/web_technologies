@@ -11,4 +11,6 @@ export type ObjectsLayer = {
     objects?: ObjectProperty[];
     x: number;
     y: number;
+    draworder?: string;
+    properties?: { name: string; value: string | number | boolean; type: string }[];
 };

@@ -7,10 +7,11 @@ type Sprite = {
     y: number;
     w: number;
     h: number;
+    image: HTMLImageElement;
 };
 
 export class SpriteManager {
-    image: HTMLImageElement;
+    images: Map<string, HTMLImageElement>;
     sprites: Sprite[];
 
     imgLoaded: boolean;
@@ -19,7 +20,7 @@ export class SpriteManager {
     mapManager: MapManager;
 
     constructor(mapManager: MapManager) {
-        this.image = new Image();
+        this.images = new Map();
         this.sprites = [];
 
         this.imgLoaded = false;
@@ -32,7 +33,7 @@ export class SpriteManager {
         const request: XMLHttpRequest = new XMLHttpRequest();
         request.onreadystatechange = (): void => {
             if (request.readyState === 4 && request.status === 200) {
-                this.parseAtlas(request.responseText);
+                this.parseAtlas(request.responseText, atlasPath);
             }
         };
         request.open('GET', atlasJson, true);
@@ -41,14 +42,26 @@ export class SpriteManager {
     }
 
     loadImg(imgName: string): void {
-        this.image.onload = (): void => {
+        if (this.images.has(imgName)) {
+            return; // Изображение уже загружается или загружено
+        }
+
+        const image = new Image();
+        image.onload = (): void => {
             this.imgLoaded = true;
         };
-        this.image.src = imgName;
+        image.src = imgName;
+        this.images.set(imgName, image);
     }
 
-    parseAtlas(responseText: string): void {
+    parseAtlas(responseText: string, imagePath: string): void {
         const atlas: Atlas = JSON.parse(responseText);
+        const image = this.images.get(imagePath);
+
+        if (!image) {
+            console.error(`Image not found for atlas: ${imagePath}`);
+            return;
+        }
 
         for (const name in atlas.frames) {
             const frame: { x: number; y: number; w: number; h: number } = atlas.frames[name].frame;
@@ -58,6 +71,7 @@ export class SpriteManager {
                 y: frame.y,
                 w: frame.w,
                 h: frame.h,
+                image: image,
             });
             this.jsonLoaded = true;
         }
@@ -86,7 +100,7 @@ export class SpriteManager {
         y -= this.mapManager.view.y;
 
         // отображаем спрайт на холсте
-        ctx.drawImage(this.image, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h);
+        ctx.drawImage(sprite.image, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h);
     }
 
     getSprite(name: string) {

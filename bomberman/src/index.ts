@@ -213,13 +213,16 @@ function initGame(): void {
     const mapManager: MapManager = new MapManager(mapPaths[0], gameManager);
     gameManager.setMapManager(mapManager);
 
+    // Настраиваем EventsManager для обработки событий клавиатуры
+    eventsManager.setup(canvas);
+
     // Игровой цикл для постоянной отрисовки
     function gameLoop(): void {
         if (!ctx) {
             return;
         }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        mapManager.draw(ctx);
+        gameManager.update(ctx);
         requestAnimationFrame(gameLoop);
     }
 

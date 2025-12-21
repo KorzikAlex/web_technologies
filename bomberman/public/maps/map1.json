@@ -1,4 +1,12 @@
-{ "compressionlevel":-1,
+{ "compressionlevel":0,
+ "editorsettings":
+    {
+     "chunksize":
+        {
+         "height":32,
+         "width":16
+        }
+    },
  "height":13,
  "infinite":false,
  "layers":[
@@ -29,15 +37,15 @@
         {
          "data":[1, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2147483650, 2147483649,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
-            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
-            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
-            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
-            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
-            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
             9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
             17, 18, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483666, 2147483665],
          "height":13,
@@ -51,31 +59,170 @@
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         "height":13,
-         "id":3,
+         "draworder":"topdown",
+         "id":14,
          "name":"obstacles",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":16,
+                 "id":21,
+                 "name":"Obstacle",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":256,
+                 "y":224
+                }],
          "opacity":1,
-         "type":"tilelayer",
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "name":"teleport",
+         "objects":[
+                {
+                 "gid":23,
+                 "height":16,
+                 "id":15,
+                 "name":"Teleport",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":240,
+                 "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":11,
+         "name":"bomb",
+         "objects":[
+                {
+                 "gid":57,
+                 "height":16,
+                 "id":17,
+                 "name":"Bomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":256,
+                 "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":12,
+         "name":"bonus",
+         "objects":[
+                {
+                 "gid":101,
+                 "height":16,
+                 "id":18,
+                 "name":"FastBomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":0,
+                 "y":224
+                }, 
+                {
+                 "gid":102,
+                 "height":16,
+                 "id":19,
+                 "name":"BigBomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":16,
+                 "y":224
+                }, 
+                {
+                 "gid":103,
+                 "height":16,
+                 "id":20,
+                 "name":"Speed",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":32,
+                 "y":224
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"entities",
+         "objects":[
+                {
+                 "gid":49,
+                 "height":16,
+                 "id":11,
+                 "name":"Fierfly",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "gid":55,
+                 "height":16,
+                 "id":13,
+                 "name":"Slime",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":16,
+                 "y":0
+                }, 
+                {
+                 "gid":33,
+                 "height":16,
+                 "id":16,
+                 "name":"Player",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":32,
+                 "y":32
+                }],
+         "opacity":1,
+         "type":"objectgroup",
          "visible":true,
-         "width":17,
          "x":0,
          "y":0
         }],
- "nextlayerid":5,
- "nextobjectid":4,
+ "nextlayerid":15,
+ "nextobjectid":22,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -84,6 +231,22 @@
         {
          "firstgid":1,
          "source":"..\/assets\/tilesets\/PeaceTown.json"
+        }, 
+        {
+         "firstgid":33,
+         "source":"..\/assets\/tilesets\/Player.json"
+        }, 
+        {
+         "firstgid":45,
+         "source":"..\/assets\/tilesets\/Enemies.json"
+        }, 
+        {
+         "firstgid":57,
+         "source":"..\/assets\/tilesets\/Bomb.json"
+        }, 
+        {
+         "firstgid":101,
+         "source":"..\/assets\/tilesets\/Bonus.json"
         }],
  "tilewidth":16,
  "type":"map",

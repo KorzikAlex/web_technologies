@@ -9,4 +9,5 @@ export type TilesLayer = {
     visible: boolean;
     x: number;
     y: number;
+    properties?: { name: string; value: string | number | boolean; type: string }[];
 };

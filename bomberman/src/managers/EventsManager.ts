@@ -21,19 +21,25 @@ export class EventsManager {
             down: false,
             right: false,
             fire: false,
+            bomb: false,
         };
     }
 
     setup(canvas: HTMLCanvasElement): void {
-        // контроль событий клавиатуры
-        canvas.addEventListener('keydown', this.onKeyDown.bind(this));
-        canvas.addEventListener('keyup', this.onKeyUp.bind(this));
+        // Делаем canvas фокусируемым
+        canvas.setAttribute('tabindex', '0');
+        canvas.focus();
+
+        // Контроль событий клавиатуры на window для надежности
+        window.addEventListener('keydown', this.onKeyDown.bind(this));
+        window.addEventListener('keyup', this.onKeyUp.bind(this));
     }
 
     onKeyDown(event: KeyboardEvent): void {
         const action = this.bind[event.key];
         if (action) {
             this.action[action] = true; // согласились выполнять действие
+            event.preventDefault(); // Предотвращаем скроллинг страницы
         }
     }
 
