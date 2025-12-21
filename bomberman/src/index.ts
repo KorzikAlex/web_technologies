@@ -92,6 +92,13 @@ function setPlayerInfo(): void {
     }
 }
 
+function updateScoreDisplay(score: number): void {
+    const scoreEl = document.getElementById('headerPlayerScore') as HTMLElement | null;
+    if (scoreEl) {
+        scoreEl.textContent = score.toString();
+    }
+}
+
 function updateLeaderboard(): void {
     const leaderboardEl = document.getElementById('infoPanelContent') as HTMLOListElement | null;
     if (!leaderboardEl) return;
@@ -331,20 +338,37 @@ function initGame(): void {
     };
     setupPlayerCallbacks();
 
+    // Настраиваем callback для изменения счёта
+    gameManager.onScoreChangeCallback = (score: number): void => {
+        updateScoreDisplay(score);
+    };
+
     // Настраиваем callback для Game Over
     gameManager.onGameOverCallback = (playerName: string, score: number): void => {
         const currentPlayer = RecordsManager.getCurrentPlayer();
         const playerNick = currentPlayer ? currentPlayer.nick : playerName;
-        const playerScore = currentPlayer ? currentPlayer.score : score;
-        showGameOverModal(playerNick, playerScore);
+
+        // Сохраняем рекорд только если текущий счёт лучше предыдущего
+        if (currentPlayer && score > currentPlayer.score) {
+            RecordsManager.setScore(score);
+            updateLeaderboard();
+        }
+
+        showGameOverModal(playerNick, score);
     };
 
     // Настраиваем callback для победы
     gameManager.onVictoryCallback = (playerName: string, score: number): void => {
         const currentPlayer = RecordsManager.getCurrentPlayer();
         const playerNick = currentPlayer ? currentPlayer.nick : playerName;
-        const playerScore = currentPlayer ? currentPlayer.score : score;
-        showVictoryModal(playerNick, playerScore);
+
+        // Сохраняем рекорд только если текущий счёт лучше предыдущего
+        if (currentPlayer && score > currentPlayer.score) {
+            RecordsManager.setScore(score);
+            updateLeaderboard();
+        }
+
+        showVictoryModal(playerNick, score);
     };
 
     // Настраиваем callback для перехода на следующий уровень

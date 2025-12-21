@@ -12,6 +12,16 @@ export type GameOverCallback = (playerName: string, score: number) => void;
 export type NextLevelCallback = (level: number, playerLives: number) => void;
 // Callback для победы (прохождения всех уровней)
 export type VictoryCallback = (playerName: string, score: number) => void;
+// Callback для изменения очков
+export type ScoreChangeCallback = (score: number) => void;
+
+// Константы очков
+export const SCORE_ENEMY_KILL = 400;
+export const SCORE_LOSE_LIFE = -200;
+export const SCORE_DESTROY_OBSTACLE = 100;
+export const SCORE_USE_TELEPORT = 300;
+export const SCORE_COLLECT_BONUS = 200;
+export const SCORE_COMPLETE_ALL_LEVELS = 400;
 
 type EntityCtor<T extends Entity> = {
     prototype: T;
@@ -42,6 +52,10 @@ export class GameManager<T extends Entity & IDrawable> {
     onGameOverCallback: GameOverCallback | null;
     onNextLevelCallback: NextLevelCallback | null;
     onVictoryCallback: VictoryCallback | null;
+    onScoreChangeCallback: ScoreChangeCallback | null;
+
+    // Очки текущей сессии
+    currentScore: number;
 
     // Уровни
     currentLevel: number;
@@ -70,6 +84,10 @@ export class GameManager<T extends Entity & IDrawable> {
         this.onGameOverCallback = null;
         this.onNextLevelCallback = null;
         this.onVictoryCallback = null;
+        this.onScoreChangeCallback = null;
+
+        // Очки текущей сессии
+        this.currentScore = 0;
 
         // Уровни
         this.currentLevel = 0;
@@ -122,6 +140,29 @@ export class GameManager<T extends Entity & IDrawable> {
             ]);
             // Воспроизводим звук начала уровня
             this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
+        }
+    }
+
+    /**
+     * Добавляет очки к текущему счёту
+     * @param points Количество очков (может быть отрицательным)
+     */
+    addScore(points: number): void {
+        this.currentScore = Math.max(0, this.currentScore + points);
+
+        // Вызываем callback для обновления UI
+        if (this.onScoreChangeCallback) {
+            this.onScoreChangeCallback(this.currentScore);
+        }
+    }
+
+    /**
+     * Сбрасывает текущий счёт
+     */
+    resetScore(): void {
+        this.currentScore = 0;
+        if (this.onScoreChangeCallback) {
+            this.onScoreChangeCallback(this.currentScore);
         }
     }
 
@@ -432,6 +473,9 @@ export class GameManager<T extends Entity & IDrawable> {
                 // Игрок задет взрывом
                 this.player.kill();
 
+                // Штраф за потерю жизни
+                this.addScore(SCORE_LOSE_LIFE);
+
                 // Проверяем, закончились ли жизни
                 if (!this.player.isAlive()) {
                     this.gameOver();
@@ -472,6 +516,9 @@ export class GameManager<T extends Entity & IDrawable> {
                 if (dx < collisionRadius && dy < collisionRadius) {
                     // Игрок столкнулся с врагом
                     this.player.kill();
+
+                    // Штраф за потерю жизни
+                    this.addScore(SCORE_LOSE_LIFE);
 
                     if (!this.player.isAlive()) {
                         this.gameOver();
@@ -521,6 +568,8 @@ export class GameManager<T extends Entity & IDrawable> {
             if (this.soundManager) {
                 this.soundManager.playWorldSound('/assets/sounds/EnemyDie.wav', enemy.pos_x, enemy.pos_y);
             }
+            // Начисляем очки за убийство врага
+            this.addScore(SCORE_ENEMY_KILL);
             this.kill(enemy as unknown as T);
         }
     }
@@ -557,6 +606,10 @@ export class GameManager<T extends Entity & IDrawable> {
         for (const bonus of bonusesToCollect) {
             this.player.applyBonus(bonus.bonusType);
             this.bonusGameManager.kill(bonus);
+
+            // Начисляем очки за сбор бонуса
+            this.addScore(SCORE_COLLECT_BONUS);
+
             // Воспроизводим звук подбора бонуса
             if (this.soundManager) {
                 this.soundManager.play('/assets/sounds/ItemGet.wav', { looping: false, volume: 0.6 });
@@ -574,7 +627,7 @@ export class GameManager<T extends Entity & IDrawable> {
         // Вызываем callback для отображения окна Game Over
         if (this.onGameOverCallback && this.player) {
             // Получаем имя игрока из записей
-            this.onGameOverCallback(this.player.name, 0);
+            this.onGameOverCallback(this.player.name, this.currentScore);
         }
     }
 
@@ -587,6 +640,9 @@ export class GameManager<T extends Entity & IDrawable> {
 
         // Сбрасываем уровень на первый
         this.currentLevel = 0;
+
+        // Сбрасываем счёт
+        this.resetScore();
 
         // Сохраняем параметры игрока для перезагрузки
         const playerName = this.player ? this.player.name : 'Player';
@@ -654,6 +710,9 @@ export class GameManager<T extends Entity & IDrawable> {
                 // Игрок вошёл в телепорт - переход на следующий уровень
                 console.log('Player entered teleport! Loading next level...');
 
+                // Начисляем очки за использование телепорта
+                this.addScore(SCORE_USE_TELEPORT);
+
                 // Воспроизводим звук прохождения уровня
                 if (this.soundManager) {
                     this.soundManager.play('/assets/sounds/StageClear.wav', { looping: false, volume: 0.7 });
@@ -676,9 +735,12 @@ export class GameManager<T extends Entity & IDrawable> {
             // Все уровни пройдены - победа!
             console.log('Congratulations! All levels completed!');
 
+            // Начисляем бонус за прохождение всех уровней
+            this.addScore(SCORE_COMPLETE_ALL_LEVELS);
+
             // Сохраняем текущее состояние игрока для экрана победы
             const playerName = this.player ? this.player.name : 'Player';
-            const playerScore = 0; // TODO: добавить систему очков
+            const playerScore = this.currentScore;
 
             // Показываем экран победы
             if (this.onVictoryCallback) {

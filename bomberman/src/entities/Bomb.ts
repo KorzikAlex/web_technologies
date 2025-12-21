@@ -1,6 +1,7 @@
 import { Entity } from './';
 import type { IDrawable } from './interfaces';
 import type { SpriteManager, GameManager, MapManager } from '@/managers';
+import { SCORE_DESTROY_OBSTACLE } from '@/managers/GameManager';
 import type { Player } from './Player';
 import { Obstacle } from './Obstacle';
 import { Explosion } from './Explosion';
@@ -193,6 +194,12 @@ export class Bomb extends Entity implements IDrawable {
             // Если есть препятствие - уничтожаем его и останавливаем взрыв
             if (obstacle) {
                 const bonusType = obstacle.destroy();
+
+                // Начисляем очки за уничтожение препятствия
+                if (this.player.mainGameManager) {
+                    this.player.mainGameManager.addScore(SCORE_DESTROY_OBSTACLE);
+                }
+
                 if (bonusType > 0) {
                     console.log(`Bonus dropped: ${bonusType} at (${obstacle.pos_x}, ${obstacle.pos_y})`);
 
