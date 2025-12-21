@@ -143,6 +143,11 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
         // Уменьшаем количество жизней
         this.lives--;
 
+        // Воспроизводим звук смерти игрока
+        if (this.mainGameManager?.soundManager) {
+            this.mainGameManager.soundManager.play('/assets/sounds/BombermanDie.wav', { looping: false, volume: 0.7 });
+        }
+
         // Уведомляем о смерти
         if (this.onDeathCallback) {
             this.onDeathCallback(this.lives);
@@ -227,6 +232,11 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
             this.gameManager.entities.push(bomb);
             this.lastBombTime = currentTime; // Обновляем время последней установки
             this.activeBombs++; // Увеличиваем счетчик активных бомб
+
+            // Воспроизводим звук установки бомбы
+            if (this.mainGameManager?.soundManager) {
+                this.mainGameManager.soundManager.play('/assets/sounds/PlaceBomb.wav', { looping: false, volume: 0.5 });
+            }
         }
     }
 

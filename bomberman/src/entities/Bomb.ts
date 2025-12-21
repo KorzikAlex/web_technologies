@@ -110,6 +110,15 @@ export class Bomb extends Entity implements IDrawable {
         const explosionRadius = this.explosionRadius;
         const tileSize = 16;
 
+        // Воспроизводим звук взрыва
+        if (this.player.mainGameManager?.soundManager) {
+            this.player.mainGameManager.soundManager.playWorldSound(
+                '/assets/sounds/BombExplode.wav',
+                this.pos_x,
+                this.pos_y
+            );
+        }
+
         // Находим и уничтожаем препятствия в радиусе взрыва
         const bombTileX = Math.floor(this.pos_x / tileSize);
         const bombTileY = Math.floor(this.pos_y / tileSize);

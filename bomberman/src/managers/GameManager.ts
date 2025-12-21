@@ -4,6 +4,7 @@ import type { IDrawable } from '@/entities/interfaces';
 import type { EventsManager } from './EventsManager';
 import type { MapManager } from './MapManager';
 import { PhysicsManager } from './PhysicsManager';
+import { SoundManager } from './SoundManager';
 
 // Callback для уведомления о Game Over
 export type GameOverCallback = (playerName: string, score: number) => void;
@@ -32,6 +33,7 @@ export class GameManager<T extends Entity & IDrawable> {
     explosionGameManager: GameManager<Explosion> | null;
     teleportGameManager: GameManager<Teleport> | null;
     bonusGameManager: GameManager<Bonus> | null;
+    soundManager: SoundManager | null;
 
     // Состояние игры
     isPaused: boolean;
@@ -59,6 +61,7 @@ export class GameManager<T extends Entity & IDrawable> {
         this.explosionGameManager = null;
         this.teleportGameManager = null;
         this.bonusGameManager = null;
+        this.soundManager = null;
 
         // Состояние игры
         this.isPaused = false;
@@ -101,6 +104,24 @@ export class GameManager<T extends Entity & IDrawable> {
         if (!this.bonusGameManager) {
             this.bonusGameManager = new GameManager<Bonus>(this.eventsManager);
             this.bonusGameManager.mapManager = mapManager;
+        }
+
+        // Создаем SoundManager и загружаем все звуки
+        if (!this.soundManager) {
+            this.soundManager = new SoundManager(this, mapManager);
+            this.soundManager.loadArray([
+                '/assets/sounds/BombermanDie.wav',
+                '/assets/sounds/BombExplode.wav',
+                '/assets/sounds/EnemyDie.wav',
+                '/assets/sounds/ItemGet.wav',
+                '/assets/sounds/PlaceBomb.wav',
+                '/assets/sounds/StageClear.wav',
+                '/assets/sounds/StageIntro.wav',
+                '/assets/sounds/Walking1.wav',
+                '/assets/sounds/Walking2.wav',
+            ]);
+            // Воспроизводим звук начала уровня
+            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
         }
     }
 
@@ -496,6 +517,10 @@ export class GameManager<T extends Entity & IDrawable> {
 
         // Удаляем убитых врагов
         for (const enemy of enemiesToKill) {
+            // Воспроизводим звук смерти врага
+            if (this.soundManager) {
+                this.soundManager.playWorldSound('/assets/sounds/EnemyDie.wav', enemy.pos_x, enemy.pos_y);
+            }
             this.kill(enemy as unknown as T);
         }
     }
@@ -532,6 +557,10 @@ export class GameManager<T extends Entity & IDrawable> {
         for (const bonus of bonusesToCollect) {
             this.player.applyBonus(bonus.bonusType);
             this.bonusGameManager.kill(bonus);
+            // Воспроизводим звук подбора бонуса
+            if (this.soundManager) {
+                this.soundManager.play('/assets/sounds/ItemGet.wav', { looping: false, volume: 0.6 });
+            }
             console.log(`Collected bonus: ${bonus.bonusType}`);
         }
     }
@@ -624,6 +653,12 @@ export class GameManager<T extends Entity & IDrawable> {
             if (dx < collisionRadius && dy < collisionRadius) {
                 // Игрок вошёл в телепорт - переход на следующий уровень
                 console.log('Player entered teleport! Loading next level...');
+
+                // Воспроизводим звук прохождения уровня
+                if (this.soundManager) {
+                    this.soundManager.play('/assets/sounds/StageClear.wav', { looping: false, volume: 0.7 });
+                }
+
                 this.nextLevel();
                 break;
             }
@@ -701,6 +736,11 @@ export class GameManager<T extends Entity & IDrawable> {
         // Загружаем новую карту
         if (this.mapManager) {
             this.mapManager.loadNewMap(nextMapPath, playerLives, playerName);
+        }
+
+        // Воспроизводим звук начала нового уровня
+        if (this.soundManager) {
+            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
         }
 
         // Вызываем callback для обновления UI
