@@ -10,13 +10,20 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
     move_x: number;
     move_y: number;
     speed: number;
+    hp: number; // Очки здоровья
+    maxHp: number; // Максимальное здоровье
+    isInvulnerable: boolean; // Временная неуязвимость после получения урона
+    private invulnerabilityTimer: number;
+    private readonly invulnerabilityDuration: number = 1000; // 1 секунда неуязвимости
     spriteManager: SpriteManager;
     mapManager: MapManager;
 
     // Спрайты для анимации
     private animationFrame: number;
     private animationTimer: number;
-    private readonly animationSpeed: number = 200; // мс между кадрами
+    private animationDirection: number; // 1 = вперёд, -1 = назад
+    private readonly animationSpeed: number = 150; // мс между кадрами
+    private readonly maxFrames: number = 7; // количество кадров анимации
 
     constructor(
         x: number,
@@ -40,9 +47,18 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
         // Скорость зависит от типа врага
         this.speed = enemyType === 'Firefly' ? 0.4 : 0.3; // Светлячок быстрее слайма
 
+        // HP зависит от типа врага
+        this.maxHp = enemyType === 'Slime' ? 2 : 1; // Слайм имеет 2 HP, светлячок - 1
+        this.hp = this.maxHp;
+
+        // Неуязвимость
+        this.isInvulnerable = false;
+        this.invulnerabilityTimer = 0;
+
         // Анимация
         this.animationFrame = 0;
         this.animationTimer = 0;
+        this.animationDirection = 1; // начинаем с движения вперёд
     }
 
     /**
@@ -67,6 +83,21 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
         const spriteName = this.enemyType === 'Slime'
             ? `slime_${frameNum}`
             : `firefly_${frameNum}`;
+
+        // Мигание красным при неуязвимости (после получения урона)
+        if (this.isInvulnerable) {
+            // Мигаем красным с частотой около 10 раз в секунду
+            if (Math.floor(this.invulnerabilityTimer / 100) % 2 === 0) {
+                // Рисуем спрайт с красным оттенком
+                ctx.save();
+                this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
+                ctx.globalCompositeOperation = 'source-atop';
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                ctx.fillRect(this.pos_x, this.pos_y, this.size_x, this.size_y);
+                ctx.restore();
+                return;
+            }
+        }
 
         this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
     }
@@ -95,11 +126,31 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
     update(): void {
         const deltaTime = 16.67; // ~60 FPS
 
-        // Обновляем таймер анимации
+        // Обновляем таймер неуязвимости
+        if (this.isInvulnerable) {
+            this.invulnerabilityTimer -= deltaTime;
+            if (this.invulnerabilityTimer <= 0) {
+                this.isInvulnerable = false;
+                this.invulnerabilityTimer = 0;
+            }
+        }
+
+        // Обновляем таймер анимации (пинг-понг: 0->6->0)
         this.animationTimer += deltaTime;
         if (this.animationTimer >= this.animationSpeed) {
             this.animationTimer = 0;
-            this.animationFrame = (this.animationFrame + 1) % 2; // 2 кадра анимации
+
+            // Двигаем кадр в текущем направлении
+            this.animationFrame += this.animationDirection;
+
+            // Проверяем границы и меняем направление
+            if (this.animationFrame >= this.maxFrames - 1) {
+                this.animationFrame = this.maxFrames - 1;
+                this.animationDirection = -1; // начинаем движение назад
+            } else if (this.animationFrame <= 0) {
+                this.animationFrame = 0;
+                this.animationDirection = 1; // начинаем движение вперёд
+            }
         }
 
         // Пытаемся двигаться
@@ -236,6 +287,25 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
             }
         }
 
+        // Проверяем столкновение с другими врагами
+        for (const entity of this.mapManager.gameManager.entities) {
+            // Пропускаем самого себя
+            if (entity === this) {
+                continue;
+            }
+
+            // Проверяем только Enemy
+            if (entity instanceof Enemy) {
+                // AABB коллизия с другим врагом
+                if (!(x + this.size_x - margin <= entity.pos_x ||
+                      y + this.size_y - margin <= entity.pos_y ||
+                      x + margin >= entity.pos_x + entity.size_x ||
+                      y + margin >= entity.pos_y + entity.size_y)) {
+                    return false; // Есть коллизия с другим врагом
+                }
+            }
+        }
+
         // Проверяем столкновение с бомбами
         if (this.mapManager.gameManager.bombGameManager) {
             for (const bomb of this.mapManager.gameManager.bombGameManager.entities) {
@@ -270,6 +340,34 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
 
     onTouchMap(_tileIndex: number): void {
         // При столкновении со стеной - ищем новое направление (обрабатывается в update)
+    }
+
+    /**
+     * Наносит урон врагу
+     * @returns true если враг убит, false если ещё жив или неуязвим
+     */
+    takeDamage(damage: number = 1): boolean {
+        // Если неуязвим - игнорируем урон
+        if (this.isInvulnerable) {
+            return false;
+        }
+
+        this.hp -= damage;
+
+        // Включаем неуязвимость после получения урона
+        if (this.hp > 0) {
+            this.isInvulnerable = true;
+            this.invulnerabilityTimer = this.invulnerabilityDuration;
+        }
+
+        return this.hp <= 0;
+    }
+
+    /**
+     * Проверяет, жив ли враг
+     */
+    isAlive(): boolean {
+        return this.hp > 0;
     }
 
     /**

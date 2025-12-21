@@ -100,6 +100,34 @@ export class SoundManager {
         return true;
     }
 
+    /**
+     * Воспроизводит звук и вызывает callback после его окончания
+     */
+    playWithCallback(path: string, callback: () => void, settings?: { volume: number }): void {
+        if (!this.loaded) {
+            setTimeout((): void => {
+                this.playWithCallback(path, callback, settings);
+            }, 1000);
+            return;
+        }
+
+        const volume: number = settings?.volume || 1;
+        const sd: SoundClip = this.clips[path];
+
+        if (sd === null || !sd.buffer) {
+            callback();
+            return;
+        }
+
+        const sound: AudioBufferSourceNode = this.context.createBufferSource();
+        sound.buffer = sd.buffer;
+        sound.connect(this.gainNode);
+        sound.loop = false;
+        this.gainNode.gain.value = volume;
+        sound.onended = callback;
+        sound.start(0);
+    }
+
     playWorldSound(path: string, x: number, y: number): void {
         if (this.gameManager.player === null) {
             return;

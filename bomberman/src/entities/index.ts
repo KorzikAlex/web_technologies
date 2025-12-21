@@ -10,6 +10,7 @@ export type { ExplosionType } from './Explosion';
 export { Teleport } from './Teleport';
 export { Enemy } from './Enemy';
 export type { EnemyType } from './Enemy';
+export { DestroyEffect } from './DestroyEffect';
 
 export {
     type IDrawable,

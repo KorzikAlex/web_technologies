@@ -1,7 +1,34 @@
 {
   "frames": {
-    "obstacle": {
+    "obstacle_1": {
+      "frame": { "x": 64, "y": 0, "w": 16, "h": 16 }
+    },
+    "obstacle_2": {
+      "frame": { "x": 80, "y": 0, "w": 16, "h": 16 }
+    },
+    "obstacle_3": {
       "frame": { "x": 96, "y": 0, "w": 16, "h": 16 }
+    },
+    "obstacle_4": {
+      "frame": { "x": 112, "y": 0, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_1": {
+      "frame": { "x": 0, "y": 48, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_2": {
+      "frame": { "x": 16, "y": 48, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_3": {
+      "frame": { "x": 32, "y": 48, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_4": {
+      "frame": { "x": 48, "y": 48, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_5": {
+      "frame": { "x": 64, "y": 48, "w": 16, "h": 16 }
+    },
+    "obstacle_destroy_6": {
+      "frame": { "x": 80, "y": 48, "w": 16, "h": 16 }
     }
   },
   "meta": {

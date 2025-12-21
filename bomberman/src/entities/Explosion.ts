@@ -13,6 +13,8 @@ export class Explosion extends Entity implements IDrawable, IHaveName {
     duration: number;
     animationFrame: number;
     animationTimer: number;
+    readonly maxFrames: number = 5;
+    readonly animationSpeed: number; // мс между кадрами
 
     constructor(
         x: number,
@@ -31,48 +33,76 @@ export class Explosion extends Entity implements IDrawable, IHaveName {
         this.duration = duration;
         this.animationFrame = 1;
         this.animationTimer = 0;
+        this.animationSpeed = duration / this.maxFrames; // Равномерно распределяем кадры по времени жизни
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        // Определяем имя спрайта в зависимости от типа взрыва
-        let spriteName: string;
+        // Определяем базовое имя спрайта и нужна ли инверсия
+        let baseSpriteName: string;
+        let flipX = false;
+        let flipY = false;
+
         switch (this.type) {
             case 'center':
-                spriteName = 'explosion_center';
+                baseSpriteName = 'explosion_center';
                 break;
             case 'horizontal':
-                spriteName = 'explosion_horizontal';
+                baseSpriteName = 'explosion_horizontal';
                 break;
             case 'vertical':
-                spriteName = 'explosion_vertical';
+                baseSpriteName = 'explosion_vertical';
                 break;
             case 'end_left':
-                spriteName = 'explosion_end_left';
+                // Используем end_right и инвертируем по X
+                baseSpriteName = 'explosion_end_right';
+                flipX = true;
                 break;
             case 'end_right':
-                spriteName = 'explosion_end_right';
+                baseSpriteName = 'explosion_end_right';
                 break;
             case 'end_up':
-                spriteName = 'explosion_end_up';
+                // Используем end_down и инвертируем по Y
+                baseSpriteName = 'explosion_end_down';
+                flipY = true;
                 break;
             case 'end_down':
-                spriteName = 'explosion_end_down';
+                baseSpriteName = 'explosion_end_down';
                 break;
             default:
-                spriteName = 'explosion_center';
+                baseSpriteName = 'explosion_center';
         }
 
-        // Эффект мерцания - меняем прозрачность
-        const alpha = 0.7 + Math.sin(this.timer * 0.02) * 0.3;
-        ctx.globalAlpha = alpha;
-        this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
-        ctx.globalAlpha = 1.0;
+        const spriteName = `${baseSpriteName}_${this.animationFrame}`;
+
+        if (flipX || flipY) {
+            ctx.save();
+            if (flipX && flipY) {
+                ctx.translate(this.pos_x + this.size_x, this.pos_y + this.size_y);
+                ctx.scale(-1, -1);
+            } else if (flipX) {
+                ctx.translate(this.pos_x + this.size_x, this.pos_y);
+                ctx.scale(-1, 1);
+            } else if (flipY) {
+                ctx.translate(this.pos_x, this.pos_y + this.size_y);
+                ctx.scale(1, -1);
+            }
+            this.spriteManager.drawSprite(ctx, spriteName, 0, 0);
+            ctx.restore();
+        } else {
+            this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
+        }
     }
 
     update(): void {
         const deltaTime = 16.67; // ~60 FPS
         this.timer += deltaTime;
         this.animationTimer += deltaTime;
+
+        // Обновляем кадр анимации
+        if (this.animationTimer >= this.animationSpeed && this.animationFrame < this.maxFrames) {
+            this.animationTimer = 0;
+            this.animationFrame++;
+        }
 
         // Удаляем взрыв после окончания времени жизни
         if (this.timer >= this.duration) {

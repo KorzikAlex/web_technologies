@@ -45,6 +45,14 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
     invulnerabilityDuration: number;
     onDeathCallback: PlayerDeathCallback | null;
 
+    // Анимация
+    private animationFrame: number;
+    private animationTimer: number;
+    private readonly animationSpeed: number = 100; // мс между кадрами
+    private readonly maxFrames: number = 4; // количество кадров анимации
+    private currentDirection: 'left' | 'right' | 'up' | 'down'; // текущее направление
+    private isMoving: boolean;
+
     constructor(
         x: number = 0,
         y: number = 0,
@@ -91,6 +99,12 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
         this.invulnerabilityTimer = 0;
         this.invulnerabilityDuration = 2000; // 2 секунды неуязвимости после респавна
         this.onDeathCallback = null;
+
+        // Анимация
+        this.animationFrame = 0;
+        this.animationTimer = 0;
+        this.currentDirection = 'down';
+        this.isMoving = false;
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -102,17 +116,75 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
             }
         }
 
-        // Отрисовываем спрайт игрока
-        this.spriteManager.drawSprite(ctx, 'player_down_1', this.pos_x, this.pos_y);
+        // Определяем кадр анимации
+        const frameNum = this.animationFrame + 1;
+
+        // Для движения влево используем спрайты left с инверсией по X
+        if (this.currentDirection === 'left') {
+            const spriteName = `player_left_${frameNum}`;
+            const sprite = this.spriteManager.getSprite(spriteName);
+
+            if (sprite) {
+                // Сохраняем состояние контекста
+                ctx.save();
+                // Перемещаемся к центру спрайта и инвертируем
+                ctx.translate(this.pos_x + this.size_x, this.pos_y);
+                ctx.scale(-1, 1);
+                // Рисуем спрайт в новой системе координат
+                this.spriteManager.drawSprite(ctx, spriteName, 0, 0);
+                // Восстанавливаем состояние
+                ctx.restore();
+            } else {
+                // Заглушка
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(this.pos_x, this.pos_y, 16, 16);
+            }
+        } else if (this.currentDirection === 'right') {
+            // Для движения вправо используем спрайты left без инверсии
+            const spriteName = `player_left_${frameNum}`;
+            this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
+        } else {
+            // Для остальных направлений рисуем нормально
+            const spriteName = `player_${this.currentDirection}_${frameNum}`;
+            this.spriteManager.drawSprite(ctx, spriteName, this.pos_x, this.pos_y);
+        }
 
         // Восстанавливаем прозрачность
         ctx.globalAlpha = 1.0;
     }
 
     update(): void {
+        const deltaTime = 16.67; // ~60 FPS
+
+        // Определяем направление движения
+        this.isMoving = this.move_x !== 0 || this.move_y !== 0;
+
+        if (this.isMoving) {
+            // Определяем направление (приоритет горизонтальному движению)
+            if (this.move_x > 0) {
+                this.currentDirection = 'right';
+            } else if (this.move_x < 0) {
+                this.currentDirection = 'left';
+            } else if (this.move_y > 0) {
+                this.currentDirection = 'down';
+            } else if (this.move_y < 0) {
+                this.currentDirection = 'up';
+            }
+
+            // Обновляем анимацию
+            this.animationTimer += deltaTime;
+            if (this.animationTimer >= this.animationSpeed) {
+                this.animationTimer = 0;
+                this.animationFrame = (this.animationFrame + 1) % this.maxFrames;
+            }
+        } else {
+            // Сбрасываем анимацию на первый кадр при остановке
+            this.animationFrame = 0;
+            this.animationTimer = 0;
+        }
+
         // Обновляем таймер неуязвимости
         if (this.isInvulnerable) {
-            const deltaTime = 16.67; // ~60 FPS
             this.invulnerabilityTimer += deltaTime;
             if (this.invulnerabilityTimer >= this.invulnerabilityDuration) {
                 this.isInvulnerable = false;
@@ -121,7 +193,7 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
         }
 
         // Используем PhysicsManager для обновления позиции
-        if (this.physicsManager && (this.move_x !== 0 || this.move_y !== 0)) {
+        if (this.physicsManager && this.isMoving) {
             this.physicsManager.update(this);
         }
     }

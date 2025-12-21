@@ -459,19 +459,8 @@ function setupToolbarControls(gameManager: GameManager<Entity & IDrawable>): voi
         });
     }
 
-    // Горячая клавиша P для паузы
-    document.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key.toLowerCase() === 'p' && !gameManager.isGameOver) {
-            // Проверяем, что не в модальном окне
-            const activeElement = document.activeElement;
-            if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-                return;
-            }
-
-            gameManager.isPaused = !gameManager.isPaused;
-            updatePauseButton(gameManager.isPaused);
-        }
-    });
+    // Сохраняем ссылку на updatePauseButton для использования в GameManager
+    ((window as unknown) as Record<string, unknown>).__updatePauseButton = updatePauseButton;
 }
 
 document.addEventListener('DOMContentLoaded', (): void => {

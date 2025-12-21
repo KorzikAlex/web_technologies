@@ -9,13 +9,33 @@ export class EventsManager {
         this.bind = {
             ArrowUp: 'up',
             w: 'up',
+            W: 'up',
+            ц: 'up', // Русская W
+            Ц: 'up',
             ArrowLeft: 'left',
             a: 'left',
+            A: 'left',
+            ф: 'left', // Русская A
+            Ф: 'left',
             ArrowDown: 'down',
             s: 'down',
+            S: 'down',
+            ы: 'down', // Русская S
+            Ы: 'down',
             ArrowRight: 'right',
             d: 'right',
+            D: 'right',
+            в: 'right', // Русская D
+            В: 'right',
             ' ': 'bomb',
+            p: 'pause',
+            P: 'pause',
+            з: 'pause', // Русская P
+            З: 'pause',
+            r: 'restart',
+            R: 'restart',
+            к: 'restart', // Русская R
+            К: 'restart',
         };
 
         this.action = {
@@ -25,6 +45,8 @@ export class EventsManager {
             right: false,
             fire: false,
             bomb: false,
+            pause: false,
+            restart: false,
         };
 
         this.keyboardAction = {
@@ -34,6 +56,8 @@ export class EventsManager {
             right: false,
             fire: false,
             bomb: false,
+            pause: false,
+            restart: false,
         };
 
         this.gamepadIndex = null;
@@ -81,6 +105,8 @@ export class EventsManager {
         let gamepadUp = false;
         let gamepadDown = false;
         let gamepadBomb = false;
+        let gamepadPause = false;
+        let gamepadRestart = false;
 
         if (this.gamepadIndex !== null) {
             const gamepads = navigator.getGamepads();
@@ -123,6 +149,16 @@ export class EventsManager {
                 if (gamepad.buttons[0]?.pressed || gamepad.buttons[1]?.pressed) {
                     gamepadBomb = true;
                 }
+
+                // Кнопка Start (button 9) - пауза
+                if (gamepad.buttons[9]?.pressed) {
+                    gamepadPause = true;
+                }
+
+                // Кнопка Select/Back (button 8) - перезагрузка
+                if (gamepad.buttons[8]?.pressed) {
+                    gamepadRestart = true;
+                }
             }
         }
 
@@ -132,6 +168,8 @@ export class EventsManager {
         this.action.up = this.keyboardAction.up || gamepadUp;
         this.action.down = this.keyboardAction.down || gamepadDown;
         this.action.bomb = this.keyboardAction.bomb || gamepadBomb;
+        this.action.pause = this.keyboardAction.pause || gamepadPause;
+        this.action.restart = this.keyboardAction.restart || gamepadRestart;
 
         // Продолжаем опрос
         requestAnimationFrame(() => this.pollGamepad());

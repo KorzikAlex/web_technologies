@@ -7,6 +7,7 @@ import { Obstacle } from './Obstacle';
 import { Explosion } from './Explosion';
 import { Teleport } from './Teleport';
 import { Bonus } from './Bonus';
+import { DestroyEffect } from './DestroyEffect';
 import type { BonusType } from './Bonus';
 import type { ExplosionType } from './Explosion';
 
@@ -221,6 +222,10 @@ export class Bomb extends Entity implements IDrawable {
                             break;
                     }
                 }
+
+                // Создаём эффект разрушения на месте препятствия
+                this.createDestroyEffect(obstacle.pos_x, obstacle.pos_y);
+
                 // Используем mainGameManager для удаления препятствия из правильного списка
                 if (this.player.mainGameManager) {
                     this.player.mainGameManager.killEntity(obstacle);
@@ -328,6 +333,18 @@ export class Bomb extends Entity implements IDrawable {
             );
             this.player.bonusGameManager.entities.push(bonus);
             console.log(`Bonus created: ${bonusType} at (${x}, ${y})`);
+        }
+    }
+
+    private createDestroyEffect(x: number, y: number): void {
+        // Используем explosionGameManager для эффектов разрушения
+        if (this.player.explosionGameManager) {
+            const effect = new DestroyEffect(
+                x, y,
+                this.spriteManager,
+                this.player.explosionGameManager,
+            );
+            this.player.explosionGameManager.entities.push(effect);
         }
     }
 }

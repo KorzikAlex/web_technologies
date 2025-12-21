@@ -49,6 +49,8 @@ export class GameManager<T extends Entity & IDrawable> {
     isPaused: boolean;
     isGameOver: boolean;
     isLoading: boolean;
+    pausePressed: boolean;
+    restartPressed: boolean;
     onGameOverCallback: GameOverCallback | null;
     onNextLevelCallback: NextLevelCallback | null;
     onVictoryCallback: VictoryCallback | null;
@@ -81,6 +83,8 @@ export class GameManager<T extends Entity & IDrawable> {
         this.isPaused = false;
         this.isGameOver = false;
         this.isLoading = false;
+        this.pausePressed = false;
+        this.restartPressed = false;
         this.onGameOverCallback = null;
         this.onNextLevelCallback = null;
         this.onVictoryCallback = null;
@@ -209,6 +213,30 @@ export class GameManager<T extends Entity & IDrawable> {
     }
 
     update(ctx: CanvasRenderingContext2D): void {
+        // Обработка паузы (с защитой от повторного срабатывания)
+        if (this.eventsManager.action['pause'] && !this.pausePressed && !this.isGameOver) {
+            this.isPaused = !this.isPaused;
+            this.pausePressed = true;
+            console.log(this.isPaused ? 'Game paused' : 'Game resumed');
+            // Обновляем кнопку паузы в UI
+            const updatePauseButton = ((window as unknown) as Record<string, unknown>).__updatePauseButton;
+            if (typeof updatePauseButton === 'function') {
+                updatePauseButton(this.isPaused);
+            }
+        }
+        if (!this.eventsManager.action['pause']) {
+            this.pausePressed = false;
+        }
+
+        // Обработка перезагрузки (с защитой от повторного срабатывания)
+        if (this.eventsManager.action['restart'] && !this.restartPressed) {
+            this.restartPressed = true;
+            this.restartGame();
+        }
+        if (!this.eventsManager.action['restart']) {
+            this.restartPressed = false;
+        }
+
         // Если игрок ещё не загружен - только отрисовываем карту
         if (this.player === null) {
             if (this.mapManager) {
@@ -562,15 +590,20 @@ export class GameManager<T extends Entity & IDrawable> {
             }
         }
 
-        // Удаляем убитых врагов
+        // Обрабатываем попадания по врагам
         for (const enemy of enemiesToKill) {
-            // Воспроизводим звук смерти врага
-            if (this.soundManager) {
-                this.soundManager.playWorldSound('/assets/sounds/EnemyDie.wav', enemy.pos_x, enemy.pos_y);
+            // Наносим урон врагу
+            const isDead = enemy.takeDamage(1);
+
+            if (isDead) {
+                // Воспроизводим звук смерти врага
+                if (this.soundManager) {
+                    this.soundManager.playWorldSound('/assets/sounds/EnemyDie.wav', enemy.pos_x, enemy.pos_y);
+                }
+                // Начисляем очки за убийство врага
+                this.addScore(SCORE_ENEMY_KILL);
+                this.kill(enemy as unknown as T);
             }
-            // Начисляем очки за убийство врага
-            this.addScore(SCORE_ENEMY_KILL);
-            this.kill(enemy as unknown as T);
         }
     }
 
@@ -713,12 +746,17 @@ export class GameManager<T extends Entity & IDrawable> {
                 // Начисляем очки за использование телепорта
                 this.addScore(SCORE_USE_TELEPORT);
 
-                // Воспроизводим звук прохождения уровня
-                if (this.soundManager) {
-                    this.soundManager.play('/assets/sounds/StageClear.wav', { looping: false, volume: 0.7 });
-                }
+                // Ставим игру на паузу во время перехода
+                this.isPaused = true;
 
-                this.nextLevel();
+                // Воспроизводим звук прохождения уровня и после его окончания загружаем следующий уровень
+                if (this.soundManager) {
+                    this.soundManager.playWithCallback('/assets/sounds/StageClear.wav', () => {
+                        this.nextLevel();
+                    }, { volume: 0.7 });
+                } else {
+                    this.nextLevel();
+                }
                 break;
             }
         }
@@ -805,9 +843,74 @@ export class GameManager<T extends Entity & IDrawable> {
             this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
         }
 
+        // Снимаем паузу после загрузки нового уровня
+        this.isPaused = false;
+
         // Вызываем callback для обновления UI
         if (this.onNextLevelCallback) {
             this.onNextLevelCallback(this.currentLevel, playerLives);
+        }
+    }
+
+    /**
+     * Перезапуск игры с первого уровня
+     */
+    restartGame(): void {
+        console.log('Restarting game...');
+
+        // Сбрасываем состояние игры
+        this.isGameOver = false;
+        this.isPaused = false;
+        this.currentLevel = 0;
+        this.currentScore = 0;
+
+        // Очищаем все сущности
+        this.entities.length = 0;
+        this.laterKill.length = 0;
+
+        if (this.bombGameManager) {
+            this.bombGameManager.entities.length = 0;
+            this.bombGameManager.laterKill.length = 0;
+        }
+
+        if (this.explosionGameManager) {
+            this.explosionGameManager.entities.length = 0;
+            this.explosionGameManager.laterKill.length = 0;
+        }
+
+        if (this.teleportGameManager) {
+            this.teleportGameManager.entities.length = 0;
+            this.teleportGameManager.laterKill.length = 0;
+        }
+
+        if (this.bonusGameManager) {
+            this.bonusGameManager.entities.length = 0;
+            this.bonusGameManager.laterKill.length = 0;
+        }
+
+        // Сбрасываем игрока
+        this.player = null;
+        this.physicsManager = null;
+
+        // Останавливаем все звуки
+        if (this.soundManager) {
+            this.soundManager.stopAll();
+        }
+
+        // Загружаем первую карту
+        const firstMapPath = this.mapPaths[0];
+        if (this.mapManager) {
+            this.mapManager.loadNewMap(firstMapPath, 5, 'Player');
+        }
+
+        // Воспроизводим звук начала уровня
+        if (this.soundManager) {
+            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
+        }
+
+        // Обновляем UI счёта
+        if (this.onScoreChangeCallback) {
+            this.onScoreChangeCallback(this.currentScore);
         }
     }
 
