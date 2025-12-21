@@ -61,6 +61,15 @@
                 <span class="toolbar__player-separator">|</span>
                 <span class="toolbar__player-label">Очки:</span>
                 <strong class="toolbar__player-score" id="headerPlayerScore">0</strong>
+                <span class="toolbar__player-separator">|</span>
+                <span class="toolbar__player-label">Жизни:</span>
+                <span class="toolbar__player-lives" id="headerPlayerLives">
+                    <span class="life-heart">❤</span>
+                    <span class="life-heart">❤</span>
+                    <span class="life-heart">❤</span>
+                    <span class="life-heart">❤</span>
+                    <span class="life-heart">❤</span>
+                </span>
             </div>
         </header>
 
@@ -81,6 +90,61 @@
                 />
                 <div class="modal__actions">
                     <button id="startGameBtn" disabled>Продолжить</button>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="modal modal--hidden"
+            id="gameOverModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gameOverModalTitle"
+        >
+            <div class="modal__content modal__content--game-over">
+                <h2 id="gameOverModalTitle">Игра окончена!</h2>
+                <div class="game-over-stats">
+                    <p class="game-over-stats__player">
+                        Игрок: <strong id="gameOverPlayerNick">-</strong>
+                    </p>
+                    <p class="game-over-stats__score">
+                        Очки: <strong id="gameOverPlayerScore">0</strong>
+                    </p>
+                </div>
+                <div class="modal__actions modal__actions--game-over">
+                    <button id="restartGameBtn" class="btn btn--primary">Играть снова</button>
+                    <button id="changePlayerGameOverBtn" class="btn btn--secondary">Сменить игрока</button>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="modal modal--hidden"
+            id="victoryModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="victoryModalTitle"
+        >
+            <div class="modal__content modal__content--victory">
+                <h2 id="victoryModalTitle">🎉 Поздравляем! 🎉</h2>
+                <p class="victory-message">Вы прошли все уровни!</p>
+                <div class="victory-stats">
+                    <p class="victory-stats__player">
+                        Игрок: <strong id="victoryPlayerNick">-</strong>
+                    </p>
+                    <p class="victory-stats__score">
+                        Очки: <strong id="victoryPlayerScore">0</strong>
+                    </p>
+                </div>
+                <div class="victory-leaderboard">
+                    <h3>Таблица рекордов</h3>
+                    <ol id="victoryLeaderboard" class="victory-leaderboard__list">
+                        <!-- Динамическая таблица рекордов -->
+                    </ol>
+                </div>
+                <div class="modal__actions modal__actions--victory">
+                    <button id="restartVictoryBtn" class="btn btn--primary">Начать заново</button>
+                    <button id="changePlayerVictoryBtn" class="btn btn--secondary">Сменить игрока</button>
                 </div>
             </div>
         </div>

@@ -158,6 +158,100 @@ function refreshUI(): void {
     updatePlayerSelect();
 }
 
+function updateLives(lives: number): void {
+    const livesEl = document.getElementById('headerPlayerLives');
+    if (!livesEl) return;
+
+    const hearts = livesEl.querySelectorAll('.life-heart');
+    hearts.forEach((heart, index) => {
+        if (index < lives) {
+            heart.classList.remove('life-heart--empty');
+            heart.classList.add('life-heart--full');
+        } else {
+            heart.classList.remove('life-heart--full');
+            heart.classList.add('life-heart--empty');
+        }
+    });
+}
+
+function showGameOverModal(playerNick: string, score: number): void {
+    const modal = document.getElementById('gameOverModal') as HTMLDivElement | null;
+    const nickEl = document.getElementById('gameOverPlayerNick') as HTMLElement | null;
+    const scoreEl = document.getElementById('gameOverPlayerScore') as HTMLElement | null;
+
+    if (!modal) return;
+
+    if (nickEl) {
+        nickEl.textContent = playerNick;
+    }
+    if (scoreEl) {
+        scoreEl.textContent = score.toString();
+    }
+
+    modal.classList.remove('modal--hidden');
+}
+
+function hideGameOverModal(): void {
+    const modal = document.getElementById('gameOverModal') as HTMLDivElement | null;
+    if (modal) {
+        modal.classList.add('modal--hidden');
+    }
+}
+
+function showVictoryModal(playerNick: string, score: number): void {
+    const modal = document.getElementById('victoryModal') as HTMLDivElement | null;
+    const nickEl = document.getElementById('victoryPlayerNick') as HTMLElement | null;
+    const scoreEl = document.getElementById('victoryPlayerScore') as HTMLElement | null;
+    const leaderboardEl = document.getElementById('victoryLeaderboard') as HTMLOListElement | null;
+
+    if (!modal) return;
+
+    if (nickEl) {
+        nickEl.textContent = playerNick;
+    }
+    if (scoreEl) {
+        scoreEl.textContent = score.toString();
+    }
+
+    // Заполняем таблицу рекордов
+    if (leaderboardEl) {
+        const leaderboard = RecordsManager.getLeaderboard(10);
+        leaderboardEl.innerHTML = '';
+
+        if (leaderboard.length === 0) {
+            const emptyMsg = document.createElement('li');
+            emptyMsg.textContent = 'Нет рекордов';
+            emptyMsg.style.listStyle = 'none';
+            leaderboardEl.appendChild(emptyMsg);
+        } else {
+            leaderboard.forEach((player) => {
+                const item = document.createElement('li');
+                item.className = 'victory-leaderboard__item';
+
+                // Выделяем текущего игрока
+                if (player.nick === playerNick) {
+                    item.classList.add('victory-leaderboard__item--current');
+                }
+
+                item.innerHTML = `
+                    <span class="victory-leaderboard__nick">${player.nick}</span>
+                    <span class="victory-leaderboard__score">${player.score}</span>
+                `;
+                leaderboardEl.appendChild(item);
+            });
+        }
+    }
+
+    modal.classList.remove('modal--hidden');
+}
+
+function hideVictoryModal(): void {
+    const modal = document.getElementById('victoryModal') as HTMLDivElement | null;
+    if (modal) {
+        modal.classList.add('modal--hidden');
+    }
+}
+
 function openPlayerModal(): void {
     const modal = document.getElementById('nickModal') as HTMLDivElement | null;
     const nickInput = document.getElementById('playerNickInput') as HTMLInputElement | null;
@@ -216,6 +310,66 @@ function initGame(): void {
     // Настраиваем EventsManager для обработки событий клавиатуры
     eventsManager.setup(canvas);
 
+    // Инициализируем отображение жизней
+    updateLives(5);
+
+    // Настраиваем callback для обновления UI при смерти игрока
+    const setupPlayerCallbacks = (): void => {
+        if (gameManager.player) {
+            const currentPlayer = RecordsManager.getCurrentPlayer();
+            if (currentPlayer) {
+                gameManager.player.name = currentPlayer.nick;
+            }
+
+            gameManager.player.onDeathCallback = (lives: number): void => {
+                updateLives(lives);
+            };
+        } else {
+            // Игрок еще не создан, ждем
+            setTimeout(setupPlayerCallbacks, 100);
+        }
+    };
+    setupPlayerCallbacks();
+
+    // Настраиваем callback для Game Over
+    gameManager.onGameOverCallback = (playerName: string, score: number): void => {
+        const currentPlayer = RecordsManager.getCurrentPlayer();
+        const playerNick = currentPlayer ? currentPlayer.nick : playerName;
+        const playerScore = currentPlayer ? currentPlayer.score : score;
+        showGameOverModal(playerNick, playerScore);
+    };
+
+    // Настраиваем callback для победы
+    gameManager.onVictoryCallback = (playerName: string, score: number): void => {
+        const currentPlayer = RecordsManager.getCurrentPlayer();
+        const playerNick = currentPlayer ? currentPlayer.nick : playerName;
+        const playerScore = currentPlayer ? currentPlayer.score : score;
+        showVictoryModal(playerNick, playerScore);
+    };
+
+    // Настраиваем callback для перехода на следующий уровень
+    gameManager.onNextLevelCallback = (level: number, playerLives: number): void => {
+        console.log(`Level ${level + 1} started!`);
+        updateLives(playerLives);
+
+        // Переустанавливаем callback для игрока на новом уровне
+        const setupNewPlayerCallback = (): void => {
+            if (gameManager.player) {
+                gameManager.player.onDeathCallback = (lives: number): void => {
+                    updateLives(lives);
+                };
+                console.log('Player death callback set for new level');
+            } else {
+                // Игрок ещё не создан, ждём
+                setTimeout(setupNewPlayerCallback, 100);
+            }
+        };
+        setupNewPlayerCallback();
+    };
+
+    // Сохраняем ссылку на gameManager для перезапуска
+    (window as unknown as Record<string, unknown>).gameManager = gameManager;
+
     // Игровой цикл для постоянной отрисовки
     function gameLoop(): void {
         if (!ctx) {
@@ -245,10 +399,104 @@ document.addEventListener('DOMContentLoaded', (): void => {
     ) as HTMLButtonElement;
     const changePlayerBtn = document.getElementById('changePlayerBtn') as HTMLButtonElement | null;
 
+    // Game Over modal buttons
+    const restartGameBtn = document.getElementById('restartGameBtn') as HTMLButtonElement | null;
+    const changePlayerGameOverBtn = document.getElementById('changePlayerGameOverBtn') as HTMLButtonElement | null;
+
+    // Victory modal buttons
+    const restartVictoryBtn = document.getElementById('restartVictoryBtn') as HTMLButtonElement | null;
+    const changePlayerVictoryBtn = document.getElementById('changePlayerVictoryBtn') as HTMLButtonElement | null;
+
     // Обработчик кнопки "Сменить игрока"
     if (changePlayerBtn) {
         changePlayerBtn.addEventListener('click', () => {
             openPlayerModal();
+        });
+    }
+
+    // Обработчики для Game Over модалки
+    if (restartGameBtn) {
+        restartGameBtn.addEventListener('click', () => {
+            hideGameOverModal();
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restart();
+                updateLives(5);
+
+                // Переустанавливаем callback для игрока после перезагрузки
+                setTimeout(() => {
+                    if (gm.player) {
+                        gm.player.onDeathCallback = (lives: number): void => {
+                            updateLives(lives);
+                        };
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    if (changePlayerGameOverBtn) {
+        changePlayerGameOverBtn.addEventListener('click', () => {
+            hideGameOverModal();
+            openPlayerModal();
+            // При смене игрока перезапускаем игру
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restart();
+                updateLives(5);
+
+                // Переустанавливаем callback для игрока после перезагрузки
+                setTimeout(() => {
+                    if (gm.player) {
+                        gm.player.onDeathCallback = (lives: number): void => {
+                            updateLives(lives);
+                        };
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    // Обработчики для Victory модалки
+    if (restartVictoryBtn) {
+        restartVictoryBtn.addEventListener('click', () => {
+            hideVictoryModal();
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restart();
+                updateLives(5);
+
+                // Переустанавливаем callback для игрока после перезагрузки
+                setTimeout(() => {
+                    if (gm.player) {
+                        gm.player.onDeathCallback = (lives: number): void => {
+                            updateLives(lives);
+                        };
+                    }
+                }, 500);
+            }
+        });
+    }
+
+    if (changePlayerVictoryBtn) {
+        changePlayerVictoryBtn.addEventListener('click', () => {
+            hideVictoryModal();
+            openPlayerModal();
+            // При смене игрока перезапускаем игру
+            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            if (gm) {
+                gm.restart();
+                updateLives(5);
+
+                // Переустанавливаем callback для игрока после перезагрузки
+                setTimeout(() => {
+                    if (gm.player) {
+                        gm.player.onDeathCallback = (lives: number): void => {
+                            updateLives(lives);
+                        };
+                    }
+                }, 500);
+            }
         });
     }
 

@@ -4,6 +4,9 @@ import type { SpriteManager, GameManager, MapManager } from '@/managers';
 import type { Player } from './Player';
 import { Obstacle } from './Obstacle';
 import { Explosion } from './Explosion';
+import { Teleport } from './Teleport';
+import { Bonus } from './Bonus';
+import type { BonusType } from './Bonus';
 import type { ExplosionType } from './Explosion';
 
 export class Bomb extends Entity implements IDrawable {
@@ -12,8 +15,13 @@ export class Bomb extends Entity implements IDrawable {
     player: Player;
     timer: number;
     explosionTime: number;
+    explosionRadius: number;
     animationFrame: number;
     animationTimer: number;
+
+    // Система прохождения через бомбу
+    // Сущности, которые находились на бомбе при её установке, могут проходить через неё
+    passThroughEntities: Set<Entity>;
 
     constructor(
         x: number,
@@ -22,6 +30,7 @@ export class Bomb extends Entity implements IDrawable {
         gameManager: GameManager<Bomb>,
         player: Player,
         explosionTime: number = 2500, // 2.5 секунды в миллисекундах
+        explosionRadius: number = 1, // Радиус взрыва в тайлах
     ) {
         super(x, y, 16, 16);
         this.spriteManager = spriteManager;
@@ -29,8 +38,44 @@ export class Bomb extends Entity implements IDrawable {
         this.player = player;
         this.timer = 0;
         this.explosionTime = explosionTime;
+        this.explosionRadius = explosionRadius;
         this.animationFrame = 1;
         this.animationTimer = 0;
+
+        // Изначально игрок, поставивший бомбу, может проходить через неё
+        this.passThroughEntities = new Set<Entity>();
+        this.passThroughEntities.add(player);
+    }
+
+    /**
+     * Проверяет, может ли сущность пройти через эту бомбу
+     */
+    canPassThrough(entity: Entity): boolean {
+        return this.passThroughEntities.has(entity);
+    }
+
+    /**
+     * Убирает сущность из списка тех, кто может проходить через бомбу
+     * Вызывается когда сущность покидает клетку с бомбой
+     */
+    removePassThrough(entity: Entity): void {
+        this.passThroughEntities.delete(entity);
+    }
+
+    /**
+     * Проверяет, находится ли сущность на той же клетке, что и бомба
+     */
+    isEntityOnBomb(entity: Entity): boolean {
+        const tileSize = 16;
+        const bombTileX = Math.floor(this.pos_x / tileSize);
+        const bombTileY = Math.floor(this.pos_y / tileSize);
+
+        const entityCenterX = entity.pos_x + entity.size_x / 2;
+        const entityCenterY = entity.pos_y + entity.size_y / 2;
+        const entityTileX = Math.floor(entityCenterX / tileSize);
+        const entityTileY = Math.floor(entityCenterY / tileSize);
+
+        return bombTileX === entityTileX && bombTileY === entityTileY;
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -61,8 +106,8 @@ export class Bomb extends Entity implements IDrawable {
     }
 
     explode(): void {
-        // Радиус взрыва (в тайлах)
-        const explosionRadius = 2; // 2 тайла в каждую сторону
+        // Радиус взрыва (в тайлах) - берём из параметра бомбы
+        const explosionRadius = this.explosionRadius;
         const tileSize = 16;
 
         // Находим и уничтожаем препятствия в радиусе взрыва
@@ -141,6 +186,22 @@ export class Bomb extends Entity implements IDrawable {
                 const bonusType = obstacle.destroy();
                 if (bonusType > 0) {
                     console.log(`Bonus dropped: ${bonusType} at (${obstacle.pos_x}, ${obstacle.pos_y})`);
+
+                    // Создаём соответствующий бонус
+                    switch (bonusType) {
+                        case 1:
+                            this.createBonus(obstacle.pos_x, obstacle.pos_y, 'Speed');
+                            break;
+                        case 2:
+                            this.createBonus(obstacle.pos_x, obstacle.pos_y, 'FastBomb');
+                            break;
+                        case 3:
+                            this.createBonus(obstacle.pos_x, obstacle.pos_y, 'BigBomb');
+                            break;
+                        case 4:
+                            this.createTeleport(obstacle.pos_x, obstacle.pos_y);
+                            break;
+                    }
                 }
                 // Используем mainGameManager для удаления препятствия из правильного списка
                 if (this.player.mainGameManager) {
@@ -183,6 +244,39 @@ export class Bomb extends Entity implements IDrawable {
                 500 // Время жизни взрыва 500мс
             );
             this.player.explosionGameManager.entities.push(explosion);
+        }
+    }
+
+    private createTeleport(x: number, y: number): void {
+        // Используем teleportGameManager игрока для создания телепорта
+        if (this.player.teleportGameManager) {
+            // Проверяем, есть ли уже телепорт на карте
+            if (this.player.teleportGameManager.entities.length > 0) {
+                console.log('Teleport already exists on the map');
+                return;
+            }
+
+            const teleport = new Teleport(
+                x, y,
+                this.spriteManager,
+                this.player.teleportGameManager,
+            );
+            this.player.teleportGameManager.entities.push(teleport);
+            console.log(`Teleport created at (${x}, ${y})`);
+        }
+    }
+
+    private createBonus(x: number, y: number, bonusType: BonusType): void {
+        // Используем bonusGameManager игрока для создания бонуса
+        if (this.player.bonusGameManager) {
+            const bonus = new Bonus(
+                x, y,
+                bonusType,
+                this.spriteManager,
+                this.player.bonusGameManager,
+            );
+            this.player.bonusGameManager.entities.push(bonus);
+            console.log(`Bonus created: ${bonusType} at (${x}, ${y})`);
         }
     }
 }

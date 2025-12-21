@@ -1,5 +1,6 @@
 import type { Entity } from '@/entities';
-import { Player, Obstacle } from '@/entities';
+import { Player, Obstacle, Enemy } from '@/entities';
+import type { EnemyType } from '@/entities';
 import type { IDrawable} from '@/entities/interfaces';
 import type { GameManager } from './GameManager';
 import { SpriteManager } from './SpriteManager';
@@ -54,6 +55,42 @@ export class MapManager {
         this.mapPath = jsonPath;
 
         this.loadMap(jsonPath);
+    }
+
+    // Сохранённые параметры игрока для переноса между уровнями
+    private savedPlayerLives: number = 5;
+    private savedPlayerName: string = 'Player';
+
+    /**
+     * Загружает новую карту (для перехода на следующий уровень)
+     */
+    loadNewMap(path: string, playerLives: number = 5, playerName: string = 'Player'): void {
+        console.log(`Loading new map: ${path}, player lives: ${playerLives}`);
+
+        // Сохраняем параметры игрока
+        this.savedPlayerLives = playerLives;
+        this.savedPlayerName = playerName;
+
+        // Сбрасываем состояние карты
+        this.mapData = null;
+        this.tileLayers = [];
+        this.tilesets = [];
+
+        this.imgLoadCount = 0;
+        this.imgLoaded = false;
+        this.jsonLoaded = false;
+
+        this.xCount = 0;
+        this.yCount = 0;
+
+        this.tSize = { x: 0, y: 0 };
+        this.mapSize = { x: 0, y: 0 };
+
+        this.scale = 1;
+        this.mapPath = path;
+
+        // Загружаем новую карту
+        this.loadMap(path);
     }
 
     /**
@@ -253,9 +290,8 @@ export class MapManager {
 
     draw(ctx: CanvasRenderingContext2D): void {
         if (!this.imgLoaded || !this.jsonLoaded || this.mapData === null) {
-            setTimeout((): void => {
-                this.draw(ctx);
-            }, 100);
+            // Карта ещё не готова - сохраняем контекст (для drawWithEntities) и выходим
+            ctx.save();
             return;
         }
 
@@ -279,12 +315,13 @@ export class MapManager {
             console.log(`Loaded ${this.tileLayers.length} tile layers`);
         }
 
+        // Сохраняем состояние контекста (всегда, даже если нечего рисовать)
+        ctx.save();
+
         if (this.tileLayers.length === 0) {
+            // НЕ восстанавливаем - это сделает drawWithEntities
             return;
         }
-
-        // Сохраняем состояние контекста
-        ctx.save();
 
         // Отключаем сглаживание для pixel-art
         ctx.imageSmoothingEnabled = false;
@@ -304,6 +341,13 @@ export class MapManager {
      * Отрисовывает карту вместе с сущностями в правильном порядке
      */
     drawWithEntities(ctx: CanvasRenderingContext2D, drawEntitiesCallback: () => void): void {
+        // Проверяем готовность карты
+        if (!this.imgLoaded || !this.jsonLoaded || this.mapData === null) {
+            // Карта ещё не загружена - только запускаем отложенную отрисовку
+            this.draw(ctx);
+            return;
+        }
+
         this.draw(ctx);
 
         // Рисуем сущности в том же масштабированном контексте
@@ -470,11 +514,18 @@ export class MapManager {
                 if (!entities.objects) {
                     continue;
                 }
+                console.log(`Processing layer: ${entities.name}, objects: ${entities.objects.length}`);
                 for (let i: number = 0; i < entities.objects.length; ++i) {
                     const e: ObjectProperty = entities.objects[i];
                     try {
                         // Создаем объекты по имени (name), а не по type
                         if (e.name === 'Player') {
+                            // Выравниваем позицию игрока по тайловой сетке
+                            const tileSize = 16;
+                            const alignedX = Math.round(e.x / tileSize) * tileSize;
+                            const alignedY = Math.round((e.y - e.height) / tileSize) * tileSize;
+
+                            console.log(`Creating Player at (${alignedX}, ${alignedY})`);
                             // Создаем игрока
                             const spriteManager = new SpriteManager(this);
                             // Загружаем атлас спрайтов для игрока
@@ -483,10 +534,12 @@ export class MapManager {
                             spriteManager.loadAtlas('/assets/atlas/bomb.json', '/assets/images/bomb.png');
                             // Загружаем атлас спрайтов для препятствий
                             spriteManager.loadAtlas('/assets/atlas/obstacle.json', '/assets/images/PeaceTown.png');
+                            // Загружаем атлас спрайтов для бонусов
+                            spriteManager.loadAtlas('/assets/atlas/bonus.json', '/assets/images/bonus.png');
 
                             const player = new Player(
-                                e.x,
-                                e.y - e.height, // Tiled использует нижний левый угол, а мы верхний левый
+                                alignedX,
+                                alignedY,
                                 e.width,
                                 e.height,
                                 100,
@@ -495,6 +548,11 @@ export class MapManager {
                                 0.25, // Оптимальная скорость для комфортного управления
                                 spriteManager,
                             );
+
+                            // Восстанавливаем параметры игрока при переходе между уровнями
+                            player.lives = this.savedPlayerLives;
+                            player.name = this.savedPlayerName;
+
                             this.gameManager.entities.push(player);
                             this.gameManager.initPlayer(player);
                         } else if (this.gameManager.factory[e.type]) {
@@ -592,6 +650,106 @@ export class MapManager {
         }
 
         console.log(`Generated ${Math.min(obstacleCount, freeTiles.length)} obstacles out of ${freeTiles.length} free tiles`);
+
+        // Генерируем врагов
+        this.generateEnemies();
+    }
+
+    /**
+     * Генерирует врагов на карте
+     */
+    private generateEnemies(): void {
+        if (!this.gameManager.player) {
+            return;
+        }
+
+        const tileSize = 16;
+        const player = this.gameManager.player;
+        const playerTileX = Math.floor(player.pos_x / tileSize);
+        const playerTileY = Math.floor(player.pos_y / tileSize);
+        const safeZoneRadius = 4; // Враги не спавнятся близко к игроку
+
+        // Флаги из Tiled
+        const FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+        const FLIPPED_VERTICALLY_FLAG = 0x40000000;
+        const FLIPPED_DIAGONALLY_FLAG = 0x20000000;
+        const FLAGS_MASK = FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG;
+
+        // Определяем количество врагов в зависимости от карты
+        const isMap1 = this.mapPath.includes('map1');
+        const enemyCount = isMap1 ? 2 : 3;
+
+        // SpriteManager для врагов
+        const spriteManager = new SpriteManager(this);
+        spriteManager.loadAtlas('/assets/atlas/enemies.json', '/assets/images/Enemies.png');
+
+        // Собираем свободные позиции для спавна врагов
+        const freeSpawnTiles: { x: number; y: number }[] = [];
+
+        for (let tileY = 0; tileY < this.yCount; tileY++) {
+            for (let tileX = 0; tileX < this.xCount; tileX++) {
+                const worldX = tileX * tileSize;
+                const worldY = tileY * tileSize;
+
+                // Не близко к игроку
+                const distX = Math.abs(tileX - playerTileX);
+                const distY = Math.abs(tileY - playerTileY);
+                if (distX <= safeZoneRadius && distY <= safeZoneRadius) {
+                    continue;
+                }
+
+                // Нет стены
+                const wallTileIdxRaw = this.getTilesetIdx(worldX, worldY, 'walls');
+                const wallTileIdx = wallTileIdxRaw & ~FLAGS_MASK;
+                if (wallTileIdx !== 0) {
+                    continue;
+                }
+
+                // Не на границах
+                if (tileX < 2 || tileX >= this.xCount - 2 || tileY < 1 || tileY >= this.yCount - 1) {
+                    continue;
+                }
+
+                // Не на препятствии
+                let hasObstacle = false;
+                for (const entity of this.gameManager.entities) {
+                    if ('name' in entity && entity.name === 'Obstacle') {
+                        const obsTileX = Math.floor(entity.pos_x / tileSize);
+                        const obsTileY = Math.floor(entity.pos_y / tileSize);
+                        if (obsTileX === tileX && obsTileY === tileY) {
+                            hasObstacle = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasObstacle) {
+                    continue;
+                }
+
+                freeSpawnTiles.push({ x: tileX, y: tileY });
+            }
+        }
+
+        // Перемешиваем
+        for (let i = freeSpawnTiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [freeSpawnTiles[i], freeSpawnTiles[j]] = [freeSpawnTiles[j], freeSpawnTiles[i]];
+        }
+
+        // Создаём врагов
+        const enemyTypes: EnemyType[] = ['Slime', 'Firefly'];
+        for (let i = 0; i < enemyCount && i < freeSpawnTiles.length; i++) {
+            const tile = freeSpawnTiles[i];
+            const worldX = tile.x * tileSize;
+            const worldY = tile.y * tileSize;
+
+            // Чередуем типы врагов
+            const enemyType = enemyTypes[i % enemyTypes.length];
+            const enemy = new Enemy(worldX, worldY, enemyType, spriteManager, this);
+            this.gameManager.entities.push(enemy);
+        }
+
+        console.log(`Generated ${Math.min(enemyCount, freeSpawnTiles.length)} enemies`);
     }
 
     getTilesetIdx(x: number, y: number, layerName?: string): number {

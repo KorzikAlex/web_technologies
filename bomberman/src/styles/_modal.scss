@@ -57,3 +57,143 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+// Game Over Modal styles
+.modal__content--game-over {
+    min-width: 320px;
+}
+
+.game-over-stats {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: var(--bg-secondary, rgba(0, 0, 0, 0.1));
+    border-radius: 4px;
+}
+
+.game-over-stats__player,
+.game-over-stats__score {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.game-over-stats__player strong,
+.game-over-stats__score strong {
+    color: var(--btn-primary);
+}
+
+.modal__actions--game-over {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn {
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn--primary {
+    background: var(--btn-primary);
+    color: var(--btn-primary-text);
+}
+
+.btn--primary:hover {
+    background: var(--btn-primary-hover);
+}
+
+.btn--secondary {
+    background: var(--btn-secondary, #6c757d);
+    color: var(--btn-secondary-text, #fff);
+}
+
+.btn--secondary:hover {
+    background: var(--btn-secondary-hover, #5a6268);
+}
+
+// Victory Modal Styles
+.modal__content--victory {
+    min-width: 380px;
+    max-width: 500px;
+}
+
+.victory-message {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 1rem 0;
+}
+
+.victory-stats {
+    background: var(--bg-secondary);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.victory-stats__player,
+.victory-stats__score {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+}
+
+.victory-stats__player strong,
+.victory-stats__score strong {
+    color: var(--btn-primary);
+}
+
+.victory-leaderboard {
+    background: var(--bg-secondary);
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.victory-leaderboard h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.victory-leaderboard__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.victory-leaderboard__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0.5rem;
+    border-radius: 3px;
+    margin-bottom: 0.25rem;
+    color: var(--text-secondary);
+}
+
+.victory-leaderboard__item--current {
+    background: rgba(var(--btn-primary-rgb, 76, 175, 80), 0.2);
+    font-weight: bold;
+    color: var(--btn-primary);
+}
+
+.victory-leaderboard__nick {
+    flex: 1;
+}
+
+.victory-leaderboard__score {
+    font-weight: bold;
+}
+
+.modal__actions--victory {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}

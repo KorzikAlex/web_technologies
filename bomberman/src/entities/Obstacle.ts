@@ -45,20 +45,20 @@ export class Obstacle extends Entity implements IDrawable, IHaveName {
         // 4 - портал
         const random = Math.random();
 
-        if (random < 0.15) {
-            // 15% шанс выпадения бонуса скорости
+        if (random < 0.05) {
+            // 5% шанс выпадения бонуса скорости
             return 1;
-        } else if (random < 0.30) {
-            // 15% шанс выпадения бонуса на количество бомб
+        } else if (random < 0.10) {
+            // 5% шанс выпадения бонуса на количество бомб
             return 2;
-        } else if (random < 0.45) {
-            // 15% шанс выпадения бонуса на мощность взрыва
+        } else if (random < 0.15) {
+            // 5% шанс выпадения бонуса на мощность взрыва
             return 3;
-        } else if (random < 0.50) {
-            // 5% шанс выпадения портала
+        } else if (random < 0.18) {
+            // 3% шанс выпадения портала
             return 4;
         }
 
-        return 0; // 50% ничего не выпадает
+        return 0; // 82% ничего не выпадает
     }
 }

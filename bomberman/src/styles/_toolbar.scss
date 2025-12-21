@@ -59,3 +59,23 @@
     color: var(--score-color);
     font-weight: 600;
 }
+
+.toolbar__player-lives {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.life-heart {
+    font-size: 1rem;
+    color: #e74c3c;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.life-heart--full {
+    color: #e74c3c;
+}
+
+.life-heart--empty {
+    color: #7f8c8d;
+    opacity: 0.4;
+}

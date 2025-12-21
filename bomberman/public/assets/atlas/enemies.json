@@ -1,0 +1,21 @@
+{
+    "frames": {
+        "firefly_1": {
+            "frame": { "x": 0, "y": 0, "w": 16, "h": 16 }
+        },
+        "firefly_2": {
+            "frame": { "x": 16, "y": 0, "w": 16, "h": 16 }
+        },
+        "slime_1": {
+            "frame": { "x": 48, "y": 0, "w": 16, "h": 16 }
+        },
+        "slime_2": {
+            "frame": { "x": 64, "y": 0, "w": 16, "h": 16 }
+        }
+    },
+    "meta": {
+        "image": "Enemies.png",
+        "format": "RGBA8888",
+        "size": { "w": 96, "h": 32 }
+    }
+}

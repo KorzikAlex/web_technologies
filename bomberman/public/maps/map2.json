@@ -1,0 +1,247 @@
+{ "compressionlevel":-1,
+ "height":13,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 12, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 20, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 12, 20, 20, 20,
+            20, 20, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 12, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+            20, 20, 12, 12, 20, 12, 12, 12, 20, 12, 20, 12, 20, 12, 20, 20, 20,
+            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
+         "height":13,
+         "id":1,
+         "name":"field",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":17,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[1, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2147483650, 2147483649,
+            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2147483658, 2147483657,
+            9, 10, 11, 11, 0, 11, 11, 11, 0, 11, 0, 11, 0, 11, 0, 2147483658, 2147483657,
+            9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2147483658, 2147483657,
+            17, 18, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483667, 2147483666, 2147483665],
+         "height":13,
+         "id":2,
+         "name":"walls",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":17,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":14,
+         "name":"obstacles",
+         "objects":[
+                {
+                 "gid":13,
+                 "height":16,
+                 "id":21,
+                 "name":"Obstacle",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":256,
+                 "y":224
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "name":"teleport",
+         "objects":[
+                {
+                 "gid":23,
+                 "height":16,
+                 "id":15,
+                 "name":"Teleport",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":240,
+                 "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":11,
+         "name":"bomb",
+         "objects":[
+                {
+                 "gid":104,
+                 "height":16,
+                 "id":17,
+                 "name":"Bomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":256,
+                 "y":0
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":12,
+         "name":"bonus",
+         "objects":[
+                {
+                 "gid":148,
+                 "height":16,
+                 "id":18,
+                 "name":"FastBomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":0,
+                 "y":224
+                }, 
+                {
+                 "gid":149,
+                 "height":16,
+                 "id":19,
+                 "name":"BigBomb",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":16,
+                 "y":224
+                }, 
+                {
+                 "gid":150,
+                 "height":16,
+                 "id":20,
+                 "name":"Speed",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":32,
+                 "y":224
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"entities",
+         "objects":[
+                {
+                 "gid":96,
+                 "height":16,
+                 "id":11,
+                 "name":"Fierfly",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "gid":102,
+                 "height":16,
+                 "id":13,
+                 "name":"Slime",
+                 "rotation":0,
+                 "type":"",
+                 "visible":false,
+                 "width":16,
+                 "x":16,
+                 "y":0
+                }, 
+                {
+                 "gid":33,
+                 "height":16,
+                 "id":16,
+                 "name":"Player",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":32,
+                 "y":32
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":5,
+ "nextobjectid":5,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.11.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"..\/assets\/tilesets\/PeaceTown.json"
+        }, 
+        {
+         "firstgid":33,
+         "source":"..\/assets\/tilesets\/Player.json"
+        }, 
+        {
+         "firstgid":92,
+         "source":"..\/assets\/tilesets\/Enemies.json"
+        }, 
+        {
+         "firstgid":104,
+         "source":"..\/assets\/tilesets\/Bomb.json"
+        }, 
+        {
+         "firstgid":148,
+         "source":"..\/assets\/tilesets\/Bonus.json"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":17
+}
