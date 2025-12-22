@@ -1,3 +1,9 @@
+/**
+ * @file index.ts
+ * @description Экспортирует все типы менеджеров.
+ * @package Managers Types
+ * @module managers/types/index
+ */
 export type { MapTileset } from './MapTileset';
 export type { Tile } from './Tile';
 

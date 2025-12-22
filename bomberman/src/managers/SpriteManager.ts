@@ -1,4 +1,4 @@
-import type { MapManager } from './';
+import { MapManager } from './';
 import type { Atlas } from './types';
 
 type Sprite = {
@@ -100,7 +100,17 @@ export class SpriteManager {
         y -= this.mapManager.view.y;
 
         // отображаем спрайт на холсте
-        ctx.drawImage(sprite.image, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h);
+        ctx.drawImage(
+            sprite.image,
+            sprite.x,
+            sprite.y,
+            sprite.w,
+            sprite.h,
+            x,
+            y,
+            sprite.w,
+            sprite.h,
+        );
     }
 
     getSprite(name: string) {

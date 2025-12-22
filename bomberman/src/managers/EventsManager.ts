@@ -1,40 +1,62 @@
+/**
+ * Менеджер событий для обработки ввода с клавиатуры и геймпада
+ */
 export class EventsManager {
-    bind: { [key: string]: string }; // сопоставление клавиш действиям
-    action: { [key: string]: boolean }; // действия
-    keyboardAction: { [key: string]: boolean }; // действия от клавиатуры
-    gamepadIndex: number | null; // индекс подключенного геймпада
+    /**
+     * Сопоставление клавиш клавиатуры с действиями
+     */
+    bind: Record<string, string>;
+    /**
+     * Текущее состояние действий
+     */
+    action: Record<string, boolean>;
+    /**
+     * Текущее состояние действий от клавиатуры
+     */
+    keyboardAction: Record<string, boolean>;
+    /**
+     * Индекс подключенного геймпада
+     */
+    gamepadIndex: number | null;
+    /**
+     * Мертвая зона для стиков геймпада
+     */
     deadzone: number; // мертвая зона для стиков
 
+    /**
+     * Конструктор EventsManager
+     * @constructor
+     */
     constructor() {
         this.bind = {
             ArrowUp: 'up',
             w: 'up',
             W: 'up',
-            ц: 'up', // Русская W
+            ц: 'up',
             Ц: 'up',
             ArrowLeft: 'left',
             a: 'left',
             A: 'left',
-            ф: 'left', // Русская A
+            ф: 'left',
             Ф: 'left',
             ArrowDown: 'down',
             s: 'down',
             S: 'down',
-            ы: 'down', // Русская S
+            ы: 'down',
             Ы: 'down',
             ArrowRight: 'right',
             d: 'right',
             D: 'right',
-            в: 'right', // Русская D
+            в: 'right',
             В: 'right',
             ' ': 'bomb',
             p: 'pause',
             P: 'pause',
-            з: 'pause', // Русская P
+            з: 'pause',
             З: 'pause',
             r: 'restart',
             R: 'restart',
-            к: 'restart', // Русская R
+            к: 'restart',
             К: 'restart',
         };
 
@@ -64,6 +86,10 @@ export class EventsManager {
         this.deadzone = 0.3; // мертвая зона 30% для стиков
     }
 
+    /**
+     * Настройка менеджера событий для заданного canvas
+     * @param canvas
+     */
     setup(canvas: HTMLCanvasElement): void {
         // Делаем canvas фокусируемым
         canvas.setAttribute('tabindex', '0');
@@ -80,12 +106,19 @@ export class EventsManager {
         // Запускаем опрос состояния геймпада
         this.pollGamepad();
     }
-
+    /**
+     * Обработка подключения геймпада
+     * @param event Событие подключения геймпада
+     */
     onGamepadConnected(event: GamepadEvent): void {
         console.log('Gamepad connected:', event.gamepad.id);
         this.gamepadIndex = event.gamepad.index;
     }
 
+    /**
+     * Обработка отключения геймпада
+     * @param event Событие отключения геймпада
+     */
     onGamepadDisconnected(event: GamepadEvent): void {
         console.log('Gamepad disconnected:', event.gamepad.id);
         if (this.gamepadIndex === event.gamepad.index) {
@@ -98,24 +131,27 @@ export class EventsManager {
         }
     }
 
+    /**
+     * Опрос состояния геймпада и обновление действий
+     */
     pollGamepad(): void {
         // Инициализируем состояния геймпада
-        let gamepadLeft = false;
-        let gamepadRight = false;
-        let gamepadUp = false;
-        let gamepadDown = false;
-        let gamepadBomb = false;
-        let gamepadPause = false;
-        let gamepadRestart = false;
+        let gamepadLeft: boolean = false;
+        let gamepadRight: boolean = false;
+        let gamepadUp: boolean = false;
+        let gamepadDown: boolean = false;
+        let gamepadBomb: boolean = false;
+        let gamepadPause: boolean = false;
+        let gamepadRestart: boolean = false;
 
         if (this.gamepadIndex !== null) {
-            const gamepads = navigator.getGamepads();
-            const gamepad = gamepads[this.gamepadIndex];
+            const gamepads: (Gamepad | null)[] = navigator.getGamepads();
+            const gamepad: Gamepad | null = gamepads[this.gamepadIndex];
 
             if (gamepad) {
                 // Обработка левого стика (оси 0 и 1)
-                const leftStickX = gamepad.axes[0]; // горизонтальная ось
-                const leftStickY = gamepad.axes[1]; // вертикальная ось
+                const leftStickX: number = gamepad.axes[0]; // горизонтальная ось
+                const leftStickY: number = gamepad.axes[1]; // вертикальная ось
 
                 // Горизонтальное движение (стик)
                 if (leftStickX < -this.deadzone) {
@@ -172,17 +208,24 @@ export class EventsManager {
         this.action.restart = this.keyboardAction.restart || gamepadRestart;
 
         // Продолжаем опрос
-        requestAnimationFrame(() => this.pollGamepad());
+        requestAnimationFrame((): void => this.pollGamepad());
     }
-
+    /**
+     * Обработка нажатия клавиши
+     * @param event Событие нажатия клавиши
+     */
     onKeyDown(event: KeyboardEvent): void {
-        const action = this.bind[event.key];
+        const action: string | undefined = this.bind[event.key];
         if (action) {
             this.keyboardAction[action] = true; // согласились выполнять действие
             event.preventDefault(); // Предотвращаем скроллинг страницы
         }
     }
 
+    /**
+     * Обработка отпускания клавиши
+     * @param event Событие отпускания клавиши
+     */
     onKeyUp(event: KeyboardEvent): void {
         const action = this.bind[event.key]; // проверили наличие действия
         if (action) {

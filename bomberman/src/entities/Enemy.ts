@@ -1,10 +1,13 @@
 import type { SpriteManager, MapManager } from '@/managers';
-import { Entity } from './Entity';
-import type { IDrawable, IHaveName, IMovable, IInteractEntity, IInteractMap } from './interfaces/';
+import { Entity } from './';
+import type { IDrawable, IHaveName, IMovable, IInteractEntity, IInteractMap } from './';
 
 export type EnemyType = 'Slime' | 'Firefly';
 
-export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IInteractEntity, IInteractMap {
+export class Enemy
+    extends Entity
+    implements IDrawable, IHaveName, IMovable, IInteractEntity, IInteractMap
+{
     name: string;
     enemyType: EnemyType;
     move_x: number;
@@ -66,10 +69,10 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
      */
     private chooseRandomDirection(): void {
         const directions = [
-            { x: 1, y: 0 },   // вправо
-            { x: -1, y: 0 },  // влево
-            { x: 0, y: 1 },   // вниз
-            { x: 0, y: -1 },  // вверх
+            { x: 1, y: 0 }, // вправо
+            { x: -1, y: 0 }, // влево
+            { x: 0, y: 1 }, // вниз
+            { x: 0, y: -1 }, // вверх
         ];
 
         const dir = directions[Math.floor(Math.random() * directions.length)];
@@ -80,9 +83,7 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
     draw(ctx: CanvasRenderingContext2D): void {
         // Получаем имя спрайта в зависимости от типа и кадра анимации
         const frameNum = this.animationFrame + 1;
-        const spriteName = this.enemyType === 'Slime'
-            ? `slime_${frameNum}`
-            : `firefly_${frameNum}`;
+        const spriteName = this.enemyType === 'Slime' ? `slime_${frameNum}` : `firefly_${frameNum}`;
 
         // Мигание красным при неуязвимости (после получения урона)
         if (this.isInvulnerable) {
@@ -199,10 +200,10 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
 
         // Все возможные направления (кроме текущего, в него упёрлись)
         const directions = [
-            { x: 1, y: 0 },   // вправо
-            { x: -1, y: 0 },  // влево
-            { x: 0, y: 1 },   // вниз
-            { x: 0, y: -1 },  // вверх
+            { x: 1, y: 0 }, // вправо
+            { x: -1, y: 0 }, // влево
+            { x: 0, y: 1 }, // вниз
+            { x: 0, y: -1 }, // вверх
         ];
 
         // Собираем все доступные направления
@@ -278,10 +279,14 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
         for (const entity of this.mapManager.gameManager.entities) {
             if ('name' in entity && entity.name === 'Obstacle') {
                 // AABB коллизия
-                if (!(x + this.size_x - margin <= entity.pos_x ||
-                      y + this.size_y - margin <= entity.pos_y ||
-                      x + margin >= entity.pos_x + entity.size_x ||
-                      y + margin >= entity.pos_y + entity.size_y)) {
+                if (
+                    !(
+                        x + this.size_x - margin <= entity.pos_x ||
+                        y + this.size_y - margin <= entity.pos_y ||
+                        x + margin >= entity.pos_x + entity.size_x ||
+                        y + margin >= entity.pos_y + entity.size_y
+                    )
+                ) {
                     return false;
                 }
             }
@@ -297,10 +302,14 @@ export class Enemy extends Entity implements IDrawable, IHaveName, IMovable, IIn
             // Проверяем только Enemy
             if (entity instanceof Enemy) {
                 // AABB коллизия с другим врагом
-                if (!(x + this.size_x - margin <= entity.pos_x ||
-                      y + this.size_y - margin <= entity.pos_y ||
-                      x + margin >= entity.pos_x + entity.size_x ||
-                      y + margin >= entity.pos_y + entity.size_y)) {
+                if (
+                    !(
+                        x + this.size_x - margin <= entity.pos_x ||
+                        y + this.size_y - margin <= entity.pos_y ||
+                        x + margin >= entity.pos_x + entity.size_x ||
+                        y + margin >= entity.pos_y + entity.size_y
+                    )
+                ) {
                     return false; // Есть коллизия с другим врагом
                 }
             }

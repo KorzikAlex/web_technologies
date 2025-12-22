@@ -1,8 +1,15 @@
 import { Entity } from './';
-import type { IDrawable, IHaveName } from './interfaces';
+import type { IDrawable, IHaveName } from './';
 import type { SpriteManager, GameManager } from '@/managers';
 
-export type ExplosionType = 'center' | 'horizontal' | 'vertical' | 'end_left' | 'end_right' | 'end_up' | 'end_down';
+export type ExplosionType =
+    | 'center'
+    | 'horizontal'
+    | 'vertical'
+    | 'end_left'
+    | 'end_right'
+    | 'end_up'
+    | 'end_down';
 
 export class Explosion extends Entity implements IDrawable, IHaveName {
     spriteManager: SpriteManager;

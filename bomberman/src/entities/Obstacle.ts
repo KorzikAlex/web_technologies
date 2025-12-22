@@ -14,11 +14,7 @@ export class Obstacle extends Entity implements IDrawable, IHaveName {
     private readonly animationSpeed: number = 200; // мс между кадрами
     private readonly maxFrames: number = 4; // количество кадров анимации
 
-    constructor(
-        x: number,
-        y: number,
-        spriteManager: SpriteManager,
-    ) {
+    constructor(x: number, y: number, spriteManager: SpriteManager) {
         super(x, y, 16, 16);
         this.spriteManager = spriteManager;
         this.health = 1; // Разрушается с одного взрыва
@@ -87,7 +83,7 @@ export class Obstacle extends Entity implements IDrawable, IHaveName {
         if (random < 0.05) {
             // 5% шанс выпадения бонуса скорости
             return 1;
-        } else if (random < 0.10) {
+        } else if (random < 0.1) {
             // 5% шанс выпадения бонуса на количество бомб
             return 2;
         } else if (random < 0.15) {

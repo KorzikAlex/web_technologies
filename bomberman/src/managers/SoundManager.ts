@@ -1,6 +1,5 @@
-import type { Entity } from '@/entities';
-import type { GameManager, MapManager } from './';
-import type { IDrawable } from '@/entities/interfaces';
+import { Entity, type IDrawable } from '@/entities';
+import { GameManager, MapManager } from './';
 
 export type SoundClip = {
     path: string;
@@ -10,9 +9,7 @@ export type SoundClip = {
 };
 
 export class SoundManager {
-    clips: {
-        [key: string]: SoundClip;
-    };
+    clips: Record<string, SoundClip>;
     context: AudioContext;
     gainNode: GainNode;
     loaded: boolean;

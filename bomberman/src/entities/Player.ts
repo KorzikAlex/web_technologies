@@ -1,16 +1,14 @@
 import type { SpriteManager, PhysicsManager, GameManager } from '@/managers';
-import { Entity } from './Entity';
-import { Bomb } from './Bomb';
-import { Enemy } from './Enemy';
-import type { Bonus, BonusType } from './Bonus';
-import type { Explosion } from './Explosion';
-import type { Teleport } from './Teleport';
-import type { IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap } from './interfaces/';
+import { Entity, Bomb, Enemy, Bonus, type BonusType, Explosion, Teleport } from './';
+import type { IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap } from './';
 
 // Callback для уведомления о смерти игрока
 export type PlayerDeathCallback = (lives: number) => void;
 
-export class Player extends Entity implements IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap {
+export class Player
+    extends Entity
+    implements IDrawable, IInteractEntity, IMovable, IHaveName, IInteractMap
+{
     name: string;
     lifetime: number;
     move_x: number;
@@ -193,7 +191,10 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
                 this.walkingSoundTimer = 0;
                 if (this.mainGameManager?.soundManager) {
                     const soundPath = `/assets/sounds/Walking${this.currentWalkingSound}.wav`;
-                    this.mainGameManager.soundManager.play(soundPath, { looping: false, volume: 0.3 });
+                    this.mainGameManager.soundManager.play(soundPath, {
+                        looping: false,
+                        volume: 0.3,
+                    });
                     // Чередуем звуки
                     this.currentWalkingSound = this.currentWalkingSound === 1 ? 2 : 1;
                 }
@@ -239,7 +240,10 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
 
         // Воспроизводим звук смерти игрока
         if (this.mainGameManager?.soundManager) {
-            this.mainGameManager.soundManager.play('/assets/sounds/BombermanDie.wav', { looping: false, volume: 0.7 });
+            this.mainGameManager.soundManager.play('/assets/sounds/BombermanDie.wav', {
+                looping: false,
+                volume: 0.7,
+            });
         }
 
         // Уведомляем о смерти
@@ -303,7 +307,15 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
 
         if (!bombExists) {
             // Создаем новую бомбу с текущим радиусом взрыва
-            const bomb = new Bomb(bombX, bombY, this.spriteManager, this.gameManager, this, 2500, this.explosionRadius);
+            const bomb = new Bomb(
+                bombX,
+                bombY,
+                this.spriteManager,
+                this.gameManager,
+                this,
+                2500,
+                this.explosionRadius,
+            );
 
             // Добавляем врагов, которые находятся на этой же клетке, в список passThroughEntities
             if (this.mainGameManager) {
@@ -329,7 +341,10 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
 
             // Воспроизводим звук установки бомбы
             if (this.mainGameManager?.soundManager) {
-                this.mainGameManager.soundManager.play('/assets/sounds/PlaceBomb.wav', { looping: false, volume: 0.5 });
+                this.mainGameManager.soundManager.play('/assets/sounds/PlaceBomb.wav', {
+                    looping: false,
+                    volume: 0.5,
+                });
             }
         }
     }
@@ -338,7 +353,9 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
      * Применяет бонус к игроку
      */
     applyBonus(bonusType: BonusType): void {
-        console.log(`Applying bonus: ${bonusType}, current speed: ${this.speed}, maxBombs: ${this.maxBombs}, explosionRadius: ${this.explosionRadius}`);
+        console.log(
+            `Applying bonus: ${bonusType}, current speed: ${this.speed}, maxBombs: ${this.maxBombs}, explosionRadius: ${this.explosionRadius}`,
+        );
         switch (bonusType) {
             case 'Speed':
                 if (!this.hasSpeedBonus) {
@@ -362,7 +379,9 @@ export class Player extends Entity implements IDrawable, IInteractEntity, IMovab
                 }
                 break;
         }
-        console.log(`After bonus: speed: ${this.speed}, maxBombs: ${this.maxBombs}, explosionRadius: ${this.explosionRadius}`);
+        console.log(
+            `After bonus: speed: ${this.speed}, maxBombs: ${this.maxBombs}, explosionRadius: ${this.explosionRadius}`,
+        );
     }
 
     /**

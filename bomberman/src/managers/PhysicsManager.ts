@@ -1,24 +1,52 @@
-import type { Entity } from '@/entities';
-import type { GameManager } from './GameManager';
-import type { MapManager } from './MapManager';
-import type { IHaveName, IInteractEntity, IInteractMap, IDrawable, IMovable } from '@/entities/interfaces';
+/**
+ * @file PhysicsManager.ts
+ * @description Менеджер физики - обработка движения и коллизий сущностей на карте
+ * @module managers/PhysicsManager
+ */
+import { Entity } from '@/entities';
+import type { IHaveName, IInteractEntity, IInteractMap, IDrawable, IMovable } from '@/entities';
+import { GameManager, MapManager } from './';
 
-export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IInteractMap & IHaveName & IMovable> {
+/**
+ * Менеджер физики - обработка движения и коллизий сущностей на карте
+ */
+export class PhysicsManager<
+    T extends Entity & IDrawable & IInteractEntity & IInteractMap & IHaveName & IMovable,
+> {
+    /**
+     * Менеджер карты
+     */
     mapManager: MapManager;
+    /**
+     * Менеджер игры
+     */
     gameManager: GameManager<T>;
 
-    // Размер тайла для расчётов коллизий
-    private readonly TILE_SIZE = 16;
-    // Порог для автокоррекции (corner cutting) - насколько пикселей персонаж может быть смещён от прохода
-    private readonly CORNER_CUT_THRESHOLD = 10;
-    // Скорость автокоррекции
-    private readonly CORNER_CUT_SPEED = 1.2;
+    /**
+     * Размер тайла в пикселях
+     */
+    private readonly TILE_SIZE: number;
+    /**
+     * Константы для автокоррекции (corner cutting)
+     */
+    private readonly CORNER_CUT_THRESHOLD: number;
+    /**
+     * Скорость автокоррекции (corner cutting)
+     */
+    private readonly CORNER_CUT_SPEED: number;
 
     constructor(mapManager: MapManager, gameManager: GameManager<T>) {
         this.mapManager = mapManager;
         this.gameManager = gameManager;
+        this.TILE_SIZE = 16;
+        this.CORNER_CUT_THRESHOLD = 10;
+        this.CORNER_CUT_SPEED = 1.2;
     }
-
+    /**
+     * Обновляет позицию объекта с учётом физики и коллизий
+     * @param obj объект для обновления
+     * @returns статус движения: 'move', 'slide', 'break', 'stop'
+     */
     update(obj: T): string {
         if (obj.move_x === 0 && obj.move_y === 0) {
             return 'stop';
@@ -28,13 +56,13 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         const newY: number = obj.pos_y + obj.move_y * obj.speed;
 
         // Используем минимальный margin для точных коллизий
-        const margin = 1;
+        const margin: number = 1;
 
         // Центрирование по перпендикулярной оси при движении
         // Если двигаемся горизонтально - центрируем по Y
         // Если двигаемся вертикально - центрируем по X
-        let adjustedX = newX;
-        let adjustedY = newY;
+        let adjustedX: number = newX;
+        let adjustedY: number = newY;
 
         if (obj.move_x !== 0 && obj.move_y === 0) {
             // Горизонтальное движение - центрируем по Y
@@ -45,7 +73,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         }
 
         // Проверяем возможность движения с учётом центрирования
-        const canMoveBoth = this.canMove(obj, adjustedX, adjustedY, margin);
+        const canMoveBoth: boolean = this.canMove(obj, adjustedX, adjustedY, margin);
 
         if (canMoveBoth) {
             // Свободное движение с центрированием
@@ -55,7 +83,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         }
 
         // Пробуем движение без центрирования
-        const canMoveOriginal = this.canMove(obj, newX, newY, margin);
+        const canMoveOriginal: boolean = this.canMove(obj, newX, newY, margin);
         if (canMoveOriginal) {
             obj.pos_x = newX;
             obj.pos_y = newY;
@@ -65,27 +93,27 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         // Если движение по обеим осям заблокировано, пробуем раздельное движение
         // с применением автокоррекции (corner cutting)
 
-        const oldX = obj.pos_x;
-        const oldY = obj.pos_y;
-        let moved = false;
+        const oldX: number = obj.pos_x;
+        const oldY: number = obj.pos_y;
+        let moved: boolean = false;
 
         // Движение по горизонтали (влево/вправо)
         if (obj.move_x !== 0 && obj.move_y === 0) {
             // Пробуем с центрированием по Y
-            const alignedY = this.alignToGrid(oldY, obj.speed);
-            const canMoveAligned = this.canMove(obj, newX, alignedY, margin);
+            const alignedY: number = this.alignToGrid(oldY, obj.speed);
+            const canMoveAligned: boolean = this.canMove(obj, newX, alignedY, margin);
             if (canMoveAligned) {
                 obj.pos_x = newX;
                 obj.pos_y = alignedY;
                 moved = true;
             } else {
-                const canMoveX = this.canMove(obj, newX, oldY, margin);
+                const canMoveX: boolean = this.canMove(obj, newX, oldY, margin);
                 if (canMoveX) {
                     obj.pos_x = newX;
                     moved = true;
                 } else {
                     // Пробуем автокоррекцию - ищем проход сверху или снизу
-                    const correction = this.findVerticalPassage(obj, newX, oldY, margin);
+                    const correction: number = this.findVerticalPassage(obj, newX, oldY, margin);
                     if (correction !== 0) {
                         obj.pos_y += correction;
                         moved = true;
@@ -96,20 +124,20 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         // Движение по вертикали (вверх/вниз)
         else if (obj.move_y !== 0 && obj.move_x === 0) {
             // Пробуем с центрированием по X
-            const alignedX = this.alignToGrid(oldX, obj.speed);
-            const canMoveAligned = this.canMove(obj, alignedX, newY, margin);
+            const alignedX: number = this.alignToGrid(oldX, obj.speed);
+            const canMoveAligned: boolean = this.canMove(obj, alignedX, newY, margin);
             if (canMoveAligned) {
                 obj.pos_x = alignedX;
                 obj.pos_y = newY;
                 moved = true;
             } else {
-                const canMoveY = this.canMove(obj, oldX, newY, margin);
+                const canMoveY: boolean = this.canMove(obj, oldX, newY, margin);
                 if (canMoveY) {
                     obj.pos_y = newY;
                     moved = true;
                 } else {
                     // Пробуем автокоррекцию - ищем проход слева или справа
-                    const correction = this.findHorizontalPassage(obj, oldX, newY, margin);
+                    const correction: number = this.findHorizontalPassage(obj, oldX, newY, margin);
                     if (correction !== 0) {
                         obj.pos_x += correction;
                         moved = true;
@@ -121,7 +149,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         else {
             // Пробуем движение только по X
             if (obj.move_x !== 0) {
-                const canMoveX = this.canMove(obj, newX, oldY, margin);
+                const canMoveX: boolean = this.canMove(obj, newX, oldY, margin);
                 if (canMoveX) {
                     obj.pos_x = newX;
                     moved = true;
@@ -130,7 +158,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
             // Пробуем движение только по Y
             if (obj.move_y !== 0) {
-                const canMoveY = this.canMove(obj, obj.pos_x, newY, margin);
+                const canMoveY: boolean = this.canMove(obj, obj.pos_x, newY, margin);
                 if (canMoveY) {
                     obj.pos_y = newY;
                     moved = true;
@@ -143,10 +171,14 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
     /**
      * Выравнивает координату к ближайшей позиции на тайловой сетке
+     * с учётом скорости движения
+     * @param pos текущая позиция
+     * @param speed скорость движения
+     * @returns выровненная позиция
      */
     private alignToGrid(pos: number, speed: number): number {
-        const tilePos = Math.round(pos / this.TILE_SIZE) * this.TILE_SIZE;
-        const diff = tilePos - pos;
+        const tilePos: number = Math.round(pos / this.TILE_SIZE) * this.TILE_SIZE;
+        const diff: number = tilePos - pos;
 
         // Если разница меньше скорости - выравниваем сразу
         if (Math.abs(diff) <= speed * 1.5) {
@@ -166,23 +198,28 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
      * Если персонаж пытается идти вверх/вниз, но путь заблокирован,
      * проверяем есть ли проход слева или справа в пределах порога.
      */
-    private findHorizontalPassage(obj: T, currentX: number, targetY: number, margin: number): number {
+    private findHorizontalPassage(
+        obj: T,
+        currentX: number,
+        targetY: number,
+        margin: number,
+    ): number {
         // Проверяем проходы на позициях, выровненных по тайловой сетке
-        const objLeft = currentX;
-        const objRight = currentX + obj.size_x;
+        const objLeft: number = currentX;
+        const objRight: number = currentX + obj.size_x;
 
         // Находим тайлы слева и справа от персонажа
-        const leftTileX = Math.floor(objLeft / this.TILE_SIZE) * this.TILE_SIZE;
-        const rightTileX = Math.floor(objRight / this.TILE_SIZE) * this.TILE_SIZE;
+        const leftTileX: number = Math.floor(objLeft / this.TILE_SIZE) * this.TILE_SIZE;
+        const rightTileX: number = Math.floor(objRight / this.TILE_SIZE) * this.TILE_SIZE;
 
         // Позиция для выравнивания по левому тайлу
-        const alignedLeftX = leftTileX;
+        const alignedLeftX: number = leftTileX;
         // Позиция для выравнивания по правому тайлу
-        const alignedRightX = rightTileX;
+        const alignedRightX: number = rightTileX;
 
         // Проверяем, насколько персонаж смещён от выровненных позиций
-        const distanceToLeft = Math.abs(currentX - alignedLeftX);
-        const distanceToRight = Math.abs(currentX - alignedRightX);
+        const distanceToLeft: number = Math.abs(currentX - alignedLeftX);
+        const distanceToRight: number = Math.abs(currentX - alignedRightX);
 
         // Пробуем сдвинуться влево (к левому тайлу)
         if (distanceToLeft > 0 && distanceToLeft <= this.CORNER_CUT_THRESHOLD) {
@@ -214,28 +251,31 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
         return 0;
     }
-
     /**
      * Ищет вертикальный проход для горизонтального движения.
      * Если персонаж пытается идти влево/вправо, но путь заблокирован,
      * проверяем есть ли проход сверху или снизу в пределах порога.
+     * @param obj объект персонажа
+     * @param targetX целевая X позиция
+     * @param currentY текущая Y позиция
+     * @param margin отступ для проверки коллизий
+     * @returns смещение по Y для прохода или 0 если проход не найден
      */
     private findVerticalPassage(obj: T, targetX: number, currentY: number, margin: number): number {
         // Находим тайлы сверху и снизу от персонажа
-        const objTop = currentY;
-        const objBottom = currentY + obj.size_y;
+        const objTop: number = currentY;
+        const objBottom: number = currentY + obj.size_y;
 
-        const topTileY = Math.floor(objTop / this.TILE_SIZE) * this.TILE_SIZE;
-        const bottomTileY = Math.floor(objBottom / this.TILE_SIZE) * this.TILE_SIZE;
+        const topTileY: number = Math.floor(objTop / this.TILE_SIZE) * this.TILE_SIZE;
+        const bottomTileY: number = Math.floor(objBottom / this.TILE_SIZE) * this.TILE_SIZE;
 
         // Позиции для выравнивания
-        const alignedTopY = topTileY;
-        const alignedBottomY = bottomTileY;
+        const alignedTopY: number = topTileY;
+        const alignedBottomY: number = bottomTileY;
 
         // Расстояния до выровненных позиций
-        const distanceToTop = Math.abs(currentY - alignedTopY);
-        const distanceToBottom = Math.abs(currentY - alignedBottomY);
-
+        const distanceToTop: number = Math.abs(currentY - alignedTopY);
+        const distanceToBottom: number = Math.abs(currentY - alignedBottomY);
         // Пробуем сдвинуться вверх
         if (distanceToTop > 0 && distanceToTop <= this.CORNER_CUT_THRESHOLD) {
             if (this.canMove(obj, targetX, alignedTopY, margin)) {
@@ -264,13 +304,18 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
         return 0;
     }
-
     /**
-     * Проверяет, может ли объект переместиться в указанную позицию
+     * Проверяет, может ли объект двигаться в указанную позицию
+     * с учётом стен карты и других сущностей
+     * @param obj объект для проверки
+     * @param x целевая X позиция
+     * @param y целевая Y позиция
+     * @param margin отступ для проверки коллизий
+     * @returns true если движение разрешено, false если заблокировано
      */
     private canMove(obj: T, x: number, y: number, margin: number): boolean {
         // Проверяем 4 угла объекта на новой позиции
-        const checkPoints = [
+        const checkPoints: { x: number; y: number }[] = [
             { x: x + margin, y: y + margin }, // верхний левый
             { x: x + obj.size_x - margin - 1, y: y + margin }, // верхний правый
             { x: x + margin, y: y + obj.size_y - margin - 1 }, // нижний левый
@@ -279,7 +324,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
         // Проверяем, есть ли стена в любой из точек
         for (const point of checkPoints) {
-            const ts = this.mapManager.getTilesetIdx(point.x, point.y, 'walls');
+            const ts: number = this.mapManager.getTilesetIdx(point.x, point.y, 'walls');
             if (ts !== 0) {
                 if (obj.onTouchMap) {
                     obj.onTouchMap(ts);
@@ -289,7 +334,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         }
 
         // Проверяем столкновение с другими объектами (Obstacle, Bonus и т.д.)
-        const entity = this.entityAtXY(obj, x, y);
+        const entity: Entity | null = this.entityAtXY(obj, x, y);
         if (entity !== null) {
             if (obj.onTouchEntity) {
                 obj.onTouchEntity(entity);
@@ -304,7 +349,7 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
         if (this.gameManager.bombGameManager) {
             for (const bomb of this.gameManager.bombGameManager.entities) {
                 // Проверяем коллизию с бомбой
-                const noCollision =
+                const noCollision: boolean =
                     x + obj.size_x - margin <= bomb.pos_x ||
                     y + obj.size_y - margin <= bomb.pos_y ||
                     x + margin >= bomb.pos_x + bomb.size_x ||
@@ -331,21 +376,25 @@ export class PhysicsManager<T extends Entity & IDrawable & IInteractEntity & IIn
 
     /**
      * Находит сущность в указанной позиции с учётом размеров объекта
+     * @param obj объект для проверки
+     * @param x целевая X позиция
+     * @param y целевая Y позиция
+     * @returns пересекающаяся сущность или null если нет пересечений
      */
     entityAtXY(obj: T, x: number, y: number) {
         // Минимальный margin для точного определения коллизий
-        const margin = 1;
+        const margin: number = 1;
 
         for (let i: number = 0; i < this.gameManager.entities.length; ++i) {
-            const e = this.gameManager.entities[i];
+            const e: T = this.gameManager.entities[i];
             if (e.name !== obj.name) {
                 // Проверяем пересечение AABB (Axis-Aligned Bounding Box)
                 // Два прямоугольника НЕ пересекаются, если выполняется хотя бы одно условие:
-                const noCollision =
+                const noCollision: boolean =
                     x + obj.size_x - margin <= e.pos_x || // obj полностью слева от e
                     y + obj.size_y - margin <= e.pos_y || // obj полностью выше e
-                    x + margin >= e.pos_x + e.size_x ||   // obj полностью справа от e
-                    y + margin >= e.pos_y + e.size_y;     // obj полностью ниже e
+                    x + margin >= e.pos_x + e.size_x || // obj полностью справа от e
+                    y + margin >= e.pos_y + e.size_y; // obj полностью ниже e
 
                 if (!noCollision) {
                     return e; // найден пересекающийся объект

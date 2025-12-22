@@ -1,15 +1,7 @@
-import { Entity } from './';
-import type { IDrawable } from './interfaces';
+import { Entity, Obstacle, Bonus, Teleport, Explosion, Player, DestroyEffect } from './';
+import type { IDrawable, BonusType, ExplosionType } from './';
 import type { SpriteManager, GameManager, MapManager } from '@/managers';
 import { SCORE_DESTROY_OBSTACLE } from '@/managers/GameManager';
-import type { Player } from './Player';
-import { Obstacle } from './Obstacle';
-import { Explosion } from './Explosion';
-import { Teleport } from './Teleport';
-import { Bonus } from './Bonus';
-import { DestroyEffect } from './DestroyEffect';
-import type { BonusType } from './Bonus';
-import type { ExplosionType } from './Explosion';
 
 export class Bomb extends Entity implements IDrawable {
     spriteManager: SpriteManager;
@@ -117,7 +109,7 @@ export class Bomb extends Entity implements IDrawable {
             this.player.mainGameManager.soundManager.playWorldSound(
                 '/assets/sounds/BombExplode.wav',
                 this.pos_x,
-                this.pos_y
+                this.pos_y,
             );
         }
 
@@ -132,16 +124,56 @@ export class Bomb extends Entity implements IDrawable {
         this.createExplosion(bombTileX * tileSize, bombTileY * tileSize, 'center');
 
         // Взрыв влево
-        this.createExplosionLine(bombTileX, bombTileY, -1, 0, explosionRadius, 'horizontal', 'end_left', mapManager, tileSize);
+        this.createExplosionLine(
+            bombTileX,
+            bombTileY,
+            -1,
+            0,
+            explosionRadius,
+            'horizontal',
+            'end_left',
+            mapManager,
+            tileSize,
+        );
 
         // Взрыв вправо
-        this.createExplosionLine(bombTileX, bombTileY, 1, 0, explosionRadius, 'horizontal', 'end_right', mapManager, tileSize);
+        this.createExplosionLine(
+            bombTileX,
+            bombTileY,
+            1,
+            0,
+            explosionRadius,
+            'horizontal',
+            'end_right',
+            mapManager,
+            tileSize,
+        );
 
         // Взрыв вверх
-        this.createExplosionLine(bombTileX, bombTileY, 0, -1, explosionRadius, 'vertical', 'end_up', mapManager, tileSize);
+        this.createExplosionLine(
+            bombTileX,
+            bombTileY,
+            0,
+            -1,
+            explosionRadius,
+            'vertical',
+            'end_up',
+            mapManager,
+            tileSize,
+        );
 
         // Взрыв вниз
-        this.createExplosionLine(bombTileX, bombTileY, 0, 1, explosionRadius, 'vertical', 'end_down', mapManager, tileSize);
+        this.createExplosionLine(
+            bombTileX,
+            bombTileY,
+            0,
+            1,
+            explosionRadius,
+            'vertical',
+            'end_down',
+            mapManager,
+            tileSize,
+        );
 
         // Уменьшаем счетчик активных бомб у игрока
         if (this.player.activeBombs > 0) {
@@ -164,7 +196,7 @@ export class Bomb extends Entity implements IDrawable {
         midType: ExplosionType,
         endType: ExplosionType,
         mapManager: MapManager | null,
-        tileSize: number
+        tileSize: number,
     ): void {
         const FLAGS_MASK = 0x80000000 | 0x40000000 | 0x20000000;
 
@@ -204,7 +236,9 @@ export class Bomb extends Entity implements IDrawable {
                 }
 
                 if (bonusType > 0) {
-                    console.log(`Bonus dropped: ${bonusType} at (${obstacle.pos_x}, ${obstacle.pos_y})`);
+                    console.log(
+                        `Bonus dropped: ${bonusType} at (${obstacle.pos_x}, ${obstacle.pos_y})`,
+                    );
 
                     // Создаём соответствующий бонус
                     switch (bonusType) {
@@ -241,7 +275,10 @@ export class Bomb extends Entity implements IDrawable {
      */
     private shouldForceTeleportDrop(currentObstacle: Obstacle): boolean {
         // Если телепорт уже есть - не нужно
-        if (this.player.teleportGameManager && this.player.teleportGameManager.entities.length > 0) {
+        if (
+            this.player.teleportGameManager &&
+            this.player.teleportGameManager.entities.length > 0
+        ) {
             return false;
         }
 
@@ -293,11 +330,12 @@ export class Bomb extends Entity implements IDrawable {
         // Используем explosionGameManager игрока для создания взрывов
         if (this.player.explosionGameManager) {
             const explosion = new Explosion(
-                x, y,
+                x,
+                y,
                 this.spriteManager,
                 this.player.explosionGameManager,
                 type,
-                500 // Время жизни взрыва 500мс
+                500, // Время жизни взрыва 500мс
             );
             this.player.explosionGameManager.entities.push(explosion);
         }
@@ -313,7 +351,8 @@ export class Bomb extends Entity implements IDrawable {
             }
 
             const teleport = new Teleport(
-                x, y,
+                x,
+                y,
                 this.spriteManager,
                 this.player.teleportGameManager,
             );
@@ -326,7 +365,8 @@ export class Bomb extends Entity implements IDrawable {
         // Используем bonusGameManager игрока для создания бонуса
         if (this.player.bonusGameManager) {
             const bonus = new Bonus(
-                x, y,
+                x,
+                y,
                 bonusType,
                 this.spriteManager,
                 this.player.bonusGameManager,
@@ -340,7 +380,8 @@ export class Bomb extends Entity implements IDrawable {
         // Используем explosionGameManager для эффектов разрушения
         if (this.player.explosionGameManager) {
             const effect = new DestroyEffect(
-                x, y,
+                x,
+                y,
                 this.spriteManager,
                 this.player.explosionGameManager,
             );

@@ -1,10 +1,14 @@
-import type { Entity, Player } from '@/entities';
-import { Bomb, Explosion, Teleport, Enemy, Bonus } from '@/entities';
-import type { IDrawable } from '@/entities/interfaces';
-import type { EventsManager } from './EventsManager';
-import type { MapManager } from './MapManager';
-import { PhysicsManager } from './PhysicsManager';
-import { SoundManager } from './SoundManager';
+import {
+    Bomb,
+    Explosion,
+    Teleport,
+    Enemy,
+    Bonus,
+    type IDrawable,
+    Entity,
+    Player,
+} from '@/entities';
+import { EventsManager, MapManager, PhysicsManager, SoundManager } from './';
 
 // Callback для уведомления о Game Over
 export type GameOverCallback = (playerName: string, score: number) => void;
@@ -33,7 +37,7 @@ export class GameManager<T extends Entity & IDrawable> {
     factory: FactoryMap<T>;
     entities: T[];
     fireNum: number;
-    player: null | Player;
+    player: Player | null;
     laterKill: T[];
 
     eventsManager: EventsManager;
@@ -143,7 +147,10 @@ export class GameManager<T extends Entity & IDrawable> {
                 '/assets/sounds/Walking2.wav',
             ]);
             // Воспроизводим звук начала уровня
-            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
+            this.soundManager.play('/assets/sounds/StageIntro.wav', {
+                looping: false,
+                volume: 0.5,
+            });
         }
     }
 
@@ -219,7 +226,8 @@ export class GameManager<T extends Entity & IDrawable> {
             this.pausePressed = true;
             console.log(this.isPaused ? 'Game paused' : 'Game resumed');
             // Обновляем кнопку паузы в UI
-            const updatePauseButton = ((window as unknown) as Record<string, unknown>).__updatePauseButton;
+            const updatePauseButton = (window as unknown as Record<string, unknown>)
+                .__updatePauseButton;
             if (typeof updatePauseButton === 'function') {
                 updatePauseButton(this.isPaused);
             }
@@ -598,7 +606,11 @@ export class GameManager<T extends Entity & IDrawable> {
             if (isDead) {
                 // Воспроизводим звук смерти врага
                 if (this.soundManager) {
-                    this.soundManager.playWorldSound('/assets/sounds/EnemyDie.wav', enemy.pos_x, enemy.pos_y);
+                    this.soundManager.playWorldSound(
+                        '/assets/sounds/EnemyDie.wav',
+                        enemy.pos_x,
+                        enemy.pos_y,
+                    );
                 }
                 // Начисляем очки за убийство врага
                 this.addScore(SCORE_ENEMY_KILL);
@@ -645,7 +657,10 @@ export class GameManager<T extends Entity & IDrawable> {
 
             // Воспроизводим звук подбора бонуса
             if (this.soundManager) {
-                this.soundManager.play('/assets/sounds/ItemGet.wav', { looping: false, volume: 0.6 });
+                this.soundManager.play('/assets/sounds/ItemGet.wav', {
+                    looping: false,
+                    volume: 0.6,
+                });
             }
             console.log(`Collected bonus: ${bonus.bonusType}`);
         }
@@ -751,9 +766,13 @@ export class GameManager<T extends Entity & IDrawable> {
 
                 // Воспроизводим звук прохождения уровня и после его окончания загружаем следующий уровень
                 if (this.soundManager) {
-                    this.soundManager.playWithCallback('/assets/sounds/StageClear.wav', () => {
-                        this.nextLevel();
-                    }, { volume: 0.7 });
+                    this.soundManager.playWithCallback(
+                        '/assets/sounds/StageClear.wav',
+                        () => {
+                            this.nextLevel();
+                        },
+                        { volume: 0.7 },
+                    );
                 } else {
                     this.nextLevel();
                 }
@@ -840,7 +859,10 @@ export class GameManager<T extends Entity & IDrawable> {
 
         // Воспроизводим звук начала нового уровня
         if (this.soundManager) {
-            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
+            this.soundManager.play('/assets/sounds/StageIntro.wav', {
+                looping: false,
+                volume: 0.5,
+            });
         }
 
         // Снимаем паузу после загрузки нового уровня
@@ -905,7 +927,10 @@ export class GameManager<T extends Entity & IDrawable> {
 
         // Воспроизводим звук начала уровня
         if (this.soundManager) {
-            this.soundManager.play('/assets/sounds/StageIntro.wav', { looping: false, volume: 0.5 });
+            this.soundManager.play('/assets/sounds/StageIntro.wav', {
+                looping: false,
+                volume: 0.5,
+            });
         }
 
         // Обновляем UI счёта
@@ -913,6 +938,4 @@ export class GameManager<T extends Entity & IDrawable> {
             this.onScoreChangeCallback(this.currentScore);
         }
     }
-
-    play() {}
 }

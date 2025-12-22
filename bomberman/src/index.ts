@@ -1,8 +1,20 @@
+/**
+ * @file index.ts
+ * @fileoverview Точка входа приложения. Инициализирует менеджеры, настраивает UI и запускает игровой цикл.
+ * @author KorzikAlex
+ * @module src/index
+ */
 import { EventsManager, GameManager, MapManager, RecordsManager } from '@/managers';
 import type { Entity, IDrawable } from '@/entities';
 
 import '@/styles/style.scss';
+import type { PlayerRecord } from './managers/RecordsManager';
 
+/**
+ * Получает 2D контекст холста с отключённой сглаживанием изображений
+ * @param canvas HTMLCanvasElement
+ * @returns CanvasRenderingContext2D | null
+ */
 function getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
     const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
     if (ctx) {
@@ -11,28 +23,35 @@ function getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D |
     return ctx;
 }
 
+/**
+ * Настраивает кнопку для скрытия/показа боковой панели
+ */
 function setAsideToggleButton(): void {
     const toggleBtn: HTMLButtonElement | null = document.getElementById(
         'toggleSidebarBtn',
     ) as HTMLButtonElement;
     const sidebarEl: HTMLDivElement | null = document.getElementById('sidebar') as HTMLDivElement;
     if (toggleBtn && sidebarEl) {
-        const hidden = localStorage.getItem('sidebarHidden') === '1';
+        const hidden: boolean = localStorage.getItem('sidebarHidden') === '1';
         if (hidden) {
             sidebarEl.classList.add('sidebar--hidden');
         }
         toggleBtn.setAttribute('aria-pressed', hidden ? 'true' : 'false');
-        toggleBtn.addEventListener('click', () => {
-            const isHidden = sidebarEl.classList.toggle('sidebar--hidden');
+        toggleBtn.addEventListener('click', (): void => {
+            const isHidden: boolean = sidebarEl.classList.toggle('sidebar--hidden');
             localStorage.setItem('sidebarHidden', isHidden ? '1' : '0');
             toggleBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
         });
     }
 }
 
+/**
+ * Настраивает переключатель темы (светлая/тёмная/системная)
+ */
 function setupThemeSwitcher(): void {
-    const themeRadios = document.querySelectorAll<HTMLInputElement>('input[name="theme"]');
-    const body = document.body;
+    const themeRadios: NodeListOf<HTMLInputElement> =
+        document.querySelectorAll<HTMLInputElement>('input[name="theme"]');
+    const body: HTMLElement = document.body;
 
     // Получить системную тему
     const getSystemTheme = (): 'light' | 'dark' => {
@@ -50,18 +69,22 @@ function setupThemeSwitcher(): void {
     };
 
     // Загрузить сохранённую тему
-    const savedTheme = (localStorage.getItem('theme') as 'system' | 'light' | 'dark') || 'system';
+    const savedTheme: 'system' | 'light' | 'dark' =
+        (localStorage.getItem('theme') as 'system' | 'light' | 'dark') || 'system';
     applyTheme(savedTheme);
 
     // Установить активный радио-баттон
-    themeRadios.forEach((radio) => {
+    themeRadios.forEach((radio: HTMLInputElement): void => {
         if (radio.value === savedTheme) {
             radio.checked = true;
         }
 
-        radio.addEventListener('change', () => {
+        radio.addEventListener('change', (): void => {
             if (radio.checked) {
-                const theme = radio.value as 'system' | 'light' | 'dark';
+                const theme: 'system' | 'light' | 'dark' = radio.value as
+                    | 'system'
+                    | 'light'
+                    | 'dark';
                 localStorage.setItem('theme', theme);
                 applyTheme(theme);
             }
@@ -69,20 +92,29 @@ function setupThemeSwitcher(): void {
     });
 
     // Слушать изменения системной темы
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const currentTheme = localStorage.getItem('theme') || 'system';
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (): void => {
+        const currentTheme: string = localStorage.getItem('theme') || 'system';
         if (currentTheme === 'system') {
             applyTheme('system');
         }
     });
 }
 
+/**
+ * Устанавливает информацию о текущем игроке в header
+ */
 function setPlayerInfo(): void {
-    const nickEl = document.getElementById('headerPlayerNick') as HTMLElement | null;
-    const scoreEl = document.getElementById('headerPlayerScore') as HTMLElement | null;
-    if (!nickEl || !scoreEl) return;
+    const nickEl: HTMLSpanElement | null = document.getElementById(
+        'headerPlayerNick',
+    ) as HTMLSpanElement | null;
+    const scoreEl: HTMLSpanElement | null = document.getElementById(
+        'headerPlayerScore',
+    ) as HTMLSpanElement | null;
+    if (!nickEl || !scoreEl) {
+        return;
+    }
 
-    const currentPlayer = RecordsManager.getCurrentPlayer();
+    const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
     if (currentPlayer) {
         nickEl.textContent = currentPlayer.nick;
         scoreEl.textContent = currentPlayer.score.toString();
@@ -92,34 +124,46 @@ function setPlayerInfo(): void {
     }
 }
 
+/**
+ * Обновляет отображение счёта игрока в header
+ * @param score Текущий счёт игрока
+ */
 function updateScoreDisplay(score: number): void {
-    const scoreEl = document.getElementById('headerPlayerScore') as HTMLElement | null;
+    const scoreEl: HTMLSpanElement | null = document.getElementById(
+        'headerPlayerScore',
+    ) as HTMLSpanElement | null;
     if (scoreEl) {
         scoreEl.textContent = score.toString();
     }
 }
-
+/**
+ * Обновляет таблицу рекордов в боковой панели
+ */
 function updateLeaderboard(): void {
-    const leaderboardEl = document.getElementById('infoPanelContent') as HTMLOListElement | null;
-    if (!leaderboardEl) return;
+    const leaderboardEl: HTMLOListElement | null = document.getElementById(
+        'infoPanelContent',
+    ) as HTMLOListElement | null;
+    if (!leaderboardEl) {
+        return;
+    }
 
-    const leaderboard = RecordsManager.getLeaderboard(10);
+    const leaderboard: PlayerRecord[] = RecordsManager.getLeaderboard(10);
     leaderboardEl.innerHTML = '';
 
     if (leaderboard.length === 0) {
-        const emptyMsg = document.createElement('li');
+        const emptyMsg: HTMLLIElement = document.createElement('li');
         emptyMsg.textContent = 'Нет рекордов';
         emptyMsg.style.listStyle = 'none';
         leaderboardEl.appendChild(emptyMsg);
         return;
     }
 
-    leaderboard.forEach((player) => {
-        const item = document.createElement('li');
+    leaderboard.forEach((player: PlayerRecord): void => {
+        const item: HTMLLIElement = document.createElement('li');
         item.className = 'leaderboard__item';
 
         // Выделяем текущего игрока
-        const currentPlayer = RecordsManager.getCurrentPlayer();
+        const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
         if (currentPlayer && player.nick === currentPlayer.nick) {
             item.classList.add('leaderboard__item--current');
         }
@@ -132,17 +176,24 @@ function updateLeaderboard(): void {
     });
 }
 
+/**
+ * Обновляет список выбора игрока в toolbar
+ */
 function updatePlayerSelect(): void {
-    const selectEl = document.getElementById('playerSelect') as HTMLSelectElement | null;
-    if (!selectEl) return;
+    const selectEl: HTMLSelectElement | null = document.getElementById(
+        'playerSelect',
+    ) as HTMLSelectElement | null;
+    if (!selectEl) {
+        return;
+    }
 
-    const players = RecordsManager.getPlayers();
-    const currentPlayer = RecordsManager.getCurrentPlayer();
+    const players: PlayerRecord[] = RecordsManager.getPlayers();
+    const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
 
     selectEl.innerHTML = '';
 
-    players.forEach((player) => {
-        const option = document.createElement('option');
+    players.forEach((player: PlayerRecord): void => {
+        const option: HTMLOptionElement = document.createElement('option');
         option.value = player.nick;
         option.textContent = player.nick;
         if (currentPlayer && player.nick === currentPlayer.nick) {
@@ -152,12 +203,19 @@ function updatePlayerSelect(): void {
     });
 }
 
+/**
+ * Настраивает обработчик изменения выбора игрока в toolbar
+ */
 function setupPlayerSelectHandler(): void {
-    const selectEl = document.getElementById('playerSelect') as HTMLSelectElement | null;
-    if (!selectEl) return;
+    const selectEl: HTMLSelectElement | null = document.getElementById(
+        'playerSelect',
+    ) as HTMLSelectElement | null;
+    if (!selectEl) {
+        return;
+    }
 
-    selectEl.addEventListener('change', () => {
-        const selectedNick = selectEl.value;
+    selectEl.addEventListener('change', (): void => {
+        const selectedNick: string = selectEl.value;
         if (selectedNick) {
             RecordsManager.setCurrentPlayer(selectedNick);
             setPlayerInfo();
@@ -167,13 +225,15 @@ function setupPlayerSelectHandler(): void {
             updateScoreDisplay(0);
 
             // Перезапускаем игру
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm = (window as unknown as Record<string, unknown>).gameManager as
+                | GameManager<Entity & IDrawable>
+                | undefined;
             if (gm) {
                 gm.restartGame();
                 updateLives(5);
 
                 // Переустанавливаем callback для игрока после перезагрузки
-                setTimeout(() => {
+                setTimeout((): void => {
                     if (gm.player) {
                         gm.player.onDeathCallback = (lives: number): void => {
                             updateLives(lives);
@@ -187,18 +247,27 @@ function setupPlayerSelectHandler(): void {
     });
 }
 
+/**
+ * Обновляет весь UI, связанный с игроком
+ */
 function refreshUI(): void {
     setPlayerInfo();
     updateLeaderboard();
     updatePlayerSelect();
 }
 
+/**
+ * Обновляет отображение жизней игрока в header
+ * @param lives Количество жизней игрока
+ */
 function updateLives(lives: number): void {
-    const livesEl = document.getElementById('headerPlayerLives');
-    if (!livesEl) return;
+    const livesEl: HTMLElement | null = document.getElementById('headerPlayerLives') as HTMLElement;
+    if (!livesEl) {
+        return;
+    }
 
-    const hearts = livesEl.querySelectorAll('.life-heart');
-    hearts.forEach((heart, index) => {
+    const hearts: NodeListOf<HTMLElement> = livesEl.querySelectorAll<HTMLElement>('.life-heart');
+    hearts.forEach((heart: HTMLElement, index: number): void => {
         if (index < lives) {
             heart.classList.remove('life-heart--empty');
             heart.classList.add('life-heart--full');
@@ -209,12 +278,22 @@ function updateLives(lives: number): void {
     });
 }
 
+/**
+ * Показывает модальное окно Game Over с информацией об игроке
+ * @param playerNick Имя игрока
+ * @param score Очки игрока
+ * @returns void
+ */
 function showGameOverModal(playerNick: string, score: number): void {
-    const modal = document.getElementById('gameOverModal') as HTMLDivElement | null;
-    const nickEl = document.getElementById('gameOverPlayerNick') as HTMLElement | null;
-    const scoreEl = document.getElementById('gameOverPlayerScore') as HTMLElement | null;
+    const modal: HTMLDivElement | null = document.getElementById('gameOverModal') as HTMLDivElement;
+    const nickEl: HTMLElement | null = document.getElementById('gameOverPlayerNick') as HTMLElement;
+    const scoreEl: HTMLElement | null = document.getElementById(
+        'gameOverPlayerScore',
+    ) as HTMLElement;
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
     if (nickEl) {
         nickEl.textContent = playerNick;
@@ -226,21 +305,33 @@ function showGameOverModal(playerNick: string, score: number): void {
     modal.classList.remove('modal--hidden');
 }
 
+/**
+ * Скрывает модальное окно Game Over
+ */
 function hideGameOverModal(): void {
-    const modal = document.getElementById('gameOverModal') as HTMLDivElement | null;
+    const modal: HTMLDivElement | null = document.getElementById('gameOverModal') as HTMLDivElement;
     if (modal) {
         modal.classList.add('modal--hidden');
     }
 }
-
+/**
+ * Показывает модальное окно победы с информацией об игроке и таблицей рекордов
+ * @param playerNick Имя игрока
+ * @param score Очки игрока
+ */
 function showVictoryModal(playerNick: string, score: number): void {
-    const modal = document.getElementById('victoryModal') as HTMLDivElement | null;
-    const nickEl = document.getElementById('victoryPlayerNick') as HTMLElement | null;
-    const scoreEl = document.getElementById('victoryPlayerScore') as HTMLElement | null;
-    const leaderboardEl = document.getElementById('victoryLeaderboard') as HTMLOListElement | null;
+    const modal: HTMLDivElement | null = document.getElementById('victoryModal') as HTMLDivElement;
+    const nickEl: HTMLElement | null = document.getElementById('victoryPlayerNick') as HTMLElement;
+    const scoreEl: HTMLElement | null = document.getElementById(
+        'victoryPlayerScore',
+    ) as HTMLElement;
+    const leaderboardEl: HTMLOListElement | null = document.getElementById(
+        'victoryLeaderboard',
+    ) as HTMLOListElement;
 
-    if (!modal) return;
-
+    if (!modal) {
+        return;
+    }
     if (nickEl) {
         nickEl.textContent = playerNick;
     }
@@ -250,17 +341,17 @@ function showVictoryModal(playerNick: string, score: number): void {
 
     // Заполняем таблицу рекордов
     if (leaderboardEl) {
-        const leaderboard = RecordsManager.getLeaderboard(10);
+        const leaderboard: PlayerRecord[] = RecordsManager.getLeaderboard(10);
         leaderboardEl.innerHTML = '';
 
         if (leaderboard.length === 0) {
-            const emptyMsg = document.createElement('li');
+            const emptyMsg: HTMLLIElement = document.createElement('li');
             emptyMsg.textContent = 'Нет рекордов';
             emptyMsg.style.listStyle = 'none';
             leaderboardEl.appendChild(emptyMsg);
         } else {
-            leaderboard.forEach((player) => {
-                const item = document.createElement('li');
+            leaderboard.forEach((player: PlayerRecord): void => {
+                const item: HTMLLIElement = document.createElement('li');
                 item.className = 'victory-leaderboard__item';
 
                 // Выделяем текущего игрока
@@ -280,16 +371,23 @@ function showVictoryModal(playerNick: string, score: number): void {
     modal.classList.remove('modal--hidden');
 }
 
+/**
+ * Скрывает модальное окно победы
+ */
 function hideVictoryModal(): void {
     const modal = document.getElementById('victoryModal') as HTMLDivElement | null;
     if (modal) {
         modal.classList.add('modal--hidden');
     }
 }
-
+/**
+ * Открывает модальное окно для ввода ника игрока
+ */
 function openPlayerModal(): void {
-    const modal = document.getElementById('nickModal') as HTMLDivElement | null;
-    const nickInput = document.getElementById('playerNickInput') as HTMLInputElement | null;
+    const modal: HTMLDivElement | null = document.getElementById('nickModal') as HTMLDivElement;
+    const nickInput: HTMLInputElement | null = document.getElementById(
+        'playerNickInput',
+    ) as HTMLInputElement;
 
     if (!modal || !nickInput) return;
 
@@ -306,12 +404,12 @@ function openPlayerModal(): void {
         existingDatalist.remove();
     }
 
-    const existingNicks = RecordsManager.getAllNicks();
+    const existingNicks: string[] = RecordsManager.getAllNicks();
     if (existingNicks.length > 0) {
-        const datalist = document.createElement('datalist');
+        const datalist: HTMLDataListElement = document.createElement('datalist');
         datalist.id = 'nicksDatalist';
-        existingNicks.forEach((nick) => {
-            const option = document.createElement('option');
+        existingNicks.forEach((nick: string): void => {
+            const option: HTMLOptionElement = document.createElement('option');
             option.value = nick;
             datalist.appendChild(option);
         });
@@ -320,6 +418,9 @@ function openPlayerModal(): void {
     }
 }
 
+/**
+ * Инициализирует игру, менеджеры и запускает игровой цикл
+ */
 function initGame(): void {
     const mapPaths: string[] = ['/maps/map1.json', '/maps/map2.json'];
 
@@ -351,7 +452,7 @@ function initGame(): void {
     // Настраиваем callback для обновления UI при смерти игрока
     const setupPlayerCallbacks = (): void => {
         if (gameManager.player) {
-            const currentPlayer = RecordsManager.getCurrentPlayer();
+            const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
             if (currentPlayer) {
                 gameManager.player.name = currentPlayer.nick;
             }
@@ -387,8 +488,8 @@ function initGame(): void {
 
     // Настраиваем callback для победы
     gameManager.onVictoryCallback = (playerName: string, score: number): void => {
-        const currentPlayer = RecordsManager.getCurrentPlayer();
-        const playerNick = currentPlayer ? currentPlayer.nick : playerName;
+        const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
+        const playerNick: string = currentPlayer ? currentPlayer.nick : playerName;
 
         // Сохраняем рекорд только если текущий счёт лучше предыдущего
         if (currentPlayer && score > currentPlayer.score) {
@@ -440,10 +541,13 @@ function initGame(): void {
 }
 
 /**
- * Обновляет иконку кнопки паузы
+ * Обновляет иконку кнопки паузы в toolbar
+ * @param isPaused Флаг, указывающий, находится ли игра на паузе
  */
 function updatePauseButton(isPaused: boolean): void {
-    const pauseBtn = document.getElementById('pauseBtn') as HTMLButtonElement | null;
+    const pauseBtn: HTMLButtonElement | null = document.getElementById(
+        'pauseBtn',
+    ) as HTMLButtonElement;
     if (pauseBtn) {
         pauseBtn.textContent = isPaused ? '▶' : '⏸';
         pauseBtn.title = isPaused ? 'Продолжить (P)' : 'Пауза (P)';
@@ -453,15 +557,22 @@ function updatePauseButton(isPaused: boolean): void {
 
 /**
  * Настраивает обработчики для кнопок паузы и перезапуска в toolbar
+ * @param gameManager Экземпляр GameManager<Entity & IDrawable>
  */
 function setupToolbarControls(gameManager: GameManager<Entity & IDrawable>): void {
-    const pauseBtn = document.getElementById('pauseBtn') as HTMLButtonElement | null;
-    const restartBtn = document.getElementById('restartBtn') as HTMLButtonElement | null;
+    const pauseBtn: HTMLButtonElement | null = document.getElementById(
+        'pauseBtn',
+    ) as HTMLButtonElement;
+    const restartBtn: HTMLButtonElement | null = document.getElementById(
+        'restartBtn',
+    ) as HTMLButtonElement;
 
     // Кнопка паузы
     if (pauseBtn) {
-        pauseBtn.addEventListener('click', () => {
-            if (gameManager.isGameOver) return;
+        pauseBtn.addEventListener('click', (): void => {
+            if (gameManager.isGameOver) {
+                return;
+            }
 
             gameManager.isPaused = !gameManager.isPaused;
             updatePauseButton(gameManager.isPaused);
@@ -470,14 +581,14 @@ function setupToolbarControls(gameManager: GameManager<Entity & IDrawable>): voi
 
     // Кнопка перезапуска
     if (restartBtn) {
-        restartBtn.addEventListener('click', () => {
+        restartBtn.addEventListener('click', (): void => {
             gameManager.restart();
             updateLives(5);
             updateScoreDisplay(0);
             updatePauseButton(false);
 
             // Переустанавливаем callback для игрока после перезагрузки
-            setTimeout(() => {
+            setTimeout((): void => {
                 if (gameManager.player) {
                     gameManager.player.onDeathCallback = (lives: number): void => {
                         updateLives(lives);
@@ -488,9 +599,10 @@ function setupToolbarControls(gameManager: GameManager<Entity & IDrawable>): voi
     }
 
     // Сохраняем ссылку на updatePauseButton для использования в GameManager
-    ((window as unknown) as Record<string, unknown>).__updatePauseButton = updatePauseButton;
+    (window as unknown as Record<string, unknown>).__updatePauseButton = updatePauseButton;
 }
 
+// Инициализация после загрузки DOM
 document.addEventListener('DOMContentLoaded', (): void => {
     setAsideToggleButton();
     setupThemeSwitcher();
@@ -508,20 +620,28 @@ document.addEventListener('DOMContentLoaded', (): void => {
 
     // Game Over modal buttons
     const restartGameBtn = document.getElementById('restartGameBtn') as HTMLButtonElement | null;
-    const changePlayerGameOverBtn = document.getElementById('changePlayerGameOverBtn') as HTMLButtonElement | null;
+    const changePlayerGameOverBtn = document.getElementById(
+        'changePlayerGameOverBtn',
+    ) as HTMLButtonElement | null;
 
     // Victory modal buttons
-    const restartVictoryBtn = document.getElementById('restartVictoryBtn') as HTMLButtonElement | null;
-    const changePlayerVictoryBtn = document.getElementById('changePlayerVictoryBtn') as HTMLButtonElement | null;
+    const restartVictoryBtn = document.getElementById(
+        'restartVictoryBtn',
+    ) as HTMLButtonElement | null;
+    const changePlayerVictoryBtn = document.getElementById(
+        'changePlayerVictoryBtn',
+    ) as HTMLButtonElement | null;
 
     // Обработчик кнопки "Сменить игрока"
     if (changePlayerBtn) {
-        changePlayerBtn.addEventListener('click', () => {
+        changePlayerBtn.addEventListener('click', (): void => {
             openPlayerModal();
             // Сбрасываем счёт в тулбаре
             updateScoreDisplay(0);
             // Перезапускаем игру
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm = (window as unknown as Record<string, unknown>).gameManager as
+                | GameManager<Entity & IDrawable>
+                | undefined;
             if (gm) {
                 gm.restartGame();
                 updateLives(5);
@@ -531,15 +651,17 @@ document.addEventListener('DOMContentLoaded', (): void => {
 
     // Обработчики для Game Over модалки
     if (restartGameBtn) {
-        restartGameBtn.addEventListener('click', () => {
+        restartGameBtn.addEventListener('click', (): void => {
             hideGameOverModal();
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm: GameManager<Entity & IDrawable> | undefined = (
+                window as unknown as Record<string, unknown>
+            ).gameManager as GameManager<Entity & IDrawable> | undefined;
             if (gm) {
                 gm.restart();
                 updateLives(5);
 
                 // Переустанавливаем callback для игрока после перезагрузки
-                setTimeout(() => {
+                setTimeout((): void => {
                     if (gm.player) {
                         gm.player.onDeathCallback = (lives: number): void => {
                             updateLives(lives);
@@ -549,19 +671,21 @@ document.addEventListener('DOMContentLoaded', (): void => {
             }
         });
     }
-
+    // Обработчик смены игрока из Game Over модального окна
     if (changePlayerGameOverBtn) {
-        changePlayerGameOverBtn.addEventListener('click', () => {
+        changePlayerGameOverBtn.addEventListener('click', (): void => {
             hideGameOverModal();
             openPlayerModal();
             // При смене игрока перезапускаем игру
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm: GameManager<Entity & IDrawable> | undefined = (
+                window as unknown as Record<string, unknown>
+            ).gameManager as GameManager<Entity & IDrawable> | undefined;
             if (gm) {
                 gm.restart();
                 updateLives(5);
 
                 // Переустанавливаем callback для игрока после перезагрузки
-                setTimeout(() => {
+                setTimeout((): void => {
                     if (gm.player) {
                         gm.player.onDeathCallback = (lives: number): void => {
                             updateLives(lives);
@@ -572,17 +696,19 @@ document.addEventListener('DOMContentLoaded', (): void => {
         });
     }
 
-    // Обработчики для Victory модалки
+    // Обработчики для Victory модального окна
     if (restartVictoryBtn) {
-        restartVictoryBtn.addEventListener('click', () => {
+        restartVictoryBtn.addEventListener('click', (): void => {
             hideVictoryModal();
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm: GameManager<Entity & IDrawable> | undefined = (
+                window as unknown as Record<string, unknown>
+            ).gameManager as GameManager<Entity & IDrawable> | undefined;
             if (gm) {
                 gm.restart();
                 updateLives(5);
 
                 // Переустанавливаем callback для игрока после перезагрузки
-                setTimeout(() => {
+                setTimeout((): void => {
                     if (gm.player) {
                         gm.player.onDeathCallback = (lives: number): void => {
                             updateLives(lives);
@@ -593,18 +719,21 @@ document.addEventListener('DOMContentLoaded', (): void => {
         });
     }
 
+    // Обработчик смены игрока из Victory модального окна
     if (changePlayerVictoryBtn) {
-        changePlayerVictoryBtn.addEventListener('click', () => {
+        changePlayerVictoryBtn.addEventListener('click', (): void => {
             hideVictoryModal();
             openPlayerModal();
             // При смене игрока перезапускаем игру
-            const gm = (window as unknown as Record<string, unknown>).gameManager as GameManager<Entity & IDrawable> | undefined;
+            const gm: GameManager<Entity & IDrawable> | undefined = (
+                window as unknown as Record<string, unknown>
+            ).gameManager as GameManager<Entity & IDrawable> | undefined;
             if (gm) {
                 gm.restart();
                 updateLives(5);
 
                 // Переустанавливаем callback для игрока после перезагрузки
-                setTimeout(() => {
+                setTimeout((): void => {
                     if (gm.player) {
                         gm.player.onDeathCallback = (lives: number): void => {
                             updateLives(lives);
@@ -641,14 +770,17 @@ document.addEventListener('DOMContentLoaded', (): void => {
         });
     }
 
-    const currentPlayer = RecordsManager.getCurrentPlayer();
+    const currentPlayer: PlayerRecord | null = RecordsManager.getCurrentPlayer();
     if (currentPlayer) {
         // If player already exists, populate UI and start immediately
         refreshUI();
         if (modal) {
             modal.classList.add('modal--hidden');
         }
-        const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+        const canvas: HTMLCanvasElement | null = document.getElementById(
+            'gameCanvas',
+        ) as HTMLCanvasElement;
+
         if (canvas) {
             canvas.dataset.gameStarted = 'true';
         }

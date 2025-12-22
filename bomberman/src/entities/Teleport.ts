@@ -1,5 +1,5 @@
 import { Entity } from './';
-import type { IDrawable, IHaveName } from './interfaces';
+import type { IDrawable, IHaveName } from './';
 import type { SpriteManager, GameManager } from '@/managers';
 
 export class Teleport extends Entity implements IDrawable, IHaveName {
@@ -42,7 +42,14 @@ export class Teleport extends Entity implements IDrawable, IHaveName {
         const radius = 6;
 
         // Внешнее свечение
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius + 2);
+        const gradient = ctx.createRadialGradient(
+            centerX,
+            centerY,
+            0,
+            centerX,
+            centerY,
+            radius + 2,
+        );
         if (this.isActive) {
             gradient.addColorStop(0, '#00ffff');
             gradient.addColorStop(0.5, '#0088ff');

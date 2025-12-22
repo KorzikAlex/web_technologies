@@ -1,6 +1,5 @@
-import { Entity } from './';
-import type { IDrawable, IHaveName } from './interfaces';
-import type { SpriteManager, GameManager } from '@/managers';
+import { Entity, type IDrawable, type IHaveName } from './';
+import { SpriteManager, GameManager } from '@/managers';
 
 /**
  * Эффект разрушения препятствия
