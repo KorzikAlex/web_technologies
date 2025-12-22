@@ -7,7 +7,9 @@
     border: 1px solid var(--border-color);
     border-radius: 6px;
     background: var(--input-bg);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease;
 }
 
 .theme-selector__title {
@@ -39,7 +41,7 @@
     background-color: var(--border-color);
 }
 
-.theme-option input[type="radio"] {
+.theme-option input[type='radio'] {
     cursor: pointer;
     accent-color: var(--btn-primary);
 }
